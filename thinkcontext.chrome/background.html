@@ -1,0 +1,53 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <script src="jquery-1.6.1.min.js" type="text/javascript"></script>
+    <script src="bg-utils.js" type="text/javascript"></script>
+    <script src="db.js" type="text/javascript"></script>
+    <script>
+    function onRequest(request, sender, callback) {
+	var key = request.key;
+	var data;
+        //console.log(request);
+	switch(request.kind){
+	case 'link': 
+	    tc.lookupResult(key, request, callback);
+	    break;
+        case 'finance':
+	case 'gs-finance':
+        case 'bing-finance':
+        case 'gp-finance':
+        case 'yahoo-finance':
+            data = tc.lookupStock(key,request,callback);
+	    break;
+        case 'place':
+            tc.lookupPlace(key,request,callback);
+	    break;
+        case 'places':
+            tc.lookupPlaces(request,callback);
+	    break;
+        case 'yahoo-text':
+	case 'gs-text':
+        case 'bing-text':
+	    tc.lookupSubvert(request.key, request, callback);
+	    break;
+        case 'reverse':
+            tc.lookupReverse(request.key,request,callback);
+            break;
+       case 'reversehome':
+            tc.lookupReverseHome(request.key,request,callback);
+            break;
+       case 'sendstat':
+            tc.sendStat(request.key);
+            break;
+       }
+    };
+
+      //console.log("background.html");
+      tc.connectSubvDB();
+      chrome.extension.onRequest.addListener(onRequest);
+      setInterval(tc.updateAllTables, 1800000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+{
+    "name": "Think Context",
+    "version": "0.3",
+    "update_url": "http://thinkcontext.org/release/chrome/updates.xml",
+    "description": "Inserts contextual, politically progressive information into your web browsing",
+    "permissions": ["*://www.google.com/*"
+    		   ,"*://fusiontables.googleusercontent.com/*"
+    		   ,"*://thinkcontext.org/*"
+        		    ],
+    "background_page": "background.html",
+    "content_scripts": [
+	{
+	    "css": ["jquery-ui.css"],
+	    "matches": ["*://www.google.com/*"],
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-search.js"]
+	}
+	,{  "matches": ["*://maps.google.com/maps/place*"],
+	    "css": ["jquery-ui.css"],
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-place-page.js"]
+	}
+	,{
+	    "matches": ["*://www.google.com/finance*"],
+	    "css": ["jquery-ui.css"],
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-finance-page.js"]
+	}
+	,{
+	    "css": ["jquery-ui.css"],
+	    "matches": ["*://www.bing.com/search*"],
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","bing-search.js"]
+	}
+	,{
+	    "css": ["jquery-ui.css"],
+	    "matches": ["*://search.yahoo.com/search*"],
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","yahoo-search.js"]
+	}
+	,{
+	    "css": ["jquery-ui.css"],
+	    "matches": ["*://*/*"],
+	    "exclude_globs": ["*://www.google.com/*"
+	    ,"*://maps.google.com/maps/place*"
+	    ,"*://www.google.com/finance*"
+	    ,"*://www.bing.com/search*"
+	    ,"*://search.yahoo.com/search*"
+] ,
+	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","bg-utils.js","reverse.js"]
+	}
+    ]
+}
