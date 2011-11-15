@@ -1,4 +1,4 @@
-console.log("google-search.js");
+//console.log("google-search.js");
 
 tc.googleSearch = {
 
@@ -66,45 +66,35 @@ tc.googleSearch = {
 				 );
 		}
 	    },
-	    
 	    placeboycott: function(n, cid, data){
 		sub.place(n,cid,'boycott',data);
 	    },
-
 	    placestrike: function(n, cid, data){
 		sub.place(n,cid,'boycott',data);
 	    },
-
 	    placerisky: function(n, cid, data){
 		sub.place(n,cid,'risky',data);
 	    },
-
 	    placesafe: function(n, cid, data){
 		sub.place(n,cid,'patronize',data);
 	    },
-
 	    hotelboycott: function(n, cid, data){
 		sub.place(n,cid,'boycott',data);
 	    },
-
 	    hotelstrike: function(n, cid, data){
 		sub.place(n,cid,'boycott',data);
 	    },
-
 	    hotelrisky: function(n, cid, data){
 		sub.place(n,cid,'risky',data);
 	    },
-
 	    hotelsafe: function(n, cid, data){
 		sub.place(n,cid,'patronize',data);
 	    }
-
 	};
 
 	function insertSubvertisements(message){
 	    var result= '';
 	    var tcstat = 'gss';
-
 	    if(message.data && message.data.length > 0){
 		var subvs = message.data;
 		var sel = [];
@@ -123,7 +113,10 @@ tc.googleSearch = {
 		    var link = subv.url;
 		    var id = subv.id;
 		    var name = d.name;
-		    var blurb = d.desc;
+		    var ds = d.desc.split(' ')
+		    var blurb = ds.slice(0,14).join(' ');
+		    if(ds.length > 14)
+			blurb += '...';
 		    var host = link.split('/')[0];
 		    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
 	    }
@@ -191,7 +184,6 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('places',function(request){ 
-	    console.timeEnd("doing onResponse places");
 	    var data = request.data;
 	    var d;
 	    var icon;
@@ -222,7 +214,7 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('place', function(request){
-	    console.log("place response");
+	    //console.log("place response");
 	    switch(request.subtype){
 	    case 'gs-cid':
 		$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
@@ -247,13 +239,13 @@ tc.googleSearch = {
 
 	
 	function listenQuery(){
-	    console.log("listenQuery");
-	    $('.gssb_a:first').live('DOMSubtreeModified',function(){console.log("dosubv.querySubv");examineQuery();});
+	    //console.log("listenQuery");
+	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
 	}
 
 	function listenResults(){
-	    console.log("listenResults");
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){console.log("do listenResults"); tc.closeAllDialogs(); tc.googleSearch.examineResults();});
+	    //console.log("listenResults");
+	    $("ol#rso > li:first").live("DOMNodeInserted",function(){ tc.closeAllDialogs(); tc.googleSearch.examineResults();});
 	}
 
 	function listenRightColumn(){
@@ -262,17 +254,17 @@ tc.googleSearch = {
 	}
 	
 	function nolistenQuery(){
-	    console.log("stopped listenQuery");
+	    //console.log("stopped listenQuery");
 	    $('.gssb_a:first').die('DOMSubtreeModified');
 	}
 
 	function nolistenResults(){
-	    console.log("stopped listenResults");
+	    //console.log("stopped listenResults");
 	    $("ol#rso > li:first").die("DOMNodeInserted");
 	}
 
 	function nolistenRightColumn(){
-	    console.log("stopped listenRightColumn");
+	    //console.log("stopped listenRightColumn");
 	    $("div#rhscol").die("DOMNodeInserted");
 	}
 
@@ -295,7 +287,6 @@ tc.googleSearch = {
 		 , 'key' : qt.replace('+',' ')
 		 , 'location' : location
 		});
-	    console.log("leaving examinequery");
 	}
 
 
@@ -307,9 +298,7 @@ tc.googleSearch = {
 	
 	function pageExamine(){
 	    examineQuery();
-	    console.log("calling examine results");
 	    tc.googleSearch.examineResults();
-	    console.log("left examineresults");
 	    //tc.reverseExamine();
 	}
 

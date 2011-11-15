@@ -127,7 +127,10 @@ tc.googleSearch = {
 		    var link = subv.url;
 		    var id = subv.id;
 		    var name = d.name;
-		    var blurb = d.desc;
+		    var ds = d.desc.split(' ')
+		    var blurb = ds.slice(0,14).join(' ');
+		    if(ds.length > 14)
+			blurb += '...';
 		    var host = link.split('/')[0];
 		    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
 	    }

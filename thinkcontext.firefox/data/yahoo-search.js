@@ -1,5 +1,3 @@
-console.log("yahoo-search");
-
 sub = {
     greenResult: function(n,key,data){
 	var detail = JSON.parse(data.data);
@@ -16,7 +14,6 @@ sub = {
 	// passed a google search result, insert a dialog
 	// "n" is the header link for the result
 	
-	console.log("hyatt_result: ");
 	var tcstat = 'ysh';
 	tc.insertPrev(n
 				,'infoI'
@@ -89,8 +86,6 @@ sub = {
 function insertSubvertisements(message){
     var result= '';
     var tcstat = 'yss';
-    console.log("insertSubvertisements");
-    console.log(message);
     if(message.data && message.data.length > 0){
 	var subvs = message.data;
 	var sel = [];
@@ -109,7 +104,10 @@ function insertSubvertisements(message){
 	    var id = subv.id;
 	    var link = subv.url;
 	    var name = d.name;
-	    var blurb = d.desc;
+	    var ds = d.desc.split(' ')
+	    var blurb = ds.slice(0,14).join(' ');
+	    if(ds.length > 14)
+		blurb += '...';
 	    var host = link.split('/')[0];
 	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '" target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
     } 

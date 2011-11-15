@@ -1,5 +1,3 @@
-console.log("google-search.js");
-
 tc.googleSearch = {
 
     googlePreInsert: function(n){
@@ -123,7 +121,10 @@ tc.googleSearch = {
 		    var link = subv.url;
 		    var id = subv.id;
 		    var name = d.name;
-		    var blurb = d.desc;
+		    var ds = d.desc.split(' ')
+		    var blurb = ds.slice(0,14).join(' ');
+		    if(ds.length > 14)
+			blurb += '...';
 		    var host = link.split('/')[0];
 		    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
 	    }
@@ -221,7 +222,6 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('place', function(request){
-	    console.log("place response");
 	    switch(request.subtype){
 	    case 'gs-cid':
 		$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
@@ -246,32 +246,28 @@ tc.googleSearch = {
 
 	
 	function listenQuery(){
-	    console.log("listenQuery");
-	    $('.gssb_a:first').live('DOMSubtreeModified',function(){console.log("dosubv.querySubv");examineQuery();});
+	    $('.gssb_a:first').live('DOMNodeRemoved',function(){examineQuery();});
+//	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
 	}
 
 	function listenResults(){
-	    console.log("listenResults");
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){console.log("do listenResults"); tc.closeAllDialogs(); tc.googleSearch.examineResults();});
+	    $("ol#rso > li:first").live("DOMNodeInserted",function(){ tc.closeAllDialogs(); tc.googleSearch.examineResults();});
 	}
 
 	function listenRightColumn(){
-	    //    console.log("started listenRightColumn");
-	    //$("div#rhscol").live("DOMNodeInserted",function(){console.log("listen mbEnd");examineQuery();});
+	    //$("div#rhscol").live("DOMNodeInserted",function(){examineQuery();});
 	}
 	
 	function nolistenQuery(){
-	    console.log("stopped listenQuery");
-	    $('.gssb_a:first').die('DOMSubtreeModified');
+	    $('.gssb_a:first').die('DOMNodeRemoved');
+	    //$('.gssb_a:first').die('DOMSubtreeModified');
 	}
 
 	function nolistenResults(){
-	    console.log("stopped listenResults");
 	    $("ol#rso > li:first").die("DOMNodeInserted");
 	}
 
 	function nolistenRightColumn(){
-	    console.log("stopped listenRightColumn");
 	    $("div#rhscol").die("DOMNodeInserted");
 	}
 
@@ -288,32 +284,28 @@ tc.googleSearch = {
 	    }
 	    var result='';
 	    var location = $("div#lc li.tbos").text();
-	    console.log("query text and location " + qt + " " + location);
+	    //console.log("query text and location " + qt + " " + location);
 	    self.postMessage(
 		{'kind' : "gs-text"
 		 , 'key' : qt.replace('+',' ')
 		 , 'location' : location
 		});
-	    console.log("leaving examinequery");
 	}
 
 
 	function installListeners(){
-	    listenQuery();
+	    //listenQuery();
 	    listenResults();
-	    listenRightColumn();
+	    //listenRightColumn();
 	}
 	
 	function pageExamine(){
 	    examineQuery();
-	    console.log("calling examine results");
 	    tc.googleSearch.examineResults();
-	    console.log("left examineresults");
-	    //tc.reverseExamine();
 	}
 
 	pageExamine();
-//	installListeners();
+	installListeners();
     }
 
     ,  examineResults: function(){

@@ -1,5 +1,3 @@
-tc.debug("google finance page");
-
 tc.registerResponse('gp-finance'
 			      ,function(request){
 				  tc.debug("google finance page onResponse");

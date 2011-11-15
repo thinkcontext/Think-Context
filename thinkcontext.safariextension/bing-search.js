@@ -105,7 +105,10 @@ sub = {
 	    var d = JSON.parse(subv.data);
 	    var link = subv.url;
 	    var name = d.name;
-	    var blurb = d.desc;
+	    var ds = d.desc.split(' ')
+	    var blurb = ds.slice(0,14).join(' ');
+	    if(ds.length > 14)
+		blurb += '...';
 	    var id = subv.id;
 	    var host = link.split('/')[0];
 	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '" target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');

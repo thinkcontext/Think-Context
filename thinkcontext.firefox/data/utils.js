@@ -4,7 +4,7 @@ tc.responses = {};
 tc.examines = [];
 
 tc.debug = function(txt){ 
-    console.log(txt); 
+    //console.log(txt); 
 }
 
 tc.registerResponse = function(kind, func){

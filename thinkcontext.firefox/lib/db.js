@@ -155,7 +155,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.log("db error: " + e.message);
+	//console.log("db error: " + e.message);
 	// console.log("fail");
     }
     
@@ -240,8 +240,8 @@ tc = {
 		    var dropTxt = "DROP TABLE IF EXISTS " + table;
 		    var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
 		    var insertTxt = '';
-		    console.log(dropTxt);
-		    console.log(createTxt);
+		    //console.log(dropTxt);
+		    //console.log(createTxt);
 		    sql.execute(dropTxt);
 		    sql.execute(createTxt);
 		    dataArray = dataArray.slice(1);
@@ -357,7 +357,6 @@ tc = {
 
 tc.connectDB();
 tc.loadAllTables();
-console.log("done load now update");
 //tc.updateTable("reverse");
 timer.setTimeout(tc.updateAllTables,10000); // do at idle?
 

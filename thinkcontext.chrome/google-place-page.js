@@ -1,5 +1,3 @@
-console.log("google place page");
-
 tc.googlePlaceResponse = function(request){
 
     var sub = {
@@ -34,8 +32,6 @@ tc.googlePlaceResponse = function(request){
 	}
     };
 
-    console.log("google place page onResponse");
-    console.log(request);
     sub['place'+request.data.type](request.data);
 };
 

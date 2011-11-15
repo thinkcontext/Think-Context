@@ -149,8 +149,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.log("db error: " + e.message);
-	// console.log("fail");
+	//console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -346,8 +345,7 @@ tc = {
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
 			      , tc.onError);
-	    }
-	);
+	    });
     }
 
     , lookupReverseHome: function(key,request,callback){
@@ -361,10 +359,8 @@ tc = {
 			      , function(tx,r){ 
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
-			      , function(tx,r){console.log("error " + selTxt);}
-			     );
-	    }
-	);
+			      , tc.onError);
+	    });
     }
 
 
@@ -378,8 +374,7 @@ tc = {
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
 			      , tc.onError);
-	    }
-	);
+	    });
     }
 
     , sendStat: function(key){

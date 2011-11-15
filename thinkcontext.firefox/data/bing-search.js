@@ -1,9 +1,6 @@
-tc.debug("bing-search");
 sub = {
     greenResult: function(n,key,data){
-	console.log("greenResult");
 	var detail = JSON.parse(data.data);
-	console.log(detail);
 	var tcstat = 'bsg';
 	tc.insertPrev(n
 				,'greenG'
@@ -17,7 +14,6 @@ sub = {
 	// passed a google search result, insert a dialog
 	// "n" is the header link for the result
 	
-	console.log("hyatt_result: ");
 	var tcstat = 'bsh';
 	tc.insertPrev(n
 				,'infoI'

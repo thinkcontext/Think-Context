@@ -1,5 +1,3 @@
-console.log("reverse");
-
 tc.registerResponse('reverse', 
 		    function(request){
 			var data = request.data;
@@ -12,16 +10,13 @@ tc.registerResponse('reverse',
 			    ex = true;
 			    text += "<b>This link was mentioned in</b><br> ";
 			} 
-			// else {
-			//     text += "<b>No exact match</b><br>";
-			// }
 			for(x in data){
 			    if(data[x]['s'] != 'exact' && found == 0){
 				text += "<b>Other links to this site</b><br> ";
 				found = 1;
 			    }
 			    text += "<li>";
-			    console.log(data[x]);
+			    //console.log(data[x]);
 			    if(data[x].icon == '1'){
 				text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + data[x].source + ".ico"+'">';
 			    }
