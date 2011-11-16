@@ -65,6 +65,7 @@ tc.insertPrev = function(n,iconName,title,text,pre,post){
 	resDiv.appendChild(imgG);
 	if(pre)pre(n);
 	n.parentNode.insertBefore(resDiv,n);
+	n.style.display = "inline";
 	tc.iconDialog(title,text,r);
 	if(post)post(n);
     }
@@ -152,6 +153,7 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*un\.org\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*sports\.espn\.go\.com\/espn\/espn25\/story/)
 	      || ret.match('http://([\w\.]*\.)?wunderground\.com/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?thefreshoutlook\.com/[^"?]+')
      ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match('(\w*\.)?cbc.ca/video')
@@ -269,6 +271,7 @@ tc.reverseResponse = function(request){
 		    redih.style.display = "inline";
 		    resDiv.appendChild(redih);
 		    this.parentNode.insertBefore(resDiv,this);
+		    this.style.display = "inline";
 		    tc.iconDialog("Progressive Trackback", text, r);
 		}
 	    }

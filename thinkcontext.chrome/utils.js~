@@ -8,50 +8,22 @@ tc.debug = function(txt){
 }
 
 tc.registerResponse = function(kind, func){
+    //console.log("register " + kind);
     tc.responses[kind] = func;
 }
 
-tc.registerResponse('resource'
-		    , function(request){
-			tc.iconDir = request.data;
-			tc.icons = { infoI : tc.iconDir + "/infoI.png"
-				     ,greenG : tc.iconDir + "/greenG.png"
-				     ,greenCheck : tc.iconDir + "/greenCheck.png"
-				     ,redCirc : tc.iconDir + "/redCirc.png"
-				     ,unitehere : tc.iconDir + "/unitehere.ico"
-				     ,trackback16: tc.iconDir + "/trackback-16.png"
-				     ,trackback32: tc.iconDir + "/trackback-32.png"};
-		    });
-
-self.postMessage({'kind': 'resource'});
-tc.getReverseHost = function(url){
-    var host;
-    var ar;
-    if(host = url.split('/')[2]){
-	ar = host.split('.');
-	if(ar[0] == 'www'){
-	    ar.shift();
-	}
-	if(ar.length <= 2){
-	    return ar.join('.')
-	} else {
-	    return ar.slice(ar.length - 3).join('.')
-	}
-    }
-    return null;
-}
-
-tc.onResponse = function(request){
-    tc.responses[request.kind](request);
-}
-
-tc.activeateResponses = function(){
-    self.on('message',tc.onResponse);
-}
-tc.activeateResponses();
 tc.registerExamine = function(func){
     tc.examines.push(func);
 };
+tc.iconDir = chrome.extension.getURL("icons");
+tc.icons = { infoI : tc.iconDir + "/infoI.png"
+		       ,greenG : tc.iconDir + "/greenG.png"
+		       ,greenCheck : tc.iconDir + "/greenCheck.png"
+		       ,redCirc : tc.iconDir + "/redCirc.png"
+		       ,unitehere : tc.iconDir + "/unitehere.ico"
+		       ,trackback16: tc.iconDir + "/trackback-16.png"
+		       ,trackback32: tc.iconDir + "/trackback-32.png"
+		     };
 
 tc.insertPrev = function(n,iconName,title,text,pre,post){
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
@@ -88,7 +60,7 @@ tc.popDialog = function(title, body, autoOpen){
 					    }); 
     
     $('div#' + z + ' a[tcstat]').click(function(){
-	self.postMessage({'kind': 'sendstat'
+	chrome.extension.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
     });
     $('#'+r).click(function(){
@@ -183,7 +155,7 @@ tc.iconDialog = function(title,body,iconId){
 	    return false;}
 	, function(event){});
     $('div#d' + iconId+' a[tcstat]').click(function(){
-	self.postMessage({'kind': 'sendstat'
+	chrome.extension.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
     });
     tc.dialogs.push(d);
@@ -209,14 +181,22 @@ tc.intersect_safe = function(a, b)
   return result;
 }
 
+tc.onResponse = function(request){
+    tc.responses[request.kind](request);
+}
+
+tc.sendMessage = function(request){
+    chrome.extension.sendRequest(request, tc.onResponse);
+}
+
 tc.reverseExamine = function(){
     var urlmap;
     urlmap = $("a[href^='http']:visible").map(function(){
-	if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
+	if(this.innerText.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
 	    return tc.sigURL(this.href);
 	}});
     if(urlmap){
-	self.postMessage(
+	tc.sendMessage(
     	    {'kind': 'reversehome'
     	     , 'key': jQuery.makeArray(urlmap).slice(0,400)
     	    });
@@ -226,10 +206,10 @@ tc.reverseResponse = function(request){
     var data = request.data;
     var out = {};
     var t;
-    var docHost = tc.getReverseHost(document.baseURI);
+    var docHost = getReverseHost(document.baseURI);
     for(var i in data){
 	t = data[i].reverse_link;
-	if(docHost != tc.getReverseHost(data[i].link)){
+	if(docHost != getReverseHost(data[i].link)){
 	    if(!out[t]){
 		out[t] = { }
 	    }
@@ -246,13 +226,13 @@ tc.reverseResponse = function(request){
 	    text += "<li>";
 	    if(out[rl][l].icon == '1'){
 		text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + out[rl][l].source + ".ico"+'">';
-	}
-	text += ' <a tcstat="' + tcstat + out[rl][l].id + docHost + '" target="_blank" href="' + out[rl][l].link + '">'+ tc.htmlDecode(out[rl][l].title) + '</a> by <a target="_blank" href="' + out[rl][l].source_link + '">' + out[rl][l].name + '</a> links to <a href="'+ out[rl][l].reverse_link + '">this page</a>'; 
+	    }
+	    text += ' <a tcstat="' + tcstat + out[rl][l].id + docHost + '" target="_blank" href="' + out[rl][l].link + '">'+ tc.htmlDecode(out[rl][l].title) + '</a> by <a target="_blank" href="' + out[rl][l].source_link + '">' + out[rl][l].name + '</a> links to <a href="'+ out[rl][l].reverse_link + '">this page</a>'; 
 	}
 //	text += "</ul>";
 	$('a[href^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
-		if(this.textContent.match(/\w/)){
+		if(this.innerText.match(/\w/)){
 		    var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 		    var resDiv = document.createElement("div");
 		    var r = Math.floor(Math.random() * 100000);
