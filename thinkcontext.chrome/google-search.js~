@@ -281,7 +281,7 @@ tc.googleSearch = {
 	    }
 	    var result='';
 	    var location = $("div#lc li.tbos").text();
-	    //console.log("query text and location " + qt + " " + location);
+	    console.log("query text and location " + qt + " " + location);
 	    tc.sendMessage(
 		{'kind' : "gs-text"
 		 , 'key' : qt.replace('+',' ')
@@ -338,8 +338,6 @@ tc.googleSearch = {
 	);
 
 	if(urlmap){
-	    //console.log("urlmap");
-	    //console.log(urlmap);
 	    tc.sendMessage({'kind': 'places'
 			    ,'type': 'google'
 			    ,'subtype': 'gs-cid'

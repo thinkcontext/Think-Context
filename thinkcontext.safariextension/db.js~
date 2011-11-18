@@ -367,6 +367,7 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
+		console.log(selTxt + " " + key);
 		tx.executeSql(selTxt
 			      , [key]
 			      , function(tx,r){ 

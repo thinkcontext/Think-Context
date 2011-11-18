@@ -41,8 +41,9 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '2038546'
-	    , version: '0.02'
+	    , googFTNumber: '2186764'
+//	    , googFTNumber: '2038546'
+	    , version: '0.03'
 	}
 	, subverts: { 
 	    fields: {
@@ -63,8 +64,9 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '1386568'
-	    , version: '0.03'
+	    , googFTNumber: '2186393'
+//	    , googFTNumber: '1386568'
+	    , version: '0.04'
 	}
 	, place_data: {
 	    fields: {
@@ -72,8 +74,9 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-	    , googFTNumber: '1386562'
-	    , version: '0.03'
+//	    , googFTNumber: '1386562'
+	    , googFTNumber: '2186651'
+	    , version: '0.04'
 	}
     }
 
@@ -315,6 +318,8 @@ tc = {
 	);
     }
     , lookupPlaces: function(request,callback){
+	//console.log("lookupPlaces");
+	//console.log(request);
 	var data = request.data;
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
@@ -322,7 +327,7 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = ?";
-		//console.log(selTxt + " " + key + " " + request.type);
+		//console.log(selTxt + " " + request.type);
 		tx.executeSql(selTxt
 			      , [request.type]
 			      , function(tx,r){tc.onLookupSuccessMany(tx,r,request,callback)}

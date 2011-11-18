@@ -41,9 +41,8 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '2186764'
-//	    , googFTNumber: '2038546'
-	    , version: '0.03'
+	    , googFTNumber: '2038546'
+	    , version: '0.02'
 	}
 	, subverts: { 
 	    fields: {
@@ -64,9 +63,8 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '2186393'
-//	    , googFTNumber: '1386568'
-	    , version: '0.04'
+	    , googFTNumber: '1386568'
+	    , version: '0.03'
 	}
 	, place_data: {
 	    fields: {
@@ -74,9 +72,8 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-//	    , googFTNumber: '1386562'
-	    , googFTNumber: '2186651'
-	    , version: '0.04'
+	    , googFTNumber: '1386562'
+	    , version: '0.03'
 	}
     }
 
@@ -152,8 +149,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.log("db error: " + e.message);
-	// console.log("fail");
+	//console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -207,8 +203,13 @@ tc = {
 			dataArray = dataArray.slice(1);
 			for (var r in dataArray){
 			    if(dataArray[r].length == len){
-				tx.executeSql("INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") " 
-					      , dataArray[r], function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);}, tc.onError);
+				var insertTxt = "INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") ";
+				tx.executeSql(insertTxt
+					      , dataArray[r]
+					      , function(){tc.setLocalTableVersion(table);
+							   tc.setLocalAddTime(table);}
+					      , tc.onError
+					     );
 			    }
 			}
 		    }
@@ -344,8 +345,7 @@ tc = {
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
 			      , tc.onError);
-	    }
-	);
+	    });
     }
 
     , lookupReverseHome: function(key,request,callback){
@@ -359,10 +359,8 @@ tc = {
 			      , function(tx,r){ 
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
-			      , function(tx,r){console.log("error " + selTxt);}
-			     );
-	    }
-	);
+			      , tc.onError);
+	    });
     }
 
 
@@ -370,15 +368,13 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
-		console.log(selTxt + " " + key);
 		tx.executeSql(selTxt
 			      , [key]
 			      , function(tx,r){ 
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
 			      , tc.onError);
-	    }
-	);
+	    });
     }
 
     , sendStat: function(key){
