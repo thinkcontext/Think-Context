@@ -3,10 +3,7 @@ var db = require("db");
 var s = require("self");
 
 var pageMod = require("page-mod");
-console.log("here");
-
 var iconDir = s.data.url("icons");
-console.log(iconDir);
 
 pageMod.PageMod({
     include : "http://www.google.com/*",
@@ -94,7 +91,7 @@ pageMod.PageMod({
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
-	    console.log(request.kind);
+	    //console.log(request.kind);
 	    switch(request.kind){
 	    case 'resource':
 		request.data = iconDir;
@@ -123,7 +120,6 @@ pageMod.PageMod({
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
-	    console.log(request.kind);
 	    switch(request.kind){
 	    case 'resource':
 		request.data = iconDir;
@@ -155,7 +151,6 @@ pageMod.PageMod({
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
-	    console.log(request.kind);
 	    switch(request.kind){
 	    case 'resource':
 		request.data = iconDir;
@@ -172,7 +167,6 @@ pageMod.PageMod({
 		db.lookupStock(key,request,function(r){worker.postMessage(r)});
 		break;
 	    case 'link':
-		//console.log("link " + request.key);
 		db.lookupResult(request, function(r){worker.postMessage(r)});
 		break;
 	    case 'place':
@@ -198,7 +192,6 @@ pageMod.PageMod({
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
-	    console.log("main.js " + request.kind);
 	    switch(request.kind){
 	    case 'resource':
 		request.data = iconDir;
@@ -215,7 +208,6 @@ pageMod.PageMod({
 		db.lookupStock(key,request,function(r){worker.postMessage(r)});
 		break;
 	    case 'link':
-		console.log("link " + request.key);
 		db.lookupResult(request, function(r){worker.postMessage(r)});
 		break;
 	    case 'place':
@@ -229,5 +221,3 @@ pageMod.PageMod({
 	    }
 	})
     }});
-
-console.log("The add-on is running.");

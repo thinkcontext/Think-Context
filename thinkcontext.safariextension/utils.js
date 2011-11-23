@@ -186,8 +186,12 @@ tc.intersect_safe = function(a, b)
 
 tc.onResponse = function(e){
     console.log(e);
+    console.log(tc.responses);
     var request = e.message;
-    tc.responses[request.kind](request);
+    console.log(request.kind);
+    var f = tc.responses[request.kind]
+    console.log(f);
+    f(request);
 }
 
 safari.self.addEventListener("message",tc.onResponse, false);

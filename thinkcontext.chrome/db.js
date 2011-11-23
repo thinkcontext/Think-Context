@@ -383,7 +383,6 @@ tc = {
     }
 
     , sendStat: function(key){
-	console.log("sendStat " + key);
 	$.get('http://thinkcontext.org/s/?' + key);
     }
 };

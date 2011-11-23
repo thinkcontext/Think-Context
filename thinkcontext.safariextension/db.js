@@ -152,8 +152,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.log("db error: " + e.message);
-	// console.log("fail");
+	//console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -359,7 +358,7 @@ tc = {
 			      , function(tx,r){ 
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
-			      , function(tx,r){console.log("error " + selTxt);}
+			      , tc.onError
 			     );
 	    }
 	);
@@ -370,7 +369,7 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
-		console.log(selTxt + " " + key);
+		//console.log(selTxt + " " + key);
 		tx.executeSql(selTxt
 			      , [key]
 			      , function(tx,r){ 
@@ -382,7 +381,6 @@ tc = {
     }
 
     , sendStat: function(key){
-	console.log("sendStat " + key);
 	$.get('http://thinkcontext.org/s/?' + key);
     }
 };

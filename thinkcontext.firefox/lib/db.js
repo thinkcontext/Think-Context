@@ -353,7 +353,7 @@ tc = {
     }
 
     , sendStat: function(key){
-	console.log("sendStat " + key);
+	//console.log("sendStat " + key);
 	Request({url: 'http://thinkcontext.org/s/?' + key}).get();
     }
 };
