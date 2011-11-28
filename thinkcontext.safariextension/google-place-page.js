@@ -57,4 +57,6 @@ tc.googlePlaceExamine = function(){
 };
 
 tc.googlePlaceExamine();
+safari.self.addEventListener("message",tc.onResponse, false);
+
 }

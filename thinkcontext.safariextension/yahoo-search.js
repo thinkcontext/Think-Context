@@ -221,4 +221,6 @@ $('div#web > ol h3 > a').map(
 
 tc.registerResponse('reversehome', tc.reverseResponse);
 tc.reverseExamine();
+safari.self.addEventListener("message",tc.onResponse, false);
+
 }

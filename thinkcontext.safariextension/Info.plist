@@ -5,13 +5,13 @@
 	<key>Builder Version</key>
 	<string>534.51.22</string>
 	<key>CFBundleDisplayName</key>
-	<string>subvertise</string>
+	<string>Think Context</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.subvertise</string>
+	<string>org.thinkcontext</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>.03</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -44,6 +44,8 @@
 			<string>jquery-ui.css</string>
 		</array>
 	</dict>
+	<key>Description</key>
+	<string>Inserts contextual, politically progressive information into your web browsing</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -56,5 +58,9 @@
 			<string>All</string>
 		</dict>
 	</dict>
+	<key>Update Manifest URL</key>
+	<string>http://www.thinkcontext.org/release/safari/updates.plist</string>
+	<key>Website</key>
+	<string>http://www.thinkcontext.org/</string>
 </dict>
 </plist>

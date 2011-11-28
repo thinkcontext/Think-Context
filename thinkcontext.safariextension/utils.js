@@ -8,7 +8,6 @@ tc.debug = function(txt){
 }
 
 tc.registerResponse = function(kind, func){
-    console.log("register " + kind);
     tc.responses[kind] = func;
 }
 
@@ -180,21 +179,15 @@ tc.intersect_safe = function(a, b)
        bi++;
      }
   }
-
   return result;
 }
 
 tc.onResponse = function(e){
-    console.log(e);
-    console.log(tc.responses);
     var request = e.message;
-    console.log(request.kind);
-    var f = tc.responses[request.kind]
-    console.log(f);
-    f(request);
+    tc.responses[request.kind](request);
 }
 
-safari.self.addEventListener("message",tc.onResponse, false);
+//safari.self.addEventListener("message",tc.onResponse, false);
 
 tc.sendMessage = function(request){
     safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);

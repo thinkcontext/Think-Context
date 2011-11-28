@@ -28,7 +28,6 @@ tc.registerResponse('reverse',
 				found = 1;
 			    }
 			    text += "<li>";
-			    console.log(data[x]);
 			    if(data[x].icon == '1'){
 				text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + data[x].source + ".ico"+'">';
 			    }
@@ -51,4 +50,6 @@ tc.registerResponse('reversehome', tc.reverseResponse);
 //tc.registerExamine(tc.reverseExamine);
 
 tc.reverseExamine();
+safari.self.addEventListener("message",tc.onResponse, false);
+
 }

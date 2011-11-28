@@ -23,5 +23,6 @@ $("a#gb_1").map(
 		 , 'key': stockRes[1]});
 	}
     });
+safari.self.addEventListener("message",tc.onResponse, false);
 
 }

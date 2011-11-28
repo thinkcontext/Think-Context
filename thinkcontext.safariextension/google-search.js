@@ -1,8 +1,8 @@
-if(document.baseURI.search('.*www.google.com/search\?.*') >= 0
-||document.baseURI.search('.*www.google.com/webhp') >= 0
-||document.baseURI.search('.*www.google.com/#') >= 0
-){
-console.log("google-search.js");
+if(document.location.href.search('.*www.google.com/search\?.*') >= 0
+   ||document.location.href.search('.*www.google.com/webhp') >= 0
+   ||document.location.href.search('.*www.google.com/#') >= 0
+   ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
+  ){
 
 tc.googleSearch = {
 
@@ -173,7 +173,6 @@ tc.googleSearch = {
 		tc.sendMessage({'kind': 'sendstat'
 	 				      , 'key': this.attributes['tcstat'].value});
 	    });
-	    
 	}
     
 	tc.registerResponse('link', function(request){
@@ -198,7 +197,6 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('places',function(request){ 
-	    console.timeEnd("doing onResponse places");
 	    var data = request.data;
 	    var d;
 	    var icon;
@@ -229,7 +227,6 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('place', function(request){
-	    console.log("place response");
 	    switch(request.subtype){
 	    case 'gs-cid':
 		$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
@@ -255,12 +252,12 @@ tc.googleSearch = {
 	
 	function listenQuery(){
 	    console.log("listenQuery");
-	    $('.gssb_a:first').live('DOMSubtreeModified',function(){console.log("dosubv.querySubv");examineQuery();});
+	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
 	}
 
 	function listenResults(){
 	    console.log("listenResults");
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){console.log("do listenResults"); tc.closeAllDialogs(); tc.googleSearch.examineResults();});
+	    $("ol#rso > li:first").live("DOMNodeInserted",function(){tc.closeAllDialogs(); tc.googleSearch.examineResults();});
 	}
 
 	function listenRightColumn(){
@@ -279,7 +276,7 @@ tc.googleSearch = {
 	}
 
 	function nolistenRightColumn(){
-	    console.log("stopped listenRightColumn");
+	    //console.log("stopped listenRightColumn");
 	    $("div#rhscol").die("DOMNodeInserted");
 	}
 
@@ -296,13 +293,12 @@ tc.googleSearch = {
 	    }
 	    var result='';
 	    var location = $("div#lc li.tbos").text();
-	    console.log("query text and location " + qt + " " + location);
+	    //console.log("query text and location " + qt + " " + location);
 	    tc.sendMessage(
 		{'kind' : "gs-text"
 		 , 'key' : qt.replace('+',' ')
 		 , 'location' : location
 		});
-	    console.log("leaving examinequery");
 	}
 
 
@@ -314,9 +310,7 @@ tc.googleSearch = {
 	
 	function pageExamine(){
 	    examineQuery();
-	    console.log("calling examine results");
 	    tc.googleSearch.examineResults();
-	    console.log("left examineresults");
 	    //tc.reverseExamine();
 	}
 
@@ -426,4 +420,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     tc.registerResponse('reversehome', tc.reverseResponse);
     tc.reverseExamine();
 }
+
+safari.self.addEventListener("message",tc.onResponse, false);
 }
