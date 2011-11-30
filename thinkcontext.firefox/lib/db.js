@@ -166,8 +166,15 @@ tc = {
 	for(var t in tc.tables){
 	    if(!tc.checkLocalTableVersion(t)){
 		tc.loadTable(t);
+	    } else {
+		tc.checkNoTable(t);
 	    }
 	}
+    }
+    , checkNoTable: function(table){
+	sql.execute("select count(*) from " + table
+		    , tc.onSuccess
+		    , function(e,stmt){ tc.loadTable(table)});
     }
     , updateAllTables: function(){
 	for(var t in tc.tables){
@@ -296,7 +303,7 @@ tc = {
 	var key = request.key;
 
 	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key  LIMIT 1";
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('results').split(', '));});
+	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
     }
 
     , lookupStock: function(key,request,callback){
@@ -309,12 +316,12 @@ tc = {
 	    keysplit[0] = keysplit[0].toUpperCase();
 	    var selTxt = "SELECT * FROM stocks WHERE symbol = '" + keysplit[0] + "'";
 	}
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('stocks').split(', '));});
+	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('stocks').split(', '));},tc.onError);
     }
 
     , lookupPlace: function(key,request,callback){
 	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = '"+key+"' and p.type = '"+request.type+"' LIMIT 1";
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);});
+	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);},tc.onError);
     }
 
 
@@ -325,7 +332,7 @@ tc = {
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 
 	var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = '" + request.type + "'";
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);});
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);},tc.onError);
     }
 
     , lookupReverse: function(key,request,callback){
@@ -335,7 +342,7 @@ tc = {
 
 	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link, icon from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = '"+key+"' union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = '"+key+"' ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||'"+host+"'||'/%' or r.reverse_link like 'http://'||'"+host+"'||'/%' ) and r.reverse_link <> '"+key+"' and o.link is null ) t group by s, title, link, name, source, source_link, icon order by s, id desc limit 5;"
 
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','title','link','reverse_link','name','source','source_link','icon'])});
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','title','link','reverse_link','name','source','source_link','icon'])},tc.onError);
     }
 
     , lookupReverseHome: function(key,request,callback){
@@ -343,12 +350,12 @@ tc = {
 	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link, s.icon";
 	
 	request.key = '';
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link','icon'])});
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link','icon'])},tc.onError);
     }
     
     , lookupSubvert: function(key, request, callback){
 	var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = '" + key + "'";
-	sql.execute(selTxt,function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id', 'data','url']);});
+	sql.execute(selTxt,function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id', 'data','url']);},tc.onError);
 	
     }
 

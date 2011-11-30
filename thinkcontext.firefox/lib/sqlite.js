@@ -47,32 +47,37 @@ const storageService = Cc["@mozilla.org/storage/service;1"].
 let connection = null;
 
 /*Local function that make the query async*/
-function queryAsync(statement, success){
+function queryAsync(statement, success, failure){
     /*sqrObject have the information about the result of query*/
     let sqrObject = new Object();
     sqrObject.data = new Array();
     sqrObject.cols = 0;
     sqrObject.rows = 0;
-    let query = connection.createStatement(statement);
-    query.executeAsync({
-        handleResult:function(resultSet){
-            for(var row=resultSet.getNextRow();row;row=resultSet.getNextRow()){
-                sqrObject.cols = row.numEntries;
-                let dataRow = new Array(sqrObject.cols);
-                for(var i=0;i<sqrObject.cols;i++){
-                    dataRow[i] = row.getResultByIndex(i);
-                }
-                sqrObject.data[sqrObject.rows] = dataRow;
-                sqrObject.rows++;
+    try{
+	let query = connection.createStatement(statement);
+	query.executeAsync({
+            handleResult:function(resultSet){
+		for(var row=resultSet.getNextRow();row;row=resultSet.getNextRow()){
+                    sqrObject.cols = row.numEntries;
+                    let dataRow = new Array(sqrObject.cols);
+                    for(var i=0;i<sqrObject.cols;i++){
+			dataRow[i] = row.getResultByIndex(i);
+                    }
+                    sqrObject.data[sqrObject.rows] = dataRow;
+                    sqrObject.rows++;
+		}
+            },
+            handleError:function(error){
+		success(null,error);
+            },
+            handleCompletion:function(reason){
+		success(sqrObject,reason);
             }
-        },
-        handleError:function(error){
-            success(null,error);
-        },
-        handleCompletion:function(reason){
-            success(sqrObject,reason);
-        }
-    });
+	});
+    } 
+    catch(e){
+	failure(e,statement);
+    }
 }
 function queryAsyncMany(statements,success){
     /*sqrObject have the information about the result of query*/
@@ -110,10 +115,10 @@ exports.execute = function execute(statement){
     }
     else{
         try{
-            queryAsync(statement,execute.arguments[1]);
+            queryAsync(statement,execute.arguments[1],execute.arguments[2]);
         }
         catch(e){
-            console.error(e.name+' - '+e.message);
+            console.error(e.name+' -- '+e.message);
         }
     }
 }

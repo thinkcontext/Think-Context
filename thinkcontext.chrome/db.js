@@ -159,8 +159,18 @@ tc = {
 	for(var t in tc.tables){
 	    if(!tc.checkLocalTableVersion(t)){
 		tc.loadTable(t);
+	    } else {
+		tc.checkNoTable(t);
 	    }
 	}
+    }
+    , checkNoTable: function(table){
+	tc.db.transaction(
+	    function(tx){
+		tx.executeSql("select count(*) from " + table
+			      ,[]
+			      ,null
+			      ,function(){ tc.loadTable(table) })});
     }
     , updateAllTables: function(){
 	for(var t in tc.tables){
