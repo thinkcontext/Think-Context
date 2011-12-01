@@ -10,7 +10,6 @@
         var request = e.message;
 	var key = request.key;
         var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};	        var data;
-        //console.log(request);
 	switch(request.kind){
 	case 'link': 
 	    tc.lookupResult(key, request, callback);
