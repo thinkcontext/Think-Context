@@ -9,8 +9,8 @@ pageMod.PageMod({
     include : "http://www.google.com/*",
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('google-search.js')],
     onAttach: function(worker){
@@ -54,8 +54,8 @@ pageMod.PageMod({
     include : "http://www.google.com/finance*",
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('google-finance-page.js')],
     onAttach: function(worker){
@@ -83,8 +83,8 @@ pageMod.PageMod({
     include : "http://maps.google.com/maps/place*",
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('google-place-page.js')],
     onAttach: function(worker){
@@ -112,8 +112,8 @@ pageMod.PageMod({
     include : ["*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('reverse.js')],
     onAttach: function(worker){
@@ -143,8 +143,8 @@ pageMod.PageMod({
     include : "http://search.yahoo.com/search*",
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('yahoo-search.js')],
     onAttach: function(worker){
@@ -184,8 +184,8 @@ pageMod.PageMod({
     include : "http://www.bing.com/search*",
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.6.1.min.js')
-			,data.url('jquery-ui.min.js')
+			,data.url('jquery-1.7.1.min.js')
+			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('bing-search.js')],
     onAttach: function(worker){

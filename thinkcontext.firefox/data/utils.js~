@@ -65,6 +65,7 @@ tc.insertPrev = function(n,iconName,title,text,pre,post){
 	resDiv.appendChild(imgG);
 	if(pre)pre(n);
 	n.parentNode.insertBefore(resDiv,n);
+	n.style.display = "inline";
 	tc.iconDialog(title,text,r);
 	if(post)post(n);
     }
@@ -74,18 +75,20 @@ tc.insertPrev = function(n,iconName,title,text,pre,post){
 tc.popDialog = function(title, body, autoOpen){
     var r = Math.floor(Math.random() * 100000);
     var z = Math.floor(Math.random() * 100000);
-    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:1000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
+    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:999999; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
 
-    var d = $('<div id="' + z + '">'+body+'</div>').dialog({ title: 'thinkContext: ' + title
-					      , position: [window.innerWidth - 350
-							   , window.innerHeight - 175 ]
-					      , close: function(){
-						  $(window).unbind('resize');
-						  $(window).unbind('scroll');
-					      }
-					      , height: 150
-					      , autoOpen: autoOpen
-					    }); 
+    var d = $('<div id="' + z + '">'+body+'</div>').dialog(
+	{ title: 'thinkContext: ' + title
+	  , position: [window.innerWidth - 350
+		       , window.innerHeight - 175 ]
+	  , close: function(){
+	      $(window).unbind('resize');
+	      $(window).unbind('scroll');
+	  }
+	  , height: 150
+	  , autoOpen: autoOpen
+	  , zIndex: 999999
+	}); 
     
     $('div#' + z + ' a[tcstat]').click(function(){
 	self.postMessage({'kind': 'sendstat'
@@ -152,6 +155,7 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*un\.org\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*sports\.espn\.go\.com\/espn\/espn25\/story/)
 	      || ret.match('http://([\w\.]*\.)?wunderground\.com/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?thefreshoutlook\.com/[^"?]+')
      ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match('(\w*\.)?cbc.ca/video')
@@ -174,6 +178,7 @@ tc.iconDialog = function(title,body,iconId){
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
 	 , height: 150
+	 , zIndex: 999999
 	}); 
     $("div#"+iconId ).hover(
 	function(event){ 
@@ -269,6 +274,7 @@ tc.reverseResponse = function(request){
 		    redih.style.display = "inline";
 		    resDiv.appendChild(redih);
 		    this.parentNode.insertBefore(resDiv,this);
+		    this.style.display = "inline";
 		    tc.iconDialog("Progressive Trackback", text, r);
 		}
 	    }

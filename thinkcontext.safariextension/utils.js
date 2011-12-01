@@ -47,18 +47,20 @@ tc.insertPrev = function(n,iconName,title,text,pre,post){
 tc.popDialog = function(title, body, autoOpen){
     var r = Math.floor(Math.random() * 100000);
     var z = Math.floor(Math.random() * 100000);
-    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:1000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
+    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:999999; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
 
-    var d = $('<div id="' + z + '">'+body+'</div>').dialog({ title: 'thinkContext: ' + title
-					      , position: [window.innerWidth - 350
-							   , window.innerHeight - 175 ]
-					      , close: function(){
-						  $(window).unbind('resize');
-						  $(window).unbind('scroll');
-					      }
-					      , height: 150
-					      , autoOpen: autoOpen
-					    }); 
+    var d = $('<div id="' + z + '">'+body+'</div>').dialog(
+	{ title: 'thinkContext: ' + title
+	  , position: [window.innerWidth - 350
+		       , window.innerHeight - 175 ]
+	  , close: function(){
+	      $(window).unbind('resize');
+	      $(window).unbind('scroll');
+	  }
+	  , height: 150
+	  , autoOpen: autoOpen
+	  , zIndex: 999999
+	}); 
     
     $('div#' + z + ' a[tcstat]').click(function(){
 	tc.sendMessage({'kind': 'sendstat'
@@ -87,11 +89,11 @@ tc.popDialog = function(title, body, autoOpen){
 tc.sigURL = function(url){
 // turn a url into some sort of canonicalized version
 // unfortunately this varies by site so this will be an imperfect exercise
-
     var ret = url;
     var matches;
+    console.time('sigurl');
     
-    yt = new RegExp('http://([^\.]+\.)?youtube.com/watch\?.*(v=[^\&]*).*');
+    yt = new RegExp(/http:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
     if(matches = yt.exec(ret)){
 	ret = 'http://www.youtube.com/watch?' + matches[2];
 	ret = ret.split('#')[0];	      
@@ -126,16 +128,18 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*sports\.espn\.go\.com\/espn\/espn25\/story/)
 	      || ret.match('http://([\w\.]*\.)?wunderground\.com/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?thefreshoutlook\.com/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?phoenixnewtimes\.com/[^"?]+')
      ){
 	ret = ret.split('#')[0];	      
-    } else if(ret.match('(\w*\.)?cbc.ca/video')
+    } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
 	      || ret.match(/(\w*\.)?cnn.com\/video\//)){
 	ret = ret;
-    } else if(ret.match('(\w*\.)*yahoo.com/')){
-	      ret = ret.split('?')[0].split('#')[0].split(';')[0];	      
+    } else if(ret.match(/^http(s)?:\/\/(\w*\.)*yahoo.com\//)){
+	ret = ret.split('?')[0].split('#')[0].split(';')[0];	      
     } else {
 	ret = ret.split('?')[0].split('#')[0];	      
     }
+    console.timeEnd('sigurl');
     return ret;
 }
 
@@ -148,6 +152,7 @@ tc.iconDialog = function(title,body,iconId){
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
 	 , height: 150
+	 , zIndex: 999999
 	}); 
     $("div#"+iconId ).hover(
 	function(event){ 

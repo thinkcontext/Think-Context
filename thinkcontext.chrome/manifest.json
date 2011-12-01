@@ -12,26 +12,26 @@
 	{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-search.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-search.js"]
 	}
 	,{  "matches": ["*://maps.google.com/maps/place*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-place-page.js"]
 	}
 	,{
 	    "matches": ["*://www.google.com/finance*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","google-finance-page.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-finance-page.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","bing-search.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bing-search.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://search.yahoo.com/search*"],
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","yahoo-search.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","yahoo-search.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
@@ -42,7 +42,7 @@
 	    ,"*://www.bing.com/search*"
 	    ,"*://search.yahoo.com/search*"
 ] ,
-	    "js": ["jquery-1.6.1.min.js","jquery-ui.min.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}
     ]
 }

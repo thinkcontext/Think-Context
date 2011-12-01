@@ -27,9 +27,9 @@
 		<dict>
 			<key>End</key>
 			<array>
-				<string>jquery-1.6.1.min.js</string>
+				<string>jquery-1.7.1.min.js</string>
 				<string>utils.js</string>
-				<string>jquery-ui.min.js</string>
+				<string>jquery-ui-1.8.16.custom.min.js</string>
 				<string>google-search.js</string>
 				<string>reverse.js</string>
 				<string>bing-search.js</string>

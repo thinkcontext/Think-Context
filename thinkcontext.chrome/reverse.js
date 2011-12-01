@@ -25,16 +25,10 @@ tc.registerResponse('reverse',
 			}
 			tc.popDialog('Progressive Trackback', text, ex);				  
 		    });
-
 tc.registerResponse('reversehome', tc.reverseResponse);
-
-//tc.registerExamine(function(){
-    tc.sendMessage(
-	{'kind': 'reverse'
-	 , 'key': tc.sigURL(document.baseURI)
-	});
-//});
-
-//tc.registerExamine(tc.reverseExamine);
+tc.sendMessage(
+    {'kind': 'reverse'
+     , 'key': tc.sigURL(document.baseURI)
+    });
 
 tc.reverseExamine();
