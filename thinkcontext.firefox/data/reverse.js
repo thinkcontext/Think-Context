@@ -27,7 +27,7 @@ tc.registerResponse('reverse',
 				found = 1;
 			    }
 			    text += "<li>";
-			    if(data[x].icon == '1'){
+			    if(tc.iconStatus[data[x].source] == 1){
 				text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir+"/" + data[x].source + ".ico"+'">';
 			    }
 			    

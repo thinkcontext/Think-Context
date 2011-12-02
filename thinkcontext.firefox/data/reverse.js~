@@ -1,4 +1,10 @@
-console.log("reverse");
+if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
+|| /^http(s)?:\/\/maps.google.com\/maps\/place/.test(document.URL)
+|| /^http(s)?:\/\/www.google.com\/finance/.test(document.URL)
+|| /^http(s)?:\/\/bing.google.com\/search/.test(document.URL)
+|| /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
+     )
+  ){    
 
 tc.registerResponse('reverse', 
 		    function(request){
@@ -21,9 +27,8 @@ tc.registerResponse('reverse',
 				found = 1;
 			    }
 			    text += "<li>";
-			    console.log(data[x]);
 			    if(data[x].icon == '1'){
-				text += '<img style="display:inline;" height="16" width="16" src="'+chrome.extension.getURL("icons/" + data[x].source + ".ico")+'">';
+				text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir+"/" + data[x].source + ".ico"+'">';
 			    }
 			    
 			    text += ' <a tcstat="' + tcstat + data[x].id + '" target="_blank" href="' + data[x].link + '">'+ tc.htmlDecode(data[x].title) + '</a> by <a target="_blank" href="' + data[x].source_link + '">' + data[x].name + '</a> links to <a href="'+ data[x].reverse_link + '">this page</a><br>';
@@ -32,15 +37,8 @@ tc.registerResponse('reverse',
 		    });
 
 tc.registerResponse('reversehome', tc.reverseResponse);
-
-//tc.registerExamine(function(){
-    chrome.extension.sendRequest(
-	{'kind': 'reverse'
-	 , 'key': tc.sigURL(document.baseURI)
-	}
-	, tc.onResponse);
-//});
-
-//tc.registerExamine(tc.reverseExamine);
-
+self.postMessage({'kind': 'reverse'
+		  , 'key': tc.sigURL(document.baseURI)
+		 });
 tc.reverseExamine();
+}

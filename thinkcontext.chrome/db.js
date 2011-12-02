@@ -7,10 +7,9 @@ tc = {
 		, source: 'text'
 		, name: 'text'
 		, link: 'text'
-		, icon: 'text'
 	    }
 	    , googFTNumber: '1040216'
-	    , version: '0.04'
+	    , version: '0.05'
 	}
 	, reverse: {
 	    fields: {
@@ -349,9 +348,7 @@ tc = {
     , lookupReverse: function(key,request,callback){
 	// find reverse links and some other links to the same site
 	var host = getReverseHost(key);
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link, icon from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = ? union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = ? ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||?||'/%' or r.reverse_link like 'http://'||?||'/%' ) and r.reverse_link <> ? and o.link is null ) t group by s, title, link, name, source, source_link, icon order by s, id desc limit 5;"
-	//var selTxt = "SELECT distinct 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = ? ";
-	
+	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = ? union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = ? ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||?||'/%' or r.reverse_link like 'http://'||?||'/%' ) and r.reverse_link <> ? and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(selTxt
@@ -365,7 +362,7 @@ tc = {
 
     , lookupReverseHome: function(key,request,callback){
 	key = arrayQuoteEscape(key);
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link, s.icon";
+	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	request.key = '';
 	tc.db.transaction(
 	    function(tx){
