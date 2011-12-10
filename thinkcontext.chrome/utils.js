@@ -8,22 +8,21 @@ tc.debug = function(txt){
 }
 
 tc.registerResponse = function(kind, func){
-    //console.log("register " + kind);
     tc.responses[kind] = func;
 }
 
 tc.registerExamine = function(func){
     tc.examines.push(func);
-};
+}
 tc.iconDir = chrome.extension.getURL("icons");
 tc.icons = { infoI : tc.iconDir + "/infoI.png"
-		       ,greenG : tc.iconDir + "/greenG.png"
-		       ,greenCheck : tc.iconDir + "/greenCheck.png"
-		       ,redCirc : tc.iconDir + "/redCirc.png"
-		       ,unitehere : tc.iconDir + "/unitehere.ico"
-		       ,trackback16: tc.iconDir + "/trackback-16.png"
-		       ,trackback32: tc.iconDir + "/trackback-32.png"
-		     };
+	     ,greenG : tc.iconDir + "/greenG.png"
+	     ,greenCheck : tc.iconDir + "/greenCheck.png"
+	     ,redCirc : tc.iconDir + "/redCirc.png"
+	     ,unitehere : tc.iconDir + "/unitehere.ico"
+	     ,trackback16: tc.iconDir + "/trackback-16.png"
+	     ,trackback32: tc.iconDir + "/trackback-32.png"
+	   };
 // ick but need to keep in sync with icons directory
 tc.iconStatus = {fair:	1,
 change:	1,
