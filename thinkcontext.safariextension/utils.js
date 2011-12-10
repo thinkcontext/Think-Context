@@ -82,7 +82,10 @@ cotton:	1,
 ctj:	1,
 innocence:	1,
 altoarizona:	1,
-		 feministing:	1};
+dcfpi:	1,
+roc:	1,
+feministing:	1
+};
 
 tc.insertPrev = function(n,iconName,title,text,pre,post){
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 

@@ -178,8 +178,6 @@ tc.sigURL = function(url){
 // unfortunately this varies by site so this will be an imperfect exercise
     var ret = url;
     var matches;
-    console.time('sigurl');
-    
     yt = new RegExp(/http:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
     if(matches = yt.exec(ret)){
 	ret = 'http://www.youtube.com/watch?' + matches[2];
@@ -227,7 +225,6 @@ tc.sigURL = function(url){
     } else {
 	ret = ret.split('?')[0].split('#')[0];	      
     }
-    console.timeEnd('sigurl');
     return ret;
 }
 
