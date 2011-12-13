@@ -164,7 +164,7 @@ tc.googleSearch = {
 	    }
 				);
 	    $("table#mbEnd a[tcstat]").click(function(){
-		self.postMessage({'kind': 'sendstat'
+		tc.sendMessage({'kind': 'sendstat'
 	 			  , 'key': this.attributes['tcstat'].value});
 	    });
 	    
@@ -176,6 +176,15 @@ tc.googleSearch = {
 		sub[request.data.func](this,request.key,request.data);});
 	});
 
+	tc.registerResponse('links', function(request){
+	    console.log('links response');
+	    var data = request.data;
+	    var out = {};
+	    for(var i in data){
+		console.log(i);
+		console.log(data[i]);
+	    }
+	});
 	
 	tc.registerResponse('gs-finance', function(request){
 	    var data = JSON.parse(request.data.data);
@@ -285,7 +294,7 @@ tc.googleSearch = {
 	    var result='';
 	    var location = $("div#lc li.tbos").text();
 	    //console.log("query text and location " + qt + " " + location);
-	    self.postMessage(
+	    tc.sendMessage(
 		{'kind' : "gs-text"
 		 , 'key' : qt.replace('+',' ')
 		 , 'location' : location
@@ -316,7 +325,7 @@ tc.googleSearch = {
 		var q = decodeURIComponent(nqr.exec(this.search)[1]);
 		var sid = "gs" + Math.floor(Math.random() * 100000);
 		this.setAttribute("sid",sid);
-		self.postMessage({'kind': 'gs-finance'
+		tc.sendMessage({'kind': 'gs-finance'
 				  , 'sid': sid
 				  , 'key': q
 				 });
@@ -340,7 +349,7 @@ tc.googleSearch = {
 	);
 
 	if(urlmap){
-	    self.postMessage({'kind': 'places'
+	    tc.sendMessage({'kind': 'places'
 			      ,'type': 'google'
 			      ,'subtype': 'gs-cid'
 			      , 'data': jQuery.makeArray(urlmap)
@@ -360,7 +369,7 @@ tc.googleSearch = {
 			var cid = cid_res[1];
 			var sid = "gs" + Math.floor(Math.random() * 100000);
 			target.setAttribute("sid",sid);
-			self.postMessage({'kind': 'place'
+			tc.sendMessage({'kind': 'place'
 					  , 'type': 'google'
 					  ,'subtype': 'gs-lcll'
 					  , 'sid': sid
@@ -380,7 +389,7 @@ tc.googleSearch = {
 		    var cid = cid_res[1];
 		    var sid = "gs" + Math.floor(Math.random() * 100000);
 		    this.setAttribute("sid",sid);
-		    self.postMessage({ 'kind': 'place'
+		    tc.sendMessage({ 'kind': 'place'
 				       ,'subtype': 'gs-ptable'
 				       , 'sid': sid
 				       , 'type': 'google'
@@ -391,13 +400,19 @@ tc.googleSearch = {
 	);
 
 //	result link	
-	$("ol#rso > li.g > div > h3 > a").map(function(){
-	    var sid = "gs" + Math.floor(Math.random() * 100000);
-	    this.setAttribute("sid",sid);
-	    self.postMessage({'kind': 'link'
-     			      , 'sid': sid
-     			      , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+	var resultmap = $("ol#rso > li.g > div > h3 > a").map(function(){
+	    if(!this.getAttribute('sid')){
+		var sid = "gs" + Math.floor(Math.random() * 100000);
+		this.setAttribute("sid",sid);
+		return [ { sid: sid
+			   , key: tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'')}];
+	    }
 	});
+	console.log(jQuery.makeArray(resultmap));
+	if(resultmap.length > 0){
+	    tc.sendMessage({'kind': 'links'
+			    , data: jQuery.makeArray(resultmap)});
+	}
     }
 }
 

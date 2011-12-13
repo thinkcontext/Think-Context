@@ -190,6 +190,9 @@ tc.sigURL = function(url){
 	      || ret.match('http://([\w\.]*\.)?thefreshoutlook\.com/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?phoenixnewtimes\.com/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?int/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?edu/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?sports\.espn\.go\.com/espn/eticket/story[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?nymag\.com/print/[^"?]+')
      ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)

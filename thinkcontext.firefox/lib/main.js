@@ -35,6 +35,9 @@ pageMod.PageMod({
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r)});
 		break;
+	    case 'links':
+		db.lookupResults(request, function(r){worker.postMessage(r)});
+		break;
 	    case 'place':
 		db.lookupPlace(key,request,function(r){worker.postMessage(r)});
 		break;

@@ -306,6 +306,22 @@ tc = {
 	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
     }
 
+    , lookupResults: function(request, callback){
+	if(request.data.length > 0){
+	    var keys = [];
+	    for(var i in request.data){
+		keys.push(request.data[i].key);
+	    }
+	    console.log(keys);
+	
+	    //	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key ";
+	    var selTxt = "SELECT * FROM results WHERE key in ( '" + keys.join("','") + "') or '" + keys.join("' like key||'/%' or '") + "' like key||'/%' or '"+ keys.join("' like '%.'||key or '") + "' like '%.'||key or '" + keys.join("' like '%.'||key||'/%' or '") + "' like '%.'||key||'/%'";
+	    console.log(selTxt);
+	    request.orig_data = request.data;
+	    sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
+	}
+    }
+
     , lookupStock: function(key,request,callback){
 	var keysplit = key.split(':');
 	var selTxt;
@@ -371,6 +387,7 @@ tc.loadAllTables();
 timer.setTimeout(tc.updateAllTables,10000); // do at idle?
 
 exports.lookupResult = tc.lookupResult;
+exports.lookupResults = tc.lookupResults;
 exports.lookupStock = tc.lookupStock;
 exports.lookupPlace = tc.lookupPlace;
 exports.lookupPlaces = tc.lookupPlaces;
