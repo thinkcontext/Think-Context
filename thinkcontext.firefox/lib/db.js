@@ -312,11 +312,10 @@ tc = {
 	    for(var i in request.data){
 		keys.push(request.data[i].key);
 	    }
-	    console.log(keys);
+	    //console.log(keys);
 	
 	    //	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key ";
 	    var selTxt = "SELECT * FROM results WHERE key in ( '" + keys.join("','") + "') or '" + keys.join("' like key||'/%' or '") + "' like key||'/%' or '"+ keys.join("' like '%.'||key or '") + "' like '%.'||key or '" + keys.join("' like '%.'||key||'/%' or '") + "' like '%.'||key||'/%'";
-	    console.log(selTxt);
 	    request.orig_data = request.data;
 	    sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
 	}

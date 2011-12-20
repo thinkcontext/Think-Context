@@ -181,8 +181,10 @@ tc.googleSearch = {
 	    var data = request.data;
 	    var out = {};
 	    for(var i in data){
-		console.log(i);
-		console.log(data[i]);
+//		console.log(i);
+		for(var j in data[i]){
+//		    console.log(j + " " + data[i][j]);
+		}
 	    }
 	});
 	
@@ -252,7 +254,6 @@ tc.googleSearch = {
 	tc.registerResponse('gs-text', function(request){
 	    insertSubvertisements(request);
 	});
-
 	
 	function listenQuery(){
 	    $('.gssb_a:first').live('DOMNodeRemoved',function(){examineQuery();});
@@ -285,8 +286,7 @@ tc.googleSearch = {
 	    
 	    var qt =  $("input[name=q]").val();
 	    // check if we're doing instant search
-	    var sflas = $("a#sflas");
-	    if(sflas.length > 0){
+	    if(tc.googleSearch.instant){
 		var nq = $("a#sflas")[0].search;
 		var nqr = new RegExp('q=([^&]+)');
 		qt = decodeURIComponent(nqr.exec(nq)[1]);
@@ -303,7 +303,8 @@ tc.googleSearch = {
 
 
 	function installListeners(){
-	    //listenQuery();
+	    console.log("installListeners");
+	    listenQuery();
 	    listenResults();
 	    //listenRightColumn();
 	}
@@ -314,7 +315,15 @@ tc.googleSearch = {
 	}
 
 	pageExamine();
-	installListeners();
+	if($("a#sflas").length > 0){
+	    tc.googleSearch.instant = true;
+	    console.log("instant on");
+	} else {
+	    tc.googleSearch.instant = false;
+	}
+	if(tc.googleSearch.instant){
+	    installListeners();
+	}
     }
 
     ,  examineResults: function(){
@@ -408,7 +417,7 @@ tc.googleSearch = {
 			   , key: tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'')}];
 	    }
 	});
-	console.log(jQuery.makeArray(resultmap));
+	//console.log(jQuery.makeArray(resultmap));
 	if(resultmap.length > 0){
 	    tc.sendMessage({'kind': 'links'
 			    , data: jQuery.makeArray(resultmap)});

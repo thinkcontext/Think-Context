@@ -269,6 +269,7 @@ tc.reverseExamine = function(){
     	    {'kind': 'reversehome'
     	     , 'key': jQuery.makeArray(urlmap).slice(0,400)
     	    });
+	console.log(jQuery.makeArray(urlmap).slice(0,400));
     }
 }
 tc.reverseResponse = function(request){
