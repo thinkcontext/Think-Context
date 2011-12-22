@@ -251,12 +251,12 @@ tc.googleSearch = {
 
 	
 	function listenQuery(){
-	    console.log("listenQuery");
-	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
+	    //console.log("listenQuery");
+	    $('p#bfl').live('DOMSubtreeModified',function(){examineQuery();});
 	}
 
 	function listenResults(){
-	    console.log("listenResults");
+	    //console.log("listenResults");
 	    $("ol#rso > li:first").live("DOMNodeInserted",function(){tc.closeAllDialogs(); tc.googleSearch.examineResults();});
 	}
 
@@ -266,12 +266,12 @@ tc.googleSearch = {
 	}
 	
 	function nolistenQuery(){
-	    console.log("stopped listenQuery");
-	    $('.gssb_a:first').die('DOMSubtreeModified');
+	    //console.log("stopped listenQuery");
+	    $('p#bfl').die('DOMSubtreeModified');
 	}
 
 	function nolistenResults(){
-	    console.log("stopped listenResults");
+	    //console.log("stopped listenResults");
 	    $("ol#rso > li:first").die("DOMNodeInserted");
 	}
 
@@ -305,7 +305,7 @@ tc.googleSearch = {
 	function installListeners(){
 	    listenQuery();
 	    listenResults();
-	    listenRightColumn();
+	    //listenRightColumn();
 	}
 	
 	function pageExamine(){

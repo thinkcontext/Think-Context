@@ -104,7 +104,6 @@ tc.getReverseHost = function(url){
 }
 
 tc.onResponse = function(request){
-    console.log(request.kind);
     tc.responses[request.kind](request);
 }
 
@@ -226,6 +225,7 @@ tc.sigURL = function(url){
 	      || ret.match('http://([\w\.]*\.)?edu/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?sports\.espn\.go\.com/espn/eticket/story[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?nymag\.com/print/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?metroweekly\.com/news/[^"?]+')
      ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)

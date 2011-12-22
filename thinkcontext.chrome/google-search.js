@@ -5,7 +5,6 @@ tc.googleSearch = {
     googlePreInsert: function(n){
 	n.addEventListener('DOMNodeRemoved',function(){ listenResults(); },false);
 	tc.googleSearch.nolistenResults();
-
     }
 
     , googlePostInsert: function(n){
@@ -240,7 +239,7 @@ tc.googleSearch = {
 	
 	function listenQuery(){
 	    //console.log("listenQuery");
-	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
+	    $('p#bfl').live('DOMSubtreeModified',function(){examineQuery();});
 	}
 
 	function listenResults(){
@@ -254,12 +253,12 @@ tc.googleSearch = {
 	}
 	
 	function nolistenQuery(){
-	    //console.log("stopped listenQuery");
-	    $('.gssb_a:first').die('DOMSubtreeModified');
+	    console.log("stopped listenQuery");
+	    $('p#bfl').die('DOMSubtreeModified');
 	}
 
 	function nolistenResults(){
-	    //console.log("stopped listenResults");
+	    console.log("stopped listenResults");
 	    $("ol#rso > li:first").die("DOMNodeInserted");
 	}
 
@@ -291,12 +290,14 @@ tc.googleSearch = {
 
 
 	function installListeners(){
+	    //console.log("installListeners");
 	    listenQuery();
 	    listenResults();
-	    listenRightColumn();
+	    //listenRightColumn();
 	}
 	
 	function pageExamine(){
+	    //console.log("pageExamine");
 	    examineQuery();
 	    tc.googleSearch.examineResults();
 	    //tc.reverseExamine();

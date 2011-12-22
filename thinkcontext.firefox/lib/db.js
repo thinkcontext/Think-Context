@@ -292,7 +292,6 @@ tc = {
 	    request.data = {};
 	    var i = 0;
 	    for( var f in fields){
-		console.log(f + " " + r.data[0][i]);
 	    	request.data[fields[f]] = r.data[0][i];
 	    	i++;
 	    }
@@ -313,12 +312,13 @@ tc = {
 	    for(var i in request.data){
 		keys.push(request.data[i].key);
 	    }
-	    //console.log(keys);
 	
 	    //	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key ";
 	    var selTxt = "SELECT * FROM results WHERE key in ( '" + keys.join("','") + "') or '" + keys.join("' like key||'/%' or '") + "' like key||'/%' or '"+ keys.join("' like '%.'||key or '") + "' like '%.'||key or '" + keys.join("' like '%.'||key||'/%' or '") + "' like '%.'||key||'/%'";
 	    request.orig_data = request.data;
-	    sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
+	    sql.execute(selTxt
+			, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));}
+			,tc.onError);
 	}
     }
 

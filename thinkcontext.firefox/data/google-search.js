@@ -177,13 +177,17 @@ tc.googleSearch = {
 	});
 
 	tc.registerResponse('links', function(request){
-	    console.log('links response');
 	    var data = request.data;
+	    var orig = request.orig_data;
 	    var out = {};
 	    for(var i in data){
-//		console.log(i);
-		for(var j in data[i]){
-//		    console.log(j + " " + data[i][j]);
+		for (var k in orig){
+		    if(orig[k].key.match('(\w+\.)?'+ data[i].key + '(/.+)?')){
+			$('a[sid=' + orig[k].sid + ']').map(
+			    function(){
+				sub[data[i].func](this,data[i].key,data[i]);
+			    });
+		    }
 		}
 	    }
 	});
@@ -256,14 +260,12 @@ tc.googleSearch = {
 	});
 	
 	function listenQuery(){
-	    $('.gssb_a:first').live('DOMNodeRemoved',function(){examineQuery();});
-//	    $('.gssb_a:first').live('DOMSubtreeModified',function(){examineQuery();});
+	    $('p#bfl').live('DOMNodeRemoved',function(){examineQuery();});
 	}
 
 	function listenResults(){
 	    $("ol#rso > li:first").live("DOMNodeInserted"
 					,function(){ 
-					    console.log("fire listenResults");
 					    tc.closeAllDialogs(); 
 					    tc.googleSearch.examineResults();});
 	}
@@ -273,8 +275,7 @@ tc.googleSearch = {
 	}
 	
 	function nolistenQuery(){
-	    $('.gssb_a:first').die('DOMNodeRemoved');
-	    //$('.gssb_a:first').die('DOMSubtreeModified');
+	    $('p#bfl').die('DOMNodeRemoved');
 	}
 
 	function nolistenResults(){
@@ -305,10 +306,8 @@ tc.googleSearch = {
 		});
 	}
 
-
 	function installListeners(){
-	    console.log("installListeners");
-	    //listenQuery();
+	    listenQuery();
 	    listenResults();
 	    //listenRightColumn();
 	}
@@ -319,20 +318,11 @@ tc.googleSearch = {
 	}
 
 	pageExamine();
-	if($("a#sflas").length > 0){
-	    tc.googleSearch.instant = true;
-	    console.log("instant on");
-	} else {
-	    tc.googleSearch.instant = false;
-	}
-	if(tc.googleSearch.instant){
-	    installListeners();
-	}
+	setTimeout(installListeners,300);
     }
-
     ,  examineResults: function(){
 	//finance
-/*	$('h2 > a[href*=/url][href*="?q=/finance"]').map(function(){
+	$('h2 > a[href*=/url][href*="?q=/finance"]').map(function(){
 	    if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
 		var nqr = new RegExp('q\%3D([^&]+)');
 		var q = decodeURIComponent(nqr.exec(this.search)[1]);
@@ -414,14 +404,6 @@ tc.googleSearch = {
 
 //	result link	
 
-	$("ol#rso > li.g > div > h3 > a").map(function(){
-	    var sid = "gs" + Math.floor(Math.random() * 100000);
-	    this.setAttribute("sid",sid);
-	    self.postMessage({'kind': 'link'
-     			      , 'sid': sid
-     			      , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
-	});
-*/
 	var resultmap = $("ol#rso > li.g > div > h3 > a").map(function(){
 	    if(!this.getAttribute('sid')){
 		var sid = "gs" + Math.floor(Math.random() * 100000);
@@ -433,10 +415,10 @@ tc.googleSearch = {
 	//console.log(jQuery.makeArray(resultmap));
 	if(resultmap.length > 0){
 	    tc.sendMessage({'kind': 'links'
-			    , data: jQuery.makeArray(resultmap)});
+			    , data: jQuery.makeArray(resultmap).slice(0,15)});
+	}
     }
 }
-
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
    ||document.location.href.search('.*www.google.com/#') >= 0
