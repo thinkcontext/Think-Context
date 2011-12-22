@@ -261,7 +261,11 @@ tc.googleSearch = {
 	}
 
 	function listenResults(){
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){ tc.closeAllDialogs(); tc.googleSearch.examineResults();});
+	    $("ol#rso > li:first").live("DOMNodeInserted"
+					,function(){ 
+					    console.log("fire listenResults");
+					    tc.closeAllDialogs(); 
+					    tc.googleSearch.examineResults();});
 	}
 
 	function listenRightColumn(){
@@ -304,13 +308,13 @@ tc.googleSearch = {
 
 	function installListeners(){
 	    console.log("installListeners");
-	    listenQuery();
+	    //listenQuery();
 	    listenResults();
 	    //listenRightColumn();
 	}
 	
 	function pageExamine(){
-	    examineQuery();
+	    //examineQuery();
 	    tc.googleSearch.examineResults();
 	}
 
@@ -328,7 +332,7 @@ tc.googleSearch = {
 
     ,  examineResults: function(){
 	//finance
-	$('h2 > a[href*=/url][href*="?q=/finance"]').map(function(){
+/*	$('h2 > a[href*=/url][href*="?q=/finance"]').map(function(){
 	    if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
 		var nqr = new RegExp('q\%3D([^&]+)');
 		var q = decodeURIComponent(nqr.exec(this.search)[1]);
@@ -409,6 +413,15 @@ tc.googleSearch = {
 	);
 
 //	result link	
+
+	$("ol#rso > li.g > div > h3 > a").map(function(){
+	    var sid = "gs" + Math.floor(Math.random() * 100000);
+	    this.setAttribute("sid",sid);
+	    self.postMessage({'kind': 'link'
+     			      , 'sid': sid
+     			      , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+	});
+*/
 	var resultmap = $("ol#rso > li.g > div > h3 > a").map(function(){
 	    if(!this.getAttribute('sid')){
 		var sid = "gs" + Math.floor(Math.random() * 100000);
@@ -421,7 +434,6 @@ tc.googleSearch = {
 	if(resultmap.length > 0){
 	    tc.sendMessage({'kind': 'links'
 			    , data: jQuery.makeArray(resultmap)});
-	}
     }
 }
 

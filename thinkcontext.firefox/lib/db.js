@@ -292,6 +292,7 @@ tc = {
 	    request.data = {};
 	    var i = 0;
 	    for( var f in fields){
+		console.log(f + " " + r.data[0][i]);
 	    	request.data[fields[f]] = r.data[0][i];
 	    	i++;
 	    }
