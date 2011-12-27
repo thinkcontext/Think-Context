@@ -121,7 +121,6 @@ pageMod.PageMod({
 			,data.url('reverse.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
-	    console.log("main");
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){

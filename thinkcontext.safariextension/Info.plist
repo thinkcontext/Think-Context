@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Builder Version</key>
-	<string>534.51.22</string>
+	<string>534.52.7</string>
 	<key>CFBundleDisplayName</key>
 	<string>Think Context</string>
 	<key>CFBundleIdentifier</key>
@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7</string>
+	<string>0.71</string>
 	<key>CFBundleVersion</key>
-	<string>0.7</string>
+	<string>0.71</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
