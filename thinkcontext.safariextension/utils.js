@@ -152,28 +152,27 @@ tc.sigURL = function(url){
 // unfortunately this varies by site so this will be an imperfect exercise
     var ret = url;
     var matches;
-    
     yt = new RegExp(/http:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
     if(matches = yt.exec(ret)){
 	ret = 'http://www.youtube.com/watch?' + matches[2];
 	ret = ret.split('#')[0];	      
-    } else if(ret.match(/(\w*\.)?abclocal\.go\.com/)
-	      || ret.match(/(\w*\.)?abcnews\.go\.com/)
-	      || ret.match(/(\w*\.)?thekojonamdishow\.org/)
-	      || ret.match(/(\w*\.)?businessday\.co\.za/)
-	      || ret.match(/(\w*\.)?bwint\.org/)
-	      || ret.match(/(\w*\.)?ctlawtribune\.com/)
-	      || ret.match(/(\w*\.)?interfax\.ru/)
-	      || ret.match(/(\w*\.)?ipsnews\.net/)
-	      || ret.match(/(\w*\.)?salon\.com/)
-	      || ret.match(/(\w*\.)?sfgate\.com/)
-	      || ret.match(/(\w*\.)?thehour\.com/)
-	      || ret.match(/(\w*\.)?npr\.org\/templates/)
-	      || ret.match(/(\w*\.)?washingtonpost\.com\/todays_paper/)
-	      || ret.match(/(\w*\.)?espn\.go\.com\/video\/clip/)	      
-	      || ret.match(/(\w*\.)?cbsnews\.com\/video\/watch/)
-	      || ret.match(/(\w*\.)?washingtonpost\.com\/ac2\/wp-dyn/)
-	      || ret.match(/(\w*\.)?dyn\.politico\.com\/printstory.cfm/)
+    } else if(ret.match(/http(s)?:\/\/(\w*\.)?abclocal\.go\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?abcnews\.go\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?thekojonamdishow\.org/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?businessday\.co\.za/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?bwint\.org/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?ctlawtribune\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?interfax\.ru/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?ipsnews\.net/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?salon\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?sfgate\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?thehour\.com/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?npr\.org\/templates/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?washingtonpost\.com\/todays_paper/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?espn\.go\.com\/video\/clip/)	      
+	      || ret.match(/http(s)?:\/\/(\w*\.)?cbsnews\.com\/video\/watch/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?washingtonpost\.com\/ac2\/wp-dyn/)
+	      || ret.match(/http(s)?:\/\/(\w*\.)?dyn\.politico\.com\/printstory.cfm/)
 	      || ret.match(/http(s)?:\/\/([\w\-\.])+\.gov\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*\.bloomberg\.com\/apps\/quote/)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*mobile\.washingtonpost\.com\/c\.jsp/)	     
@@ -194,7 +193,7 @@ tc.sigURL = function(url){
 	      || ret.match('http://([\w\.]*\.)?sports\.espn\.go\.com/espn/eticket/story[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?nymag\.com/print/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?metroweekly\.com/news/[^"?]+')
-     ){
+	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
 	      || ret.match(/(\w*\.)?cnn.com\/video\//)){
