@@ -12,11 +12,9 @@ tc = {
 		, source: 'text'
 		, name: 'text'
 		, link: 'text'
-		, icon: 'text'
 	    }
 	    , googFTNumber: '1040216'
-//	    , googFTNumber: '2121502'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
 	, reverse: {
 	    fields: {
@@ -71,7 +69,6 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , googFTNumber: '2186393'
-//	    , googFTNumber: '1386568'
 	    , version: '0.04'
 	}
 	, place_data: {
@@ -80,7 +77,6 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-//	    , googFTNumber: '1386562'
 	    , googFTNumber: '2186651'
 	    , version: '0.04'
 	}
@@ -356,17 +352,17 @@ tc = {
 
 	var host = getReverseHost(key);
 
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link, icon from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = '"+key+"' union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = '"+key+"' ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||'"+host+"'||'/%' or r.reverse_link like 'http://'||'"+host+"'||'/%' ) and r.reverse_link <> '"+key+"' and o.link is null ) t group by s, title, link, name, source, source_link, icon order by s, id desc limit 5;"
+	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = '"+key+"' union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = '"+key+"' ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||'"+host+"'||'/%' or r.reverse_link like 'http://'||'"+host+"'||'/%' ) and r.reverse_link <> '"+key+"' and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
 
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','title','link','reverse_link','name','source','source_link','icon'])},tc.onError);
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','title','link','reverse_link','name','source','source_link'])},tc.onError);
     }
 
     , lookupReverseHome: function(key,request,callback){
 	key = arrayQuoteEscape(key);
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link, s.icon FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link, s.icon";
+	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	
 	request.key = '';
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link','icon'])},tc.onError);
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link'])},tc.onError);
     }
     
     , lookupSubvert: function(key, request, callback){

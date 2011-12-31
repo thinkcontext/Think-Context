@@ -5,8 +5,10 @@ if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
       || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
      )
   ){    
+    //console.log("reverse");
     tc.registerResponse('reverse', 
 			function(request){
+			    //console.log("reverseResponse");
 			    var data = request.data;
 			    var x;
 			    var found = 0;

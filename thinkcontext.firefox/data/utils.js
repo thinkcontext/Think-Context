@@ -141,7 +141,7 @@ tc.insertPrev = function(n,iconName,title,text,pre,post){
 tc.popDialog = function(title, body, autoOpen){
     var r = Math.floor(Math.random() * 100000);
     var z = Math.floor(Math.random() * 100000);
-    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:999999; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
+    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
 
     var d = $('<div id="' + z + '">'+body+'</div>').dialog(
 	{ title: 'thinkContext: ' + title
@@ -153,7 +153,7 @@ tc.popDialog = function(title, body, autoOpen){
 	  }
 	  , height: 150
 	  , autoOpen: autoOpen
-	  , zIndex: 999999
+	  , zIndex: 10000000
 	}); 
     
     $('div#' + z + ' a[tcstat]').click(function(){
@@ -226,6 +226,9 @@ tc.sigURL = function(url){
 	      || ret.match('http://([\w\.]*\.)?sports\.espn\.go\.com/espn/eticket/story[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?nymag\.com/print/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?metroweekly\.com/news/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?defensenews\.com/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?msmagazine\.com/news/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?unep\.org/[^"?]+')
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
@@ -248,7 +251,7 @@ tc.iconDialog = function(title,body,iconId){
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
 	 , height: 150
-	 , zIndex: 999999
+	 , zIndex: 10000000
 	}); 
     $("div#"+iconId ).hover(
 	function(event){ 
