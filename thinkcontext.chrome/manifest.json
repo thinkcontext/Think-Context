@@ -1,6 +1,6 @@
 {
     "name": "Think Context",
-    "version": "0.72",
+    "version": "0.73",
     "update_url": "http://thinkcontext.org/release/chrome/updates.xml",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "permissions": ["*://www.google.com/*"
