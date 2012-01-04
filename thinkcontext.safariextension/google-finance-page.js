@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(document.baseURI.search("http://www.google.com/finance?.*q.*") >= 0){
 tc.debug("google finance page");
 
@@ -25,4 +26,5 @@ $("a#gb_1").map(
     });
 safari.self.addEventListener("message",tc.onResponse, false);
 
+}
 }

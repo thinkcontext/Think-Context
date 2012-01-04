@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(document.baseURI.search("http://www.bing.com/search.*") >= 0){
 tc.debug("bing-search");
 
@@ -251,4 +252,5 @@ $("div h2 div a[href*='lid=']").map(
 tc.registerResponse('reversehome', tc.reverseResponse);
 tc.reverseExamine();
 safari.self.addEventListener("message",tc.onResponse, false);
+}
 }

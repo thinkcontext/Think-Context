@@ -1,5 +1,3 @@
-tc.debug("google finance page");
-
 tc.registerResponse('gp-finance'
 			      ,function(request){
 				  tc.debug("google finance page onResponse");
@@ -17,10 +15,9 @@ $("a#gb_1").map(
 	var stockRegexp = new RegExp('q=([A-Z:]+)');
 	var stockRes = stockRegexp.exec(this.href);
 	if(stockRes && stockRes[1]){
-	    chrome.extension.sendRequest(
+	    self.postMessage(
 		{'kind': 'gp-finance'
-		 , 'key': stockRes[1]}
-		, tc.onResponse);
+		 , 'key': stockRes[1]});
 	}
     });
 

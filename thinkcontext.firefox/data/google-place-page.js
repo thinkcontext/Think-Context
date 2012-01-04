@@ -1,3 +1,4 @@
+if (window.frameElement === null){
 tc.googlePlaceResponse = function(request){
 
     var sub = {
@@ -51,3 +52,4 @@ tc.googlePlaceExamine = function(){
 };
 
 tc.googlePlaceExamine();
+}

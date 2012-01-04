@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
 || /^http(s)?:\/\/maps.google.com\/maps\/place/.test(document.URL)
 || /^http(s)?:\/\/www.google.com\/finance/.test(document.URL)
@@ -37,19 +38,15 @@ tc.registerResponse('reverse',
 			tc.popDialog('Progressive Trackback', text, ex);				  
 		    });
 
-tc.registerResponse('reversehome', tc.reverseResponse);
-
-//tc.registerExamine(function(){
+    tc.registerResponse('reversehome', tc.reverseResponse);
+    
     tc.sendMessage(
 	{'kind': 'reverse'
 	 , 'key': tc.sigURL(document.baseURI)
 	});
-
-//});
-
-//tc.registerExamine(tc.reverseExamine);
-
+    
 tc.reverseExamine();
 safari.self.addEventListener("message",tc.onResponse, false);
 
+}
 }

@@ -1,3 +1,4 @@
+if (window.frameElement === null){
 if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
       || /^http(s)?:\/\/maps.google.com\/maps\/place/.test(document.URL)
       || /^http(s)?:\/\/www.google.com\/finance/.test(document.URL)
@@ -42,4 +43,5 @@ if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
 		      , 'key': tc.sigURL(document.baseURI)
 		     });
     tc.reverseExamine();
+}
 }

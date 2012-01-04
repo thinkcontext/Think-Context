@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
    ||document.location.href.search('.*www.google.com/#') >= 0
@@ -422,4 +423,5 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 }
 
 safari.self.addEventListener("message",tc.onResponse, false);
+}
 }

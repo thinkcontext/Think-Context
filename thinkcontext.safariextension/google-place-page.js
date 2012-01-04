@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(document.baseURI.search("http://maps.google.com/maps/place.*") >= 0){
 
 console.log("google place page");
@@ -59,4 +60,5 @@ tc.googlePlaceExamine = function(){
 tc.googlePlaceExamine();
 safari.self.addEventListener("message",tc.onResponse, false);
 
+}
 }

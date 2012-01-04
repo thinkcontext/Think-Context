@@ -1,3 +1,4 @@
+if (window.frameElement === null){
 tc.registerResponse('gp-finance'
 			      ,function(request){
 				  tc.debug("google finance page onResponse");
@@ -20,4 +21,4 @@ $("a#gb_1").map(
 		 , 'key': stockRes[1]});
 	}
     });
-
+}

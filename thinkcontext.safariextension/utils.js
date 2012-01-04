@@ -1,3 +1,4 @@
+if (window.top === window) {
 var tc = {};
 tc.dialogs = [];
 tc.responses = {};
@@ -198,6 +199,7 @@ tc.sigURL = function(url){
 	      || ret.match('http://([\w\.]*\.)?unep\.org/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?lamag\.com/[^"?]+')
 	      || ret.match('http://([\w\.]*\.)?9news\.com/[^"?]+')
+	      || ret.match('http://([\w\.]*\.)?oecd\.org/[^"?]+')
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
@@ -338,4 +340,5 @@ tc.closeAllDialogs = function(){
     for(var d in tc.dialogs){
 	tc.dialogs[d].dialog('close');
     }
+}
 }

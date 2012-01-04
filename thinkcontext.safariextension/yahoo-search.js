@@ -1,3 +1,4 @@
+if (window.top === window) {
 if(document.baseURI.search("http://search.yahoo.com/search.*") >= 0){
 
 console.log("yahoo-search");
@@ -223,4 +224,5 @@ tc.registerResponse('reversehome', tc.reverseResponse);
 tc.reverseExamine();
 safari.self.addEventListener("message",tc.onResponse, false);
 
+}
 }

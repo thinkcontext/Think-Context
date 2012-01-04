@@ -1,3 +1,4 @@
+if (window.frameElement === null){
 tc.googleSearch = {
 
     googlePreInsert: function(n){
@@ -428,4 +429,5 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 }else{
     tc.registerResponse('reversehome', tc.reverseResponse);
     tc.reverseExamine();
+}
 }

@@ -1,3 +1,4 @@
+if (window.frameElement === null){
 var subvcss = document.createElement("style");
 subvcss.type = "text/css";
 subvcss.rel = "stylesheet";
@@ -318,3 +319,4 @@ subvcss.innerHTML = '\
  ';
 
 document.getElementsByTagName('head')[0].appendChild(subvcss);
+}
