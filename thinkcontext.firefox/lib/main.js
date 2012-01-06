@@ -1,12 +1,11 @@
 var data = require('self').data;
 var db = require("db");
 var s = require("self");
-
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
 
 pageMod.PageMod({
-    include : "http://www.google.com/*",
+    include : ["http://www.google.com/*","https://www.google.com/*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')
@@ -54,7 +53,7 @@ pageMod.PageMod({
 });
 
 pageMod.PageMod({
-    include : "http://www.google.com/finance*",
+    include : ["http://www.google.com/finance*","https://www.google.com/finance*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')
@@ -83,7 +82,7 @@ pageMod.PageMod({
 });
 
 pageMod.PageMod({
-    include : "http://maps.google.com/maps/place*",
+    include : ["http://maps.google.com/maps/place*","https://maps.google.com/maps/place*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')
@@ -143,7 +142,7 @@ pageMod.PageMod({
     }   
 });
 pageMod.PageMod({
-    include : "http://search.yahoo.com/search*",
+    include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')
@@ -184,7 +183,7 @@ pageMod.PageMod({
 	})
     }});
 pageMod.PageMod({
-    include : "http://www.bing.com/search*",
+    include : ["http://www.bing.com/search*","https://www.bing.com/search*"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')

@@ -187,6 +187,7 @@ tc = {
 	}
 
 	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause);
+	//console.log(query);
 	Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -201,7 +202,8 @@ tc = {
 			    queries.push(deleteTxt);
 			}
 		    }
-		    sql.executeMany(queries, function(){tc.setLocalDeleteTime(table) });
+		    //console.log(table);
+		    sql.executeMany(queries, function(){tc.setLocalDeleteTime(table) }, tc.onError);
 		}
 	    }
 	}).get();
@@ -212,6 +214,7 @@ tc = {
 	}
 
 	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause);
+	//console.log(query);
 	Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -222,11 +225,15 @@ tc = {
 		    dataArray = dataArray.slice(1);
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
-			    insertTxt = "INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
+			    insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
 			    queries.push(insertTxt);
 			}
 		    }
-		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table) });
+		    //console.log(table);
+		    sql.executeMany(queries
+				    , function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table) }
+				    , tc.onError
+				   );
 		}
 	    }
 	}).get();
@@ -253,13 +260,14 @@ tc = {
 		    dataArray = dataArray.slice(1);
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
-			    insertTxt = "INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
+			    insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
 			    //console.log(insertTxt);
 			    queries.push(insertTxt);
 			    //sql.execute(insertTxt);
 			}
 		    }
-		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table) });
+		    console.log(table);
+		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table) }, tc.onError);
 		}
 	    }
 	}).get();
@@ -344,7 +352,7 @@ tc = {
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 
 	var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = '" + request.type + "'";
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);},tc.onError);
+	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);});
     }
 
     , lookupReverse: function(key,request,callback){

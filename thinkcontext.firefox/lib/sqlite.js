@@ -79,7 +79,7 @@ function queryAsync(statement, success, failure){
 	failure(e,statement);
     }
 }
-function queryAsyncMany(statements,success){
+function queryAsyncMany(statements,success,fail){
     /*sqrObject have the information about the result of query*/
     let queries = [];
     for(s in statements){
@@ -92,7 +92,7 @@ function queryAsyncMany(statements,success){
 				   if(reason == 0){ 
 				       success() }
 			       }
-			       , handleError: function(error){            console.error(error.name+' - '+error.message);}
+			       , handleError: function(error){            console.error(error.name+' - '+error.message); fail(); }
 			       , handleResult: function(resultSet){}
 			     });
 }
@@ -123,9 +123,9 @@ exports.execute = function execute(statement){
     }
 }
 
-exports.executeMany = function executeMany(statements, success){
+exports.executeMany = function executeMany(statements, success, fail){
     try{
-	queryAsyncMany(statements,success);
+	queryAsyncMany(statements,success,fail);
     }
     catch(e){
 	console.error(e.name + ' - ' +e.message);
