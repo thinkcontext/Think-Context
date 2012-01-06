@@ -216,7 +216,7 @@ tc = {
 			dataArray = dataArray.slice(1);
 			for (var r in dataArray){
 			    if(dataArray[r].length == len){
-				tx.executeSql("INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") " 
+				tx.executeSql("INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") " 
 					      , dataArray[r], function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);}, tc.onError);
 			    }
 			}
@@ -237,7 +237,7 @@ tc = {
 		    function(tx){
 			var dropTxt = "DROP TABLE IF EXISTS " + table;
 			var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
-			var insertTxt = "INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") ";
+			var insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") ";
 			tx.executeSql(dropTxt,[]
 				      , tc.onSuccess, tc.onError);
 			tx.executeSql(createTxt
@@ -246,7 +246,7 @@ tc = {
 			dataArray = dataArray.slice(1);
 			for (var r in dataArray){
 			    if(dataArray[r].length == len){
-				tx.executeSql("INSERT INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") " 
+				tx.executeSql("INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") " 
 					      , dataArray[r], function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table)}, tc.onError);
 			    }
 			}
