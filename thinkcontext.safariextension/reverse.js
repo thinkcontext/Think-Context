@@ -6,7 +6,7 @@ if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
 || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
      )
   ){    
-console.log("reverse");
+//console.log("reverse");
 
 tc.registerResponse('reverse', 
 		    function(request){

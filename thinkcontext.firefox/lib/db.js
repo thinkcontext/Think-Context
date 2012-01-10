@@ -389,6 +389,7 @@ tc.connectDB();
 tc.loadAllTables();
 //tc.updateTable("reverse");
 timer.setTimeout(tc.updateAllTables,10000); // do at idle?
+timer.setInterval(tc.updateAllTables,1800000); // do at idle?
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupResults = tc.lookupResults;
