@@ -153,9 +153,9 @@ tc.sigURL = function(url){
 // unfortunately this varies by site so this will be an imperfect exercise
     var ret = url;
     var matches;
-    yt = new RegExp(/http:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
+    yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
     if(matches = yt.exec(ret)){
-	ret = 'http://www.youtube.com/watch?' + matches[2];
+	ret = 'http://www.youtube.com/watch?' + matches[3];
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/http(s)?:\/\/(\w*\.)?abclocal\.go\.com/)
 	      || ret.match(/http(s)?:\/\/(\w*\.)?abcnews\.go\.com/)
@@ -186,20 +186,20 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*wtop\.com\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*un\.org\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*sports\.espn\.go\.com\/espn\/espn25\/story/)
-	      || ret.match('http://([\w\.]*\.)?wunderground\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?thefreshoutlook\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?phoenixnewtimes\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?int/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?edu/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?sports\.espn\.go\.com/espn/eticket/story[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?nymag\.com/print/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?metroweekly\.com/news/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?defensenews\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?msmagazine\.com/news/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?unep\.org/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?lamag\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?9news\.com/[^"?]+')
-	      || ret.match('http://([\w\.]*\.)?oecd\.org/[^"?]+')
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*wunderground\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*thefreshoutlook\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*phoenixnewtimes\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*int\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*edu\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*sports\.espn\.go\.com\/espn\/eticket\/story\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*nymag\.com\/print\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*metroweekly\.com\/news\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*defensenews\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*msmagazine\.com\/news\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*unep\.org\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*lamag\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*9news\.com\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*oecd\.org\//)
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
