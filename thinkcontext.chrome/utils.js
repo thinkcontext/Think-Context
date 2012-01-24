@@ -200,6 +200,7 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*lamag\.com\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*9news\.com\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*oecd\.org\//)
+	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*archives\.newyorker\.com\//)
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
