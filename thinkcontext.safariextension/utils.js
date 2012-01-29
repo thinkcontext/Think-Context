@@ -203,7 +203,10 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*oecd\.org\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*archives\.newyorker\.com\//)
 	      || ret.match(/http(s)?:\/\/([\w\-\.]*\.)*select\.nytimes\.com\//)
-	     ){
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?govtrack\.us\/[^"?]+/)
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?markets\.ft\.com\/[^"?]+/)
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?irinnews\.org\/[^"?]+/)
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?jpost\.com\/[^"?]+/)		     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
 	      || ret.match(/(\w*\.)?cnn.com\/video\//)){
