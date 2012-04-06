@@ -6,6 +6,8 @@
     "permissions": ["*://www.google.com/*"
     		   ,"*://fusiontables.googleusercontent.com/*"
     		   ,"*://thinkcontext.org/*"
+		   ,"*://yahoo.com/*"
+		   ,"*://goodsearch.com/*"
         		    ],
     "background_page": "background.html",
     "content_scripts": [
@@ -29,8 +31,10 @@
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bing-search.js"]
 	}
 	,{
+	    "all_frames": true,
 	    "css": ["jquery-ui.css"],
-	    "matches": ["*://search.yahoo.com/search*"],
+//	    "matches": ["*://search.yahoo.com/search*","*://www.goodsearch.com/search.aspx?*"],
+	    "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","yahoo-search.js"]
 	}
 	,{
