@@ -142,7 +142,7 @@ pageMod.PageMod({
     }   
 });
 pageMod.PageMod({
-    include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*"],
+    include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*","http://www.goodsearch.com/search.aspx"],
     contentScriptWhen:  'ready',
     contentScriptFile: [data.url('jquery-ui.css.js')
 			,data.url('jquery-1.7.1.min.js')

@@ -1,4 +1,4 @@
-if (window.frameElement === null){
+//if (window.frameElement === null){
 sub = {
     greenResult: function(n,key,data){
 	var detail = JSON.parse(data.data);
@@ -212,4 +212,4 @@ $('div#web > ol h3 > a').map(
 
 tc.registerResponse('reversehome', tc.reverseResponse);
 tc.reverseExamine();
-}
+//}
