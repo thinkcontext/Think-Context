@@ -241,6 +241,7 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?irinnews\.org\/[^"?]+/)
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?jpost\.com\/[^"?]+/)
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?cato\.org\/[^"?]+/)
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?wtop\.com\/[^"?]+/)
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
