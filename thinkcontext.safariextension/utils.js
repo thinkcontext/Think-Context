@@ -83,7 +83,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		     innocence:	1,
 		     altoarizona:	1,
 		     dcfpi:	1,
-		     roc:	1,
 		     feministing:	1,
 		     nationb:	1
 		    };

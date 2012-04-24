@@ -82,7 +82,6 @@ ctj:	1,
 innocence:	1,
 altoarizona:	1,
 dcfpi:	1,
-roc:	1,
 feministing:	1,
 nationb:	1
 };
