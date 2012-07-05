@@ -40,8 +40,9 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '4488538'
-	    , version: '0.04'
+	    , googFTNumber: '2186764'
+//	    , googFTNumber: '2038546'
+	    , version: '0.03'
 	}
 	, subverts: { 
 	    fields: {

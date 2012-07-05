@@ -19,7 +19,7 @@
 	    "matches": ["*://www.google.com/*"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-search.js"]
 	}
-	,{  "matches": ["*://plus.google.com/*"],
+	,{  "matches": ["*://maps.google.com/maps/place*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-place-page.js"]
 	}

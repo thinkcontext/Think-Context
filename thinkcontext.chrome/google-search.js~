@@ -351,7 +351,7 @@ tc.googleSearch = {
 	
 	// place page in an lclbox long result
 	// eg "hay adams hotel"
-	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").map(
+	$("li:has(div > h3 > a) > div > #lclbox > a[href*=cid]:first-child").map(
 	    function(){
 		var target = this.parentNode.parentNode.children[0].children[0];
     		if(target && target.getAttribute && !target.getAttribute('subv')){
@@ -373,9 +373,9 @@ tc.googleSearch = {
 	
 	// place not in an lclbox
 	// boston hotels
-	$("div.intrlu > div > span > a[href*='//plus.google.com/']:first-child").map(
+	$("li > div.vsc > div.intrlu > div > span > a[href^='http://maps.google.com/maps/place']:first-child").map(
 	    function(){
-		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+		var cid_regex = new RegExp('cid=([0-9]+)');
     		cid_res = cid_regex.exec(this.href);
 		if(cid_res[1]){
 		    var cid = cid_res[1];
