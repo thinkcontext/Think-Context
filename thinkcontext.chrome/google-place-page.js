@@ -39,8 +39,8 @@ tc.registerResponse('place', tc.googlePlaceResponse);
 
 tc.googlePlaceExamine = function(){
 
-    var cid_regex = new RegExp('^/([0-9]+)');
-    var cid_res = cid_regex.exec(document.baseURI);
+    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    var cid_res = cid_regex.exec(document.URL);
     if(cid_res[1]){
 	tc.sendMessage(
 	    {'kind': 'place'

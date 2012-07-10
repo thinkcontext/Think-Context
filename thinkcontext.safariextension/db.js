@@ -22,16 +22,6 @@ tc = {
 	    , googFTNumber: '1049740'
 	    , version: '0.05'
 	}
-	, stocks: {
-	    fields: {
-		id: 'integer primary key'
-		, symbol: 'text'
-		, exchange: 'text'
-		, data: 'text'
-	    }
-	    , googFTNumber: '892855'
-	    , version: '0.01'
-	}
 	, results: { 
 	    fields: {
 		id:'integer primary key'
@@ -280,27 +270,6 @@ tc = {
 		//console.log(key);
 		tx.executeSql(selTxt
 			      , [key,key,key,key]
-			      , function(tx,r){ 
-				  tc.onLookupSuccess(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    }
-	);
-    }
-    , lookupStock: function(key,request,callback){
-	var keysplit = key.split(':');
-	var selTxt;
-	if(keysplit.length > 1){
-	    keysplit[1] = keysplit[1].toUpperCase();
-	    var selTxt = "SELECT * FROM stocks WHERE exchange = ? and symbol = ?";
-	} else {
-	    keysplit[0] = keysplit[0].toUpperCase();
-	    var selTxt = "SELECT * FROM stocks WHERE symbol = ?";
-	}
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(selTxt
-			      , keysplit
 			      , function(tx,r){ 
 				  tc.onLookupSuccess(tx,r,request, callback)
 			      }

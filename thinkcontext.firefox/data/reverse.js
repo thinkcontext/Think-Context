@@ -1,7 +1,6 @@
 if (window.frameElement === null){
 if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
       || /^http(s)?:\/\/maps.google.com\/maps\/place/.test(document.URL)
-      || /^http(s)?:\/\/www.google.com\/finance/.test(document.URL)
       || /^http(s)?:\/\/bing.google.com\/search/.test(document.URL)
       || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
      )

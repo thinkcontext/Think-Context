@@ -24,13 +24,6 @@ pageMod.PageMod({
 	    case 'sendstat':
 		db.sendStat(request.key);
 		break;
-            case 'finance':
-	    case 'gs-finance':
-            case 'bing-finance':
-            case 'gp-finance':
-            case 'yahoo-finance':
-		db.lookupStock(key,request,function(r){worker.postMessage(r)});
-		break;
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r)});
 		break;
@@ -52,34 +45,6 @@ pageMod.PageMod({
     }
 });
 
-pageMod.PageMod({
-    include : ["http://www.google.com/finance*","https://www.google.com/finance*"],
-    contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
-			,data.url('google-finance-page.js')],
-    onAttach: function(worker){
-	worker.on('message', function(request){
-	    var key = request.key;
-	    var data;
-	    switch(request.kind){
-	    case 'resource':
-		request.data = iconDir;
-		worker.postMessage(request);
-		break;
-	    case 'sendstat':
-		db.sendStat(request.key);
-		break;
-            case 'gp-finance':
-		db.lookupStock(key,request,function(r){worker.postMessage(r)});
-		break;
-	    }
-	}
-		 )
-    }   
-});
 
 pageMod.PageMod({
     include : ["http://maps.google.com/maps/place*","https://maps.google.com/maps/place*"],
@@ -161,13 +126,6 @@ pageMod.PageMod({
 	    case 'sendstat':
 		db.sendStat(request.key);
 		break;
-            case 'finance':
-	    case 'gs-finance':
-            case 'bing-finance':
-            case 'gp-finance':
-            case 'yahoo-finance':
-		db.lookupStock(key,request,function(r){worker.postMessage(r)});
-		break;
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r)});
 		break;
@@ -201,13 +159,6 @@ pageMod.PageMod({
 		break;
 	    case 'sendstat':
 		db.sendStat(request.key);
-		break;
-            case 'finance':
-	    case 'gs-finance':
-            case 'bing-finance':
-            case 'gp-finance':
-            case 'yahoo-finance':
-		db.lookupStock(key,request,function(r){worker.postMessage(r)});
 		break;
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r)});

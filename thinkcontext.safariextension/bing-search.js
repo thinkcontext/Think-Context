@@ -144,27 +144,6 @@ tc.registerResponse('link',
 			    sub[request.data.func](this,request.key,request.data);});
 		    });
 
-tc.registerResponse('bing-finance'
-		    ,function(request){
-			var data = JSON.parse(request.data.data);
-			$("[sid="+request.sid+"]").map(
-			    function(){
-				var resDiv = document.createElement("div");
-				var r = Math.floor(Math.random() * 100000);
-				resDiv.setAttribute("id",r);
-				resDiv.setAttribute("subv",true);
-				resDiv.style.display = "inline";
-				var redih = document.createElement("img");
-				redih.src = tc.infoI;
-				resDiv.appendChild(redih);
-				this.parentNode.insertBefore(resDiv,this);
-				var supporters = data['Supporters'].join(' ')
-				var message = '<div>This company has an upcoming proxy vote. ' + supporters + ' have an opionion on the vote.  <a target="_blank" href="' + data['BallotUrl'] + '">More info</a></div>';
-				tc.iconDialog('Proxy Vote Info',message,r);
-			    }
-			);
-		    });
-
 tc.registerResponse('place'
 		    , function(request){
 			$("[sid=" + request.sid +"]").map(function(){
@@ -180,23 +159,6 @@ tc.sendMessage(
       , 'key' : qt
       , 'location' : loc
      });
-
-
-// stock
-$("div h2 a:contains('Real-time stock quote')[href*='/finance']").map(
-    function(){
-		if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
-		    var nqr = new RegExp('q=([^&]+)');
-		    var q = decodeURIComponent(nqr.exec(this.search)[1]);
-		    
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
-		    this.setAttribute("sid",sid);
-		    tc.sendMessage({'kind': 'bing-finance'
-				    , 'sid': sid
-				    , 'key': q
-				   });
-		}
-    });
 
 // result link
 $('div#results  li  div  div  h3  a').map(

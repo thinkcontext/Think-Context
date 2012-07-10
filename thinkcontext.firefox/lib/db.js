@@ -27,16 +27,6 @@ tc = {
 	    , googFTNumber: '1049740'
 	    , version: '0.05'
 	}
-	, stocks: {
-	    fields: {
-		id: 'integer primary key'
-		, symbol: 'text'
-		, exchange: 'text'
-		, data: 'text'
-	    }
-	    , googFTNumber: '892855'
-	    , version: '0.01'
-	}
 	, results: { 
 	    fields: {
 		id:'integer primary key'
@@ -326,19 +316,6 @@ tc = {
 	}
     }
 
-    , lookupStock: function(key,request,callback){
-	var keysplit = key.split(':');
-	var selTxt;
-	if(keysplit.length > 1){
-	    keysplit[1] = keysplit[1].toUpperCase();
-	    var selTxt = "SELECT * FROM stocks WHERE exchange = '"+ keysplit[0] + "'and symbol = '" + keysplit[1] + "'";
-	} else {
-	    keysplit[0] = keysplit[0].toUpperCase();
-	    var selTxt = "SELECT * FROM stocks WHERE symbol = '" + keysplit[0] + "'";
-	}
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('stocks').split(', '));},tc.onError);
-    }
-
     , lookupPlace: function(key,request,callback){
 	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = '"+key+"' and p.type = '"+request.type+"' LIMIT 1";
 	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);},tc.onError);
@@ -393,7 +370,6 @@ timer.setInterval(tc.updateAllTables,1800000); // do at idle?
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupResults = tc.lookupResults;
-exports.lookupStock = tc.lookupStock;
 exports.lookupPlace = tc.lookupPlace;
 exports.lookupPlaces = tc.lookupPlaces;
 exports.lookupReverse = tc.lookupReverse;

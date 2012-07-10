@@ -1,15 +1,7 @@
-<html>
-  <head>
-  </head>
-  <body>
-    <script src="jquery-1.7.1.min.js" type="text/javascript"></script>
-    <script src="bg-utils.js" type="text/javascript"></script>
-    <script src="db.js" type="text/javascript"></script>
-    <script>
-    function onRequest(e) {
-        var request = e.message;
+    function onRequest(request, sender, callback) {
 	var key = request.key;
-        var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};	        var data;
+	var data;
+        //console.log(request);
 	switch(request.kind){
 	case 'link': 
 	    tc.lookupResult(key, request, callback);
@@ -39,8 +31,5 @@
 
       //console.log("background.html");
       tc.connectSubvDB();
-      safari.application.addEventListener("message",onRequest);
+      chrome.extension.onRequest.addListener(onRequest);
       setInterval(tc.updateAllTables, 1800000);
-    </script>
-  </body>
-</html>

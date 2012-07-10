@@ -135,25 +135,6 @@ tc.registerResponse('link',function(request){
     $("[sid=" + request.sid +"]").map(function(){
 	sub[request.data.func](this,request.key,request.data);});
 });
-tc.registerResponse('finance',function(request){
-    var data = JSON.parse(request.data.data);
-    $("[sid="+request.sid+"]").map(
-	function(){
-	    var resDiv = document.createElement("div");
-	    var r = Math.floor(Math.random() * 100000);
-	    resDiv.setAttribute("id",r);
-	    resDiv.setAttribute("subv",true);
-	    resDiv.style.display = "inline";
-	    var redih = document.createElement("img");
-	    redih.src = tc.infoI;
-	    resDiv.appendChild(redih);
-	    this.parentNode.insertBefore(resDiv,this);
-	    var supporters = data['Supporters'].join(' ')
-	    var message = '<div>This company has an upcoming proxy vote. ' + supporters + ' have an opionion on the vote.  <a target="_blank" href="' + data['BallotUrl'] + '">More info</a></div>';
-	    tc.iconDialog('Proxy Vote Info',message,r);
-	}
-    );
-});
 tc.registerResponse('place', function(request){
     $("[sid=" + request.sid +"]").map(function(){
 	sub[request.data.func](this,request.key,request.data);});
@@ -171,22 +152,6 @@ tc.sendMessage(
       , 'key' : qt
       //      , 'location' : loc
      });
-
-// stock
-$("div h3 a[href*='finance.yahoo.com/q%3fs=']").map(
-    function(){
-		if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
-		    var nqr = new RegExp('q%3fs=([^"]+)');
-		    var q = decodeURIComponent(nqr.exec(this.href)[1]);
-		    
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
-		    this.setAttribute("sid",sid);
-		    tc.sendMessage({'kind': 'finance'
-				    , 'sid': sid
-				    , 'key': q
-				   });
-		}
-    });
 
 // result link - could be a place link else look up the result link
 $('div#web > ol h3 > a').map(

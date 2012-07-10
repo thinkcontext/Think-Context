@@ -167,21 +167,6 @@ tc.googleSearch = {
 		sub[request.data.func](this,request.key,request.data);});
 	});
 
-	
-	tc.registerResponse('gs-finance', function(request){
-	    var data = JSON.parse(request.data.data);
-	    var tcstat = 'gsf' + request.data.id;
-	    $("[sid="+request.sid+"]").map(
-		function(){
-		    var supporters = data['Supporters'].join(' ');
-		    var message = '<div>This company has an upcoming proxy vote. ' + supporters + ' have an opionion on the vote.  <a tcstat="'+tcstat+'" target="_blank" href="' + data['BallotUrl'] + '">More info</a></div>';
-		    tc.insertPrev(this,'infoI','Proxy Vote Info',message, tc.googlePreInsert
-					      , tc.googlePostInsert
-					     );
-		}
-	    );
-	});
-
 	tc.registerResponse('places',function(request){ 
 	    var data = request.data;
 	    var d;
@@ -308,18 +293,6 @@ tc.googleSearch = {
     }
 
     ,  examineResults: function(){
-	//finance
-	$('h2 > a[href*=/url][href*="?q=/finance"]').map(function(){
-	    if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
-		var nqr = new RegExp('q\%3D([^&]+)');
-		var q = decodeURIComponent(nqr.exec(this.search)[1]);
-		var sid = "gs" + Math.floor(Math.random() * 100000);
-		this.setAttribute("sid",sid);
-		tc.sendMessage({'kind': 'gs-finance'
-				, 'sid': sid
-				, 'key': q
-			       });
-	    }});
 	
 	// place page in an lclbox brief results
 	// eg "chicago hotels"

@@ -34,7 +34,6 @@
 				<string>reverse.js</string>
 				<string>bing-search.js</string>
 				<string>yahoo-search.js</string>
-				<string>google-finance-page.js</string>
 				<string>google-place-page.js</string>
 				<string>bg-utils.js</string>
 			</array>
