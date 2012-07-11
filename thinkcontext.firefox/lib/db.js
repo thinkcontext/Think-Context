@@ -14,7 +14,7 @@ tc = {
 		, link: 'text'
 	    }
 	    , googFTNumber: '1040216'
-	    , version: '0.08'
+	    , version: '0.05'
 	}
 	, reverse: {
 	    fields: {
@@ -35,9 +35,8 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '2186764'
-//	    , googFTNumber: '2038546'
-	    , version: '0.03'
+	    , googFTNumber: '4488538'
+	    , version: '0.04'
 	}
 	, subverts: { 
 	    fields: {
@@ -58,8 +57,8 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '2186393'
-	    , version: '0.04'
+	    , googFTNumber: '4527813'
+	    , version: '0.05'
 	}
 	, place_data: {
 	    fields: {
@@ -67,8 +66,8 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-	    , googFTNumber: '2186651'
-	    , version: '0.04'
+	    , googFTNumber: '4527176'
+	    , version: '0.05'
 	}
     }
 

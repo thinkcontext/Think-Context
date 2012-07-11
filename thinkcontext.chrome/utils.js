@@ -266,8 +266,6 @@ tc.intersect_safe = function(a, b)
 }
 
 tc.onResponse = function(request){
-    console.log(request);
-    console.log(tc.responses);
     tc.responses[request.kind](request);
 }
 

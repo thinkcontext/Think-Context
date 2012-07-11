@@ -206,7 +206,7 @@ tc.googleSearch = {
 		}
 
 		if(icon){
-		    $("li#lclbox > div > div:has(div > div > div > a[href *= 'cid=" + d.siteid + "']) div > h4 > a").map(function(){
+		    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + d.siteid +"']) div > h4 > a").map(function(){
 			tc.insertPrev(this,icon,title,blurb,tc.googlePreInsert,tc.googlePostInsert);});
 		}
 	    }
@@ -307,11 +307,11 @@ tc.googleSearch = {
     ,  examineResults: function(){
 	
 	// place page in an lclbox brief results
-	// eg "chicago hotels"
-	var urlmap = $("li#lclbox > div > div > div > div > div > a[href *= 'cid']:nth-child(5)").map(
+	// eg "westin dc"
+	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").map(
 	    function(){
     		if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
-		    var cid_regex = new RegExp('cid=([0-9]+)');
+		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
@@ -324,6 +324,7 @@ tc.googleSearch = {
 	);
 
 	if(urlmap){
+	    //console.log(jQuery.makeArray(urlmap));
 	    tc.sendMessage({'kind': 'places'
 			    ,'type': 'google'
 			    ,'subtype': 'gs-cid'
@@ -334,11 +335,11 @@ tc.googleSearch = {
 	
 	// place page in an lclbox long result
 	// eg "hay adams hotel"
-	$("li:has(div > h3 > a) > div > #lclbox > a[href*=cid]:first-child").map(
+	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").map(
 	    function(){
-		var target = this.parentNode.parentNode.children[0].children[0];
+		var target = this.parentNode.parentNode.parentNode.children[0].children[0];
     		if(target && target.getAttribute && !target.getAttribute('subv')){
-		    var cid_regex = new RegExp('cid=([0-9]+)');
+		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
@@ -356,9 +357,9 @@ tc.googleSearch = {
 	
 	// place not in an lclbox
 	// boston hotels
-	$("li > div.vsc > div.intrlu > div > span > a[href^='http://maps.google.com/maps/place']:first-child").map(
+	$("div.intrlu > div > span > a[href*='//plus.google.com/']").map(
 	    function(){
-		var cid_regex = new RegExp('cid=([0-9]+)');
+		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		cid_res = cid_regex.exec(this.href);
 		if(cid_res[1]){
 		    var cid = cid_res[1];
@@ -372,7 +373,7 @@ tc.googleSearch = {
 		}
 	    }
 	);
-
+	
 //	result link	
 	$("ol#rso > li.g > div > h3 > a").map(function(){
 	    var sid = "gs" + Math.floor(Math.random() * 100000);
