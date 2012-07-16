@@ -186,7 +186,7 @@ tc.sigURL = function(url){
 // unfortunately this varies by site so this will be an imperfect exercise
     var ret = url;
     var matches;
-    yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
+    var yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
     if(matches = yt.exec(ret)){
 	ret = 'http://www.youtube.com/watch?' + matches[3];
 	ret = ret.split('#')[0];	      

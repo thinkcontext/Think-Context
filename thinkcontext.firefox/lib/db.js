@@ -255,7 +255,7 @@ tc = {
 			    //sql.execute(insertTxt);
 			}
 		    }
-		    console.log(table);
+		    //console.log(table);
 		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table) }, tc.onError);
 		}
 	    }
