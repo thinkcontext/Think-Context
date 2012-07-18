@@ -19,7 +19,22 @@ tc.googleSearch = {
 
     , doit: function(){
 	var sub = {
-	    greenResult: function(n,key,data){
+
+	    rushBoycott: function(n,key,data){
+		console.log(data);
+		console.log(key);
+		var detail = JSON.parse(data.data);
+		var tcstat = 'grb';
+		tc.insertPrev(n
+			      , 'redCirc'
+			      , 'Rush Limbaugh Advertiser'
+			      , detail.name + ' is listed as an advertiser of Rush Limbaugh\'s by <a href="http://www.stoprush.net/" target="_blank" tcstat="'+tcstat+key + '">The Stop Rush Project</a>.  Click <a href="'+ data.url + '" target="_blank" tcstat="'+tcstat+key + '">here</a> for more information on this particular advertiser\'s activity.'
+			      , tc.googlePreInsert
+			      , tc.googlePostInsert			      
+			     )
+	    }
+
+	    , greenResult: function(n,key,data){
 		var detail = JSON.parse(data.data);
 		var tcstat = 'gsg';
 		tc.insertPrev(n

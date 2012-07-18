@@ -30,8 +30,8 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '4488538'
-	    , version: '0.04'
+	    , googFTNumber: '4583132'
+	    , version: '0.05'
 	}
 	, subverts: { 
 	    fields: {
