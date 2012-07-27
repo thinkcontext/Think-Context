@@ -20,6 +20,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		 ,greenG : tc.iconDir + "/greenG.png"
 		 ,greenCheck : tc.iconDir + "/greenCheck.png"
 		 ,redCirc : tc.iconDir + "/redCirc.png"
+		 ,stopRush : tc.iconDir + "/sr.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
 		 ,trackback16: tc.iconDir + "/trackback-16.png"
 		 ,trackback32: tc.iconDir + "/trackback-32.png"

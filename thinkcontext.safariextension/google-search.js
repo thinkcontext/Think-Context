@@ -26,7 +26,7 @@ tc.googleSearch = {
 		var detail = JSON.parse(data.data);
 		var tcstat = 'grb';
 		tc.insertPrev(n
-			      , 'redCirc'
+			      , 'stopRush'
 			      , 'Rush Limbaugh Advertiser'
 			      , detail.name + ' is listed as an advertiser of Rush Limbaugh\'s by <a href="http://www.stoprush.net/" target="_blank" tcstat="'+tcstat+key + '">The Stop Rush Project</a>.  Click <a href="'+ data.url + '" target="_blank" tcstat="'+tcstat+key + '">here</a> for more information on this particular advertiser\'s activity.'
 			      , tc.googlePreInsert
