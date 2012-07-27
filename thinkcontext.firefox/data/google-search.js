@@ -1,5 +1,5 @@
 if (window.frameElement === null){
-    console.log("google-search.js");
+    //console.log("google-search.js");
     tc.googleSearch = {
 
 	googlePreInsert: function(n){
@@ -16,8 +16,8 @@ if (window.frameElement === null){
 	    var sub = {
 
 		rushBoycott: function(n,key,data){
-		    console.log(data);
-		    console.log(key);
+		    //console.log(data);
+		    //console.log(key);
 		    var detail = JSON.parse(data.data);
 		    var tcstat = 'grb';
 		    tc.insertPrev(n
