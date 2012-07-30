@@ -287,6 +287,9 @@ tc.reverseExamine = function(){
     	    });
     }
 }
+
+tc.reverseResponseTwit = 0;
+
 tc.reverseResponse = function(request){
     var data = request.data;
     var out = {};
@@ -302,7 +305,9 @@ tc.reverseResponse = function(request){
 	}
     }
     var tcstat = 'rrh';
-	
+    var jsearch = "href";
+    if(tc.reverseResponseTwit == 1)
+	jsearch = 'data-ultimate-url';
     for(var rl in out){
 	var text = '<b>This link was mentioned in</b>';// <ul style="display:inline">';
 
@@ -315,7 +320,9 @@ tc.reverseResponse = function(request){
 	    text += ' <a tcstat="' + tcstat + out[rl][l].id + docHost + '" target="_blank" href="' + out[rl][l].link + '">'+ tc.htmlDecode(out[rl][l].title) + '</a> by <a target="_blank" href="' + out[rl][l].source_link + '">' + out[rl][l].name + '</a> links to <a href="'+ out[rl][l].reverse_link + '">this page</a>'; 
 	}
 //	text += "</ul>";
-	$('a[href^="'+rl+'"]:visible').map(function(){
+	
+
+	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		if(this.innerText.match(/\w/)){
 		    var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');

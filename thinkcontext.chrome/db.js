@@ -330,6 +330,7 @@ tc = {
 	key = arrayQuoteEscape(key);
 	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	request.key = '';
+	//	console.log(selTxt);
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(selTxt

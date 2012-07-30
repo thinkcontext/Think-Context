@@ -1,6 +1,6 @@
 {
     "name": "Think Context",
-    "version": "0.81",
+    "version": "0.82",
     "update_url": "http://thinkcontext.org/release/chrome/updates.xml",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
@@ -89,6 +89,12 @@
 	    "matches": ["*://www.google.com/*"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-search.js"]
 	}
+	, {
+	    "css": ["jquery-ui.css"],
+	    "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","bg-utils.js","utils.js","twitter.js"]
+	}
+
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-place-page.js"]
@@ -108,11 +114,12 @@
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://*/*"],
 	    "exclude_globs": ["*://www.google.com/*"
-	    ,"*://maps.google.com/maps/place*"
-	    ,"*://plus.google.com/*"
-	    ,"*://www.bing.com/search*"
-	    ,"*://search.yahoo.com/search*"
-] ,
+			      ,"*://maps.google.com/maps/place*"
+			      ,"*://plus.google.com/*"
+			      ,"*://www.bing.com/search*"
+			      ,"*://search.yahoo.com/search*"
+			      ,"*://twitter.com/*"
+			     ] ,
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}
     ]
