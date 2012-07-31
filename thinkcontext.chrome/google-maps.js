@@ -4,6 +4,8 @@ tc.googlePlacesHandler = function(siteid, icon, title, blurb){
     $("div.one:has(a.pp-more-content-link[href *= 'plus.google.com/" + siteid + "']) > div.lsicon > div:first").map(
 	function(){
 	    tc.insertPrev(this,icon,title,blurb,null,null);
+	    this.previousElementSibling.style.display = "block";
+	    this.style.display = "block";
 	})
 }
 
