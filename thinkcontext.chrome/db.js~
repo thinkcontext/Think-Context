@@ -253,7 +253,6 @@ tc = {
 	    for(var i=0;i<r.rows.length;i++){
 		request.data[i]=r.rows.item(i);
 	    }
-	    //console.log(request);
 	    callback(request);
 	}
     }

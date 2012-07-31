@@ -184,12 +184,35 @@ tc.googleSearch = {
 		sub[request.data.func](this,request.key,request.data);});
 	});
 
-	tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
-	    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
-		tc.insertPrev(this,icon,title,blurb,tc.googlePreInsert,tc.googlePostInsert);});	    
-	}
+	tc.registerResponse('places',function(request){ 
+	    var data = request.data;
+	    var d;
+	    var icon;
+	    var title;
+	    var blurb;
+	    var tcstat = 'gsp';
+	    for(var r in data){
+		d = data[r];
+		if(d.type == 'safe'){
+		    icon = 'greenCheck';
+		    title = '<img src="'+ tc.icons['greenCheck'] + '"> Patronize This Hotel';
+		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>';
+		} else if(d.type == 'boycott' || d.type == 'strike'){
+		    icon = 'redCirc';
+		    title = '<img src="'+ tc.icons['redCirc'] + '"> Boycott This Hotel';
+		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>';
+		} else if(d.type == 'risky'){
+		    icon = 'infoI';
+		    title = 'Risk of Labor Dispute At This Hotel';
+		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>';
+		}
 
-	tc.registerResponse('places', tc.googlePlaces);
+		if(icon){
+		    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + d.siteid +"']) div > h4 > a").map(function(){
+			tc.insertPrev(this,icon,title,blurb,tc.googlePreInsert,tc.googlePostInsert);});
+		}
+	    }
+	});
 
 	tc.registerResponse('place', function(request){
 	    switch(request.subtype){

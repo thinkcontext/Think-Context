@@ -99,10 +99,6 @@
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-place-page.js"]
 	}
-	,{  "matches": ["*://maps.google.com/*"],
-	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","google-maps.js"]
-	}
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
@@ -123,7 +119,6 @@
 			      ,"*://www.bing.com/search*"
 			      ,"*://search.yahoo.com/search*"
 			      ,"*://twitter.com/*"
-			      ,"*://maps.google.com/*"
 			     ] ,
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}

@@ -1,0 +1,12 @@
+var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+var urlmap = $("div.res div.one > div.vcard > span > div > div > a[href *= 'plus.google.com']").map(
+    function(){
+	cid_res = cid_regex.exec(this.href);
+	if(cid_res[1]){
+	    var cid = cid_res[1];
+	    //var sid = "gs" + Math.floor(Math.random() * 100000);
+	    //this.parentNode.children[0].setAttribute("sid",sid);
+	    return [ {cid:cid} ];
+	}
+    });
+console.log(urlmap);
