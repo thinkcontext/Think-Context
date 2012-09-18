@@ -243,6 +243,7 @@ tc.sigURL = function(url){
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?cato\.org\/[^"?]+/)
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?wtop\.com\/[^"?]+/)
 	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?money\.msn\.com\/[^"?]+/)
+	      || ret.match(/http(s)?:\/\/([\w\.]*\.)?npr\.org\/player\/v2\/mediaPlayer\.html[^"?]+/)	     
 	     ){
 	ret = ret.split('#')[0];	      
     } else if(ret.match(/(\w*\.)?cbc.ca\/video/)
