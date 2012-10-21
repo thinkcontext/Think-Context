@@ -115,7 +115,7 @@
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","yahoo-search.js"]
 	}
 	,{
-	    "css": ["jquery-ui.css"],
+
 	    "matches": ["*://*/*"],
 	    "exclude_globs": ["*://www.google.com/*"
 			      ,"*://maps.google.com/maps/place*"
@@ -125,7 +125,7 @@
 			      ,"*://twitter.com/*"
 			      ,"*://maps.google.com/*"
 			     ] ,
-	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js","jquery-ui.css.js"]
 	}
     ]
 }
