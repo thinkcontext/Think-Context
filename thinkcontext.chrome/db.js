@@ -30,8 +30,8 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '4583132'
-	    , version: '0.05'
+	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
+	    , version: '0.06'
 	}
 	, subverts: { 
 	    fields: {
@@ -52,8 +52,8 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '4527813'
-	    , version: '0.05'
+	    , googFTNumber: '1H38qhAMz280fqktszJRVyAtHuS0OBdcsC7-WZsE'
+	    , version: '0.06'
 	}
 	, place_data: {
 	    fields: {
@@ -61,8 +61,8 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-	    , googFTNumber: '4527176'
-	    , version: '0.05'
+	    , googFTNumber: '10TYcA0TD-DdArVh5oYxq9KdwBJa0WCin6GNnV8Y'
+	    , version: '0.06'
 	}
     }
 
@@ -171,7 +171,7 @@ tc = {
 	    dateClause = "and dm >= " + secs;
 	}
 
-	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause);
+	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    if(dataArray.length > 1){ // see if there's any data to insert
@@ -192,7 +192,7 @@ tc = {
 	if(secs=tc.checkLocalAddTime(table)){
 	    dateClause = "and da >= " + secs;
 	}
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause);
+	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause  + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -219,7 +219,7 @@ tc = {
     
     , loadTable: function(table){
 	var query;
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'");
+	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
