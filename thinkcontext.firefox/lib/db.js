@@ -13,7 +13,7 @@ tc = {
 		, name: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '1040216'
+	    , googFTNumber: '16npeDRrzx9J6X4P4w2KplYwF9wPmSrLEZSQdiBE' //1040216'
 	    , version: '0.05'
 	}
 	, reverse: {
@@ -24,7 +24,7 @@ tc = {
 		, title: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '1049740'
+	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
 	    , version: '0.05'
 	}
 	, results: { 
@@ -47,7 +47,7 @@ tc = {
 		, bin_op: 'text'
 		
 	    }
-	    , googFTNumber: '2038549' 
+	    , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
 	    , version: '0.02'
 	}
 	, place: {
@@ -103,7 +103,7 @@ tc = {
 	return r;
     }
 
-    , googFT : 'https://www.google.com/fusiontables/api/query?sql='
+    , googFT : 'https://www.googleapis.com/fusiontables/v1/query?key=AIzaSyDZ28Q_ZRg6SXUEVsR-AqRbyIJdoE0qGYg&alt=csv&sql='
 
     , checkLocalTableVersion: function(t){
 	return ss.storage[t + 'version'] == tc.tables[t].version;
