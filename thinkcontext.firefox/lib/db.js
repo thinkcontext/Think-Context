@@ -365,7 +365,8 @@ tc.connectDB();
 tc.loadAllTables();
 //tc.updateTable("reverse");
 timer.setTimeout(tc.updateAllTables,10000); // do at idle?
-timer.setInterval(tc.updateAllTables,1800000); // do at idle?
+timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
+timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupResults = tc.lookupResults;
