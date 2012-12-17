@@ -1,7 +1,7 @@
 {
     "name": "Think Context",
-    "version": "0.82",
-    "update_url": "http://thinkcontext.org/release/chrome/updates.xml",
+    "version": "0.83",
+    "update_url": "http://clients2.google.com/service/update2/crx",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
     "web_accessible_resources": ["icons/350.ico",
@@ -115,7 +115,7 @@
 	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","yahoo-search.js"]
 	}
 	,{
-
+	    "css": ["jquery-ui.css"],
 	    "matches": ["*://*/*"],
 	    "exclude_globs": ["*://www.google.com/*"
 			      ,"*://maps.google.com/maps/place*"
@@ -125,7 +125,7 @@
 			      ,"*://twitter.com/*"
 			      ,"*://maps.google.com/*"
 			     ] ,
-	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js","jquery-ui.css.js"]
+	    "js": ["jquery-1.7.1.min.js","jquery-ui-1.8.16.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}
     ]
 }

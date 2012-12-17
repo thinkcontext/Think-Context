@@ -25,7 +25,7 @@ tc = {
 		, link: 'text'
 	    }
 	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
-	    , version: '0.05'
+	    , version: '0.06'
 	}
 	, results: { 
 	    fields: {

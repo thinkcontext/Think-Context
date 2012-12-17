@@ -6,9 +6,10 @@ var iconDir = s.data.url("icons");
 
 pageMod.PageMod({
     include : ["http://www.google.com/*","https://www.google.com/*"],
+    contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
+    contentScriptFile: [
+			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('google-search.js')],
@@ -48,9 +49,10 @@ pageMod.PageMod({
 
 pageMod.PageMod({
     include : ["http://maps.google.com/maps/place*","https://maps.google.com/maps/place*"],
+    contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
+    contentScriptFile: [
+			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('google-place-page.js')],
@@ -77,9 +79,10 @@ pageMod.PageMod({
 });
 pageMod.PageMod({
     include : ["*"],
+    contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
+    contentScriptFile: [
+			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('reverse.js')],
@@ -108,9 +111,10 @@ pageMod.PageMod({
 });
 pageMod.PageMod({
     include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*","http://www.goodsearch.com/search.aspx"],
+    contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
+    contentScriptFile: [
+			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('yahoo-search.js')],
@@ -142,9 +146,10 @@ pageMod.PageMod({
     }});
 pageMod.PageMod({
     include : ["http://www.bing.com/search*","https://www.bing.com/search*"],
+    contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
-    contentScriptFile: [data.url('jquery-ui.css.js')
-			,data.url('jquery-1.7.1.min.js')
+    contentScriptFile: [
+			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
 			,data.url('utils.js'),
 			,data.url('bing-search.js')],
