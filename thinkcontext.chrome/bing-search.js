@@ -2,12 +2,24 @@ sub = {
     greenResult: function(n,key,data){
 	var detail = JSON.parse(data.data);
 	var tcstat = 'bsg';
+	var d = $("<div>")
+	    .append($('<b>')
+		    .append($('<a>'
+			      ,{tcstat: tcstat+data.id
+				, target: '_blank'
+				, href: 'http://' + key + '/'
+				, text: detail.name})))
+	    .append('- ' + detail.desc);
+		    
+ 
 	tc.insertPrev(n
-				,'greenG'
-				,'Member of the Green Business Network','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
+		      ,'greenG'
+		      ,'Member of the Green Business Network'
+		      , d
+		      //		      ,'<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
 				, null
 				, null
-			       );
+		     );
     },
     
     hyatt_result: function(n,key,data){
@@ -83,49 +95,59 @@ sub = {
     }
 
     , insertSubvertisements: function(message){
-    var result= '';
-    var tcstat = 'bss';
-    if(message.data && message.data.length > 0){
-	var subvs = message.data;
-	var sel = [];
-	var x = 0;
-	if(subvs.length > 3){
-	    for(x=0;x<=2;x++){
-		var i = Math.floor(Math.random() * 100000)% subvs.length ;
-		sel.push(subvs[i]);
-		subvs.splice(i,1);
-	    }
-	} else {
-	    sel = subvs;
-	}
-	result = sel.map(function(subv){ 
-	    var d = JSON.parse(subv.data);
-	    var link = subv.url;
-	    var name = d.name;
-	    var ds = d.desc.split(' ')
-	    var blurb = ds.slice(0,14).join(' ');
-	    if(ds.length > 14)
-		blurb += '...';
-	    var id = subv.id;
-	    var host = link.split('/')[0];
-	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '" target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
-    } 
-    $("div#sidebar").map(function(){
-	if(result != ''){
-	    var subvDiv = document.createElement("div");
-	    subvDiv.setAttribute("subv",true);
-	    subvDiv.innerHTML = result;
-	    if(this.firstChild.getAttribute("subv") == null){
-		this.insertBefore(subvDiv,this.firstChild);
-	    } else {
-		this.replaceChild(subvDiv,this.firstChild);
-	    }
-	}});
-    $("div#sidebar a[tcstat]").click(function(){
-	tc.sendMessage({'kind': 'sendstat'
-	 			      , 'key': this.attributes['tcstat'].value});
-    });
-}
+//     var result= '';
+//     var tcstat = 'bss';
+//     if(message.data && message.data.length > 0){
+// 	var subvs = message.data;
+// 	var sel = [];
+// 	var x = 0;
+// 	if(subvs.length > 3){
+// 	    for(x=0;x<=2;x++){
+// 		var i = Math.floor(Math.random() * 100000)% subvs.length ;
+// 		sel.push(subvs[i]);
+// 		subvs.splice(i,1);
+// 	    }
+// 	} else {
+// 	    sel = subvs;
+// 	}
+// 	result = sel.map(function(subv){ 
+// 	    var d = JSON.parse(subv.data);
+// 	    var link = subv.url;
+// 	    var name = d.name;
+// 	    var ds = d.desc.split(' ')
+// 	    var blurb = ds.slice(0,14).join(' ');
+// 	    if(ds.length > 14)
+// 		blurb += '...';
+// 	    var id = subv.id;
+// 	    var host = link.split('/')[0];
+// 	    return $("<li>", {class: "knavi"})
+// 		.append($("<h3>")
+// 			.append($("<a>", {tcstat: tcstat + id
+// 					, target: "_blank"
+// 					, href: "http://" + link
+// 					, text : name}).text(blurb))
+// 			.append($("<br>"))
+// 			.append($("<div>"))
+// 			.append($("<cite>").text(host))
+// 		       );
+// //	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '" target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
+// 	}
+//     $("div#sidebar").map(function(){
+// 	if(result != ''){
+// 	    var subvDiv = document.createElement("div");
+// 	    subvDiv.setAttribute("subv",true);
+// 	    subvDiv.innerHTML = result;
+// 	    if(this.firstChild.getAttribute("subv") == null){
+// 		this.insertBefore(subvDiv,this.firstChild);
+// 	    } else {
+// 		this.replaceChild(subvDiv,this.firstChild);
+// 	    }
+// 	}});
+//     $("div#sidebar a[tcstat]").click(function(){
+// 	tc.sendMessage({'kind': 'sendstat'
+// 	 			      , 'key': this.attributes['tcstat'].value});
+//     });
+    }
 
 };
 

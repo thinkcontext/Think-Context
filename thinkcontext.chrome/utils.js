@@ -87,20 +87,20 @@ feministing:	1,
 nationb:	1
 };
 
-tc.insertPrev = function(n,iconName,title,text,pre,post){
+tc.insertPrev = function(n,iconName,title,theDiv,pre,post){
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	var r = Math.floor(Math.random() * 100000);
-	var resDiv = document.createElement("div");
-	resDiv.setAttribute("id",r);
-	resDiv.setAttribute("subv",true);
-	resDiv.style.display = "inline";
-	var imgG = document.createElement("img");
-	imgG.src = tc.icons[iconName];
-	resDiv.appendChild(imgG);
+	var resDiv = $('<div>'
+		       , { id: r
+			   , subv: true
+			   , style: 'display: inline;' })
+	    .append($('img', { src: tc.icons[iconName]}))[0];
 	if(pre)pre(n);
+	console.log(n);
+	console.log(resDiv);
 	n.parentNode.insertBefore(resDiv,n);
 	n.style.display = "inline";
-	tc.iconDialog(title,text,r);
+	tc.iconDialog(title,theDiv);
 	if(post)post(n);
     }
 };
@@ -228,7 +228,7 @@ tc.htmlDecode = function(value){
 }
 
 tc.iconDialog = function(title,body,iconId){
-    var d = $('<div id="d'+iconId+'">'+body+' </div>').dialog(
+    var d = body.dialog(
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
 	 , height: 150
