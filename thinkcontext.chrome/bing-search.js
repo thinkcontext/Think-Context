@@ -1,100 +1,7 @@
 sub = {
-    greenResult: function(n,key,data){
-	var detail = JSON.parse(data.data);
-	var tcstat = 'bsg';
-	var d = $("<div>")
-	    .append($('<b>')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://' + key + '/'
-				, text: detail.name})))
-	    .append('- ' + detail.desc);
-		    
- 
-	tc.insertPrev(n
-		      ,'greenG'
-		      ,'Member of the Green Business Network'
-		      , d
-		      //		      ,'<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
-				, null
-				, null
-		     );
-    },
-    
-    hyatt_result: function(n,key,data){
-	// passed a google search result, insert a dialog
-	// "n" is the header link for the result
-	
-	var tcstat = 'bsh';
-	tc.insertPrev(n
-				,'infoI'
-				,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-				, null
-				, null
-			       );
-    }
-    , place: function(n, cid, pb,data){
-	var tcstat = 'bsp';
-	if(pb == 'patronize'){
-	    tc.insertPrev(n
-			  ,'greenCheck'
-			  ,'Patronize This Hotel'
-			  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>'
-			  , null
-			  , null
-			 );
-	} else if(pb == 'boycott'){
-	    tc.insertPrev(n
-			  ,'redCirc'
-			  ,'Boycott This Hotel'
-			  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>'
-				    , null
-				    , null
-				   );
-	} else if(pb == 'risky'){
-	    tc.insertPrev(n
-			  ,'infoI'
-			  ,'Risk of Labor Dispute At This Hotel'
-			  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>'
-			  , null
-			  , null
-			 );
-	}
-    },
 
-    placeboycott: function(n, cid, data){
-	sub.place(n,cid,'boycott',data);
-    },
 
-    placepatronize: function(n, cid, data){
-	sub.place(n,cid,'patronize',data);
-    },
-
-    placestrike: function(n, cid, data){
-	sub.place(n,cid,'boycott',data);
-    },
-    placestrike: function(n, cid, data){
-	sub.place(n,cid,'risky',data);
-    },
-
-    hotelboycott: function(n, cid, data){
-	sub.place(n,cid,'boycott',data);
-    },
-
-    hotelstrike: function(n, cid, data){
-	sub.place(n,cid,'boycott',data);
-    },
-
-    hotelrisky: function(n, cid, data){
-	sub.place(n,cid,'risky',data);
-    },
-
-    hotelsafe: function(n, cid, data){
-	sub.place(n,cid,'patronize',data);
-    }
-
-    , insertSubvertisements: function(message){
+    insertSubvertisements: function(message){
 //     var result= '';
 //     var tcstat = 'bss';
 //     if(message.data && message.data.length > 0){
@@ -158,7 +65,7 @@ tc.registerResponse('bing-text'
 tc.registerResponse('link',
 		    function(request){
 			$("[sid=" + request.sid +"]").map(function(){
-			    sub[request.data.func](this,request.key,request.data);});
+			    tc.sub[request.data.func](this,request.key,request.data);});
 		    });
 
 tc.registerResponse('place'

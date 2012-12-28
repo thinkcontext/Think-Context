@@ -87,30 +87,29 @@ feministing:	1,
 nationb:	1
 };
 
-tc.insertPrev = function(n,iconName,title,theDiv,pre,post){
+tc.insertPrev = function(n,iconName,r,title,theDiv,pre,post){
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	var r = Math.floor(Math.random() * 100000);
 	var resDiv = $('<div>'
 		       , { id: r
 			   , subv: true
 			   , style: 'display: inline;' })
-	    .append($('img', { src: tc.icons[iconName]}))[0];
+	    .append($('<img>', { src: tc.icons[iconName]}))[0];
 	if(pre)pre(n);
-	console.log(n);
-	console.log(resDiv);
 	n.parentNode.insertBefore(resDiv,n);
 	n.style.display = "inline";
-	tc.iconDialog(title,theDiv);
+	tc.iconDialog(title,theDiv,r);
 	if(post)post(n);
     }
 };
 
-
 tc.popDialog = function(title, body, autoOpen){
     var r = Math.floor(Math.random() * 100000);
     var z = Math.floor(Math.random() * 100000);
-    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
-
+    //    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
+    $('body').append($('<img>', { id: r
+				  ,src: tc.icons.trackback32 
+				  ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
+		     
     var d = $('<div id="' + z + '">'+body+'</div>').dialog(
 	{ zIndex: 10000000
 	  ,title: 'thinkContext: ' + title
@@ -240,7 +239,7 @@ tc.iconDialog = function(title,body,iconId){
 	    d.dialog('open'); 
 	    $('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
 	    return false;}
-	, function(event){});
+    );
     $('div#d' + iconId+' a[tcstat]').click(function(){
 	chrome.extension.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
@@ -311,18 +310,23 @@ tc.reverseResponse = function(request){
     if(tc.reverseResponseTwit == 1)
 	jsearch = 'data-ultimate-url';
     for(var rl in out){
-	var text = '<b>This link was mentioned in</b>';// <ul style="display:inline">';
-
+	var revDiv = $('<b>',{text: 'This link was mentioned in'});
+	var build = ''
 	for(l in out[rl]){
-	    text += "<br>";
-	    text += "<li>";
 	    if(tc.iconStatus[out[rl][l].source] == 1){
-		text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + out[rl][l].source + ".ico"+'">';
+		revDiv.append($('<img>',{ style: '"display:inline;" height="16" width="16"'
+					  ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
+			     );
 	    }
-	    text += ' <a tcstat="' + tcstat + out[rl][l].id + docHost + '" target="_blank" href="' + out[rl][l].link + '">'+ tc.htmlDecode(out[rl][l].title) + '</a> by <a target="_blank" href="' + out[rl][l].source_link + '">' + out[rl][l].name + '</a> links to <a href="'+ out[rl][l].reverse_link + '">this page</a>'; 
+	    revDiv.append($('<br>')).append($('<li>'));
+	    revDiv.append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
+				     , target: "_blank"
+				     , href: out[rl][l].link
+				     , text: tc.htmlDecode(out[rl][l].title)})
+			  .append('links to')
+			  .append('<a>', { href: out[rl][l].reverse_link
+					   , text: 'this page'}));
 	}
-//	text += "</ul>";
-	
 
 	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
@@ -344,7 +348,7 @@ tc.reverseResponse = function(request){
 		    resDiv.appendChild(redih);
 		    this.parentNode.insertBefore(resDiv,this);
 		    this.style.display = "inline";
-		    tc.iconDialog("Progressive Trackback", text, r);
+		    tc.iconDialog("Progressive Trackback", revDiv, r);
 		}
 	    }
 	});
@@ -386,3 +390,148 @@ tc.googlePlaces = function(request){
 	}
     }
 }
+
+tc.sub = {};
+
+tc.sub.greenResult = function(n,key,data){
+    var detail = JSON.parse(data.data);
+    var tcstat = 'bsg';
+    var r = Math.floor(Math.random() * 100000);
+    var d = $("<div>",{id: "d"+r})
+	.append($('<b>')
+		.append($('<a>'
+			  ,{tcstat: tcstat+data.id
+			    , target: '_blank'
+			    , href: 'http://' + key + '/'
+			    , text: detail.name})))
+	.append('- ' + detail.desc); 
+    
+    tc.insertPrev(n
+		  ,'greenG'
+		  ,r
+		  ,'Member of the Green Business Network'
+		  , d
+		  //		      ,'<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
+		  , null
+		  , null
+		 );
+}
+
+tc.sub.rushBoycott = function(n,key,data){
+    var detail = JSON.parse(data.data);
+    var tcstat = 'grb';
+
+    var r = Math.floor(Math.random() * 100000);
+    var d = $("<div>",{id: "d"+r})
+	.append($('<b>', {text: detail.name})
+		.append(' is listed as an advertiser of Rush Limbaugh\'s by ')
+		.append($('<a>'
+			  ,{tcstat: tcstat+data.id
+			    , target: '_blank'
+			    , href: 'http://stoprush.net/'
+			    , text: 'The Stop Rush Project'})))
+	.append('. Click ')
+	.append($('<a>', {tcstat: tcstat+data.id
+			  , target: '_blank'
+			  , href: data.url
+			  , text: 'here'}))
+	.append(' for more information on this particular advertiser\'s activity.');
+
+    tc.insertPrev(n
+		  , 'stopRush'
+		  , r
+		  , 'Rush Limbaugh Advertiser'
+		  , d
+		  , tc.googlePreInsert
+		  , tc.googlePostInsert			      
+		 )
+}
+
+tc.sub.place = function(n, cid, pb,data){
+    var tcstat = 'bsp';
+    var r = Math.floor(Math.random() * 100000);
+    var d = $("<div>",{id: "d"+r})
+	.append($('<b>')
+		.append($('<a>'
+			  ,{tcstat: tcstat+data.id
+			    , target: '_blank'
+			    , href: 'http://www.hotelworkersrising.org/'
+			    , text: 'Hotel Workers Rising'})));
+
+    if(pb == 'patronize'){
+	tc.insertPrev(n
+		      ,'greenCheck'
+		      , r
+		      ,'Patronize This Hotel'
+		      , d.append('- Recommends patronizing this hotel')
+		  , tc.googlePreInsert
+		  , tc.googlePostInsert			      
+		     );
+    } else if(pb == 'boycott'){
+	tc.insertPrev(n
+		      ,'redCirc'
+		      ,r
+		      ,'Boycott This Hotel'
+		      , d.append('- Recommends boycotting this hotel')
+		  , tc.googlePreInsert
+		  , tc.googlePostInsert			      
+		     );
+    } else if(pb == 'risky'){
+	tc.insertPrev(n
+		      ,'infoI'
+		      ,r
+		      ,'Risk of Labor Dispute At This Hotel'
+		      , d.append(' advises that there is a risk of a labor dispute at this hotel.')
+		      , tc.googlePreInsert
+		      , tc.googlePostInsert			      
+		     );
+    }
+}
+
+tc.sub.placeboycott = function(n, cid, data){
+    tc.sub.place(n,cid,'boycott',data);
+}
+
+tc.sub.placepatronize = function(n, cid, data){
+    tc.sub.place(n,cid,'patronize',data);
+}
+
+tc.sub.placestrike = function(n, cid, data){
+    tc.sub.place(n,cid,'boycott',data);
+}
+tc.sub.placerisky = function(n, cid, data){
+    tc.sub.place(n,cid,'risky',data);
+}
+
+tc.sub.placesafe = function(n, cid, data){
+    tc.sub.place(n,cid,'patronize',data);
+}
+
+tc.sub.hotelboycott = function(n, cid, data){
+    tc.sub.place(n,cid,'boycott',data);
+}
+
+tc.sub.hotelstrike = function(n, cid, data){
+    tc.sub.place(n,cid,'boycott',data);
+}
+
+tc.sub.hotelrisky = function(n, cid, data){
+    tc.sub.place(n,cid,'risky',data);
+}
+
+tc.sub.hotelsafe = function(n, cid, data){
+    tc.sub.place(n,cid,'patronize',data);
+}
+
+	    // hyatt_result: function(n,key,data){
+	    // 	// passed a google search result, insert a dialog
+	    // 	// "n" is the header link for the result
+		
+	    // 	var tcstat = 'gsh';
+	    // 	tc.insertPrev(n
+	    // 		      ,'infoI'
+	    // 		      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
+	    // 		      , tc.googlePreInsert
+	    // 		      , tc.googlePostInsert
+	    // 		     );
+	    // }

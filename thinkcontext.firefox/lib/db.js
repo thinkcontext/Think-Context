@@ -157,7 +157,8 @@ tc = {
 	}
     }
     , checkNoTable: function(table){
-	sql.execute("select count(*) from " + table
+	sql.execute("select count(*) from :table"
+		    ,{table:table}
 		    , tc.onSuccess
 		    , function(e,stmt){ tc.loadTable(table)});
     }
@@ -239,20 +240,22 @@ tc = {
 		//		    console.log(dataArray);
 		var len = tc.tableFieldsLength(table);
 		if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
-		    var dropTxt = "DROP TABLE IF EXISTS " + table;
-		    var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
-		    var insertTxt = '';
+		    var dropTxt = "DROP TABLE IF EXISTS :table";
+		    var createTxt = "CREATE TABLE :table ( " + bindNums(tc.tableFieldsTypes(table)) + " )";
 		    //console.log(dropTxt);
 		    //console.log(createTxt);
-		    sql.execute(dropTxt);
-		    sql.execute(createTxt);
+		    sql.execute(dropTxt, {table:table});
+		    var b = bindArr(tc.tableFieldsTypes(table));
+		    var b['table'] = table;
+		    sql.execute(createTxt, b);
+		    var insertTxt = '';
 		    dataArray = dataArray.slice(1);
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
 			    insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
 			    //console.log(insertTxt);
 			    queries.push(insertTxt);
-			    //sql.execute(insertTxt);
+			    
 			}
 		    }
 		    //console.log(table);
@@ -263,7 +266,6 @@ tc = {
     }
     
     , onLookupManySuccess: function(r, status, request, callback, fields){
-	//console.log("in onlookupManySuccess " + r.data.length);
 	if(r.data.length > 0){
 	    request.data = [];
 	    for(var z = 0; z<r.data.length;z++){
@@ -280,7 +282,7 @@ tc = {
     }
 
     , onLookupSuccess: function(r, status, request, callback, fields){
-//	console.log("in onlookupSuccess " + r.data.length);
+	//	console.log("in onlookupSuccess " + r.data.length);
 	if(r.data.length > 0){
 	    request.data = {};
 	    var i = 0;
@@ -294,19 +296,22 @@ tc = {
 
     , lookupResult: function(request, callback){
 	var key = request.key;
+	
+	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key  LIMIT 1";
 
-	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key  LIMIT 1";
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,tc.tableFields('results').split(', '));},tc.onError);
+	sql.execute(selTxt 
+		    , {key: key}
+		    ,function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
+		    ,tc.onError);
     }
-
+    
     , lookupResults: function(request, callback){
 	if(request.data.length > 0){
 	    var keys = [];
 	    for(var i in request.data){
 		keys.push(request.data[i].key);
 	    }
-	
-	    //	var selTxt = "SELECT * FROM results WHERE key = '" + key + "' or '" + key + "' like key || '/%' or '" + key + "' like '%.' || key || '/%' or '" + key + "' like '%.' || key ";
+	    
 	    var selTxt = "SELECT * FROM results WHERE key in ( '" + keys.join("','") + "') or '" + keys.join("' like key||'/%' or '") + "' like key||'/%' or '"+ keys.join("' like '%.'||key or '") + "' like '%.'||key or '" + keys.join("' like '%.'||key||'/%' or '") + "' like '%.'||key||'/%'";
 	    request.orig_data = request.data;
 	    sql.execute(selTxt
@@ -314,12 +319,15 @@ tc = {
 			,tc.onError);
 	}
     }
-
+    
     , lookupPlace: function(key,request,callback){
-	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = '"+key+"' and p.type = '"+request.type+"' LIMIT 1";
-	sql.execute(selTxt, function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);},tc.onError);
+	console.log("lookupPlace");
+	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = :key and p.type = :type LIMIT 1";
+	sql.execute(selTxt
+		    ,{key: key, type:request.type}
+		    , function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);}
+		    ,tc.onError);
     }
-
 
     , lookupPlaces: function(key,request,callback){
 
@@ -336,23 +344,31 @@ tc = {
 
 	var host = getReverseHost(key);
 
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = '"+key+"' union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = '"+key+"' ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||'"+host+"'||'/%' or r.reverse_link like 'http://'||'"+host+"'||'/%' ) and r.reverse_link <> '"+key+"' and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
+	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = :key union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = :key ) o on o.link = r.link WHERE ( r.reverse_link like :host2 or r.reverse_link like :host1 ) and r.reverse_link <> :key and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
 
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','title','link','reverse_link','name','source','source_link'])},tc.onError);
+	var q = sql.execute(selTxt
+			    ,{key:key
+			      ,host1 : 'http://' + host + '/%'
+			      ,host2 : 'http://%.' + host + '/%'}
+			    , function(result,status){
+				console.log(result);
+				tc.onLookupManySuccess(result,status,request
+						       ,callback
+						       ,['id','s','title','link','reverse_link','name','source','source_link'])}
+			    ,tc.onError);
     }
 
     , lookupReverseHome: function(key,request,callback){
-	key = arrayQuoteEscape(key);
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
+	console.log(key);
+	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + bindNums(key.length) + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	
 	request.key = '';
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link'])},tc.onError);
+	sql.execute(selTxt, bindArr(key),function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link'])},tc.onError);
     }
     
     , lookupSubvert: function(key, request, callback){
-	var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = '" + key + "'";
-	sql.execute(selTxt,function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id', 'data','url']);},tc.onError);
-	
+	var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = :key ";
+	sql.execute(selTxt,{key:key},function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id', 'data','url']);},tc.onError);
     }
 
     , sendStat: function(key){
@@ -469,6 +485,18 @@ function getReverseHost(url){
     return null;
 }
 
-function arrayQuoteEscape(arr){
-    return arr.map(function(x){ return x.replace("'","''")})
+bindNums = function(x){
+    var ret = []
+    for(var i = 0; i<x; i++){
+	ret.push(":" + i.toString());
+    }
+    return ret.join(',');    
+}
+
+bindArr = function(arr){
+    var ret = {}
+    for(var i = 0; i<arr.length; i++ ){
+	ret[i.toString()] = arr[i];
+    }
+    return ret;    
 }

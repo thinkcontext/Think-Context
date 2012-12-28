@@ -47,8 +47,11 @@ pageMod.PageMod({
 });
 
 
+// maps
+//pageMod.PageMod();
+
 pageMod.PageMod({
-    include : ["http://maps.google.com/maps/place*","https://maps.google.com/maps/place*"],
+    include : ["http://plus.google.com/*","https://plus.google.com/*"],
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [

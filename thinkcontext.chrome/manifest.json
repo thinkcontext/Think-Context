@@ -1,7 +1,7 @@
 {
     "name": "Think Context",
     "version": "0.83",
-    "update_url": "http://clients2.google.com/service/update2/crx",
+    "update_url": "http://www.thinkcontext.org/release/chrome/updates.xml",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
     "web_accessible_resources": ["icons/350.ico",
