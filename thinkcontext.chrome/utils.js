@@ -102,15 +102,13 @@ tc.insertPrev = function(n,iconName,r,title,theDiv,pre,post){
     }
 };
 
-tc.popDialog = function(title, body, autoOpen){
+tc.popDialog = function(title, revDiv, z, autoOpen){
     var r = Math.floor(Math.random() * 100000);
-    var z = Math.floor(Math.random() * 100000);
-    //    $('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
     $('body').append($('<img>', { id: r
 				  ,src: tc.icons.trackback32 
 				  ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
-		     
-    var d = $('<div id="' + z + '">'+body+'</div>').dialog(
+    
+    var d = revDiv.dialog(
 	{ zIndex: 10000000
 	  ,title: 'thinkContext: ' + title
 	  , position: [window.innerWidth - 350
@@ -310,30 +308,41 @@ tc.reverseResponse = function(request){
     if(tc.reverseResponseTwit == 1)
 	jsearch = 'data-ultimate-url';
     for(var rl in out){
-	var revDiv = $('<b>',{text: 'This link was mentioned in'});
-	var build = ''
-	for(l in out[rl]){
-	    if(tc.iconStatus[out[rl][l].source] == 1){
-		revDiv.append($('<img>',{ style: '"display:inline;" height="16" width="16"'
-					  ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
-			     );
-	    }
-	    revDiv.append($('<br>')).append($('<li>'));
-	    revDiv.append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-				     , target: "_blank"
-				     , href: out[rl][l].link
-				     , text: tc.htmlDecode(out[rl][l].title)})
-			  .append('links to')
-			  .append('<a>', { href: out[rl][l].reverse_link
-					   , text: 'this page'}));
-	}
-
 	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		if(this.innerText.match(/\w/)){
+		    var r = Math.floor(Math.random() * 100000);
+		    var revDiv = $('<div>',{id: "d"+r});
+		    revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
+		    var build = ''
+		    for(l in out[rl]){
+			if(tc.iconStatus[out[rl][l].source] == 1){
+			    revDiv.append($('<li>')
+					  .append($('<img>',{ style: "display:inline;"
+							      , height:"16"
+							      , width:"16"
+			       				      ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
+						 )
+					  .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
+							     , target: "_blank"
+							     , href: out[rl][l].link
+							     , text: tc.htmlDecode(out[rl][l].title)}))
+					  .append(' links to ')
+					  .append($('<a>', { href: out[rl][l].reverse_link
+							     , text: 'this page'})));
+			} else {
+			    revDiv.append($('<li>')
+					  .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
+							     , target: "_blank"
+							     , href: out[rl][l].link
+							     , text: tc.htmlDecode(out[rl][l].title)}))
+					  .append(' links to ')
+					  .append($('<a>', { href: out[rl][l].reverse_link
+							     , text: 'this page'})));
+			}
+		    }
 		    var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 		    var resDiv = document.createElement("div");
-		    var r = Math.floor(Math.random() * 100000);
 		    resDiv.setAttribute("id",r);
 		    resDiv.setAttribute("subv",true);
 		    resDiv.style.display = "inline";
@@ -373,16 +382,37 @@ tc.googlePlaces = function(request){
 	d = data[r];
 	if(d.type == 'safe'){
 	    icon = 'greenCheck';
-	    title = '<img src="'+ tc.icons['greenCheck'] + '"> Patronize This Hotel';
-	    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>';
+	    title = ' Patronize This Hotel';
+	    blurb = $('<div>')
+		.append($('<b>')
+			.append($('<a>', {tcstat:tcstat + d.id
+					  , target:"_blank"
+					  , href: "http://www.hotelworkersrising.org/"
+					  , text: "Hotel Workers Rising"
+					 })))
+		.append(' - Recommends patronizing this hotel');
 	} else if(d.type == 'boycott' || d.type == 'strike'){
 	    icon = 'redCirc';
-	    title = '<img src="'+ tc.icons['redCirc'] + '"> Boycott This Hotel';
-	    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>';
+	    title = ' Boycott This Hotel';
+	    blurb = $('<div>')
+		.append($('<b>')
+			.append($('<a>', {tcstat:tcstat + d.id
+					  , target:"_blank"
+					  , href: "http://www.hotelworkersrising.org/"
+					  , text: "Hotel Workers Rising"
+					 })))
+		.append(' - Recommends boycotting this hotel');
 	} else if(d.type == 'risky'){
 	    icon = 'infoI';
 	    title = 'Risk of Labor Dispute At This Hotel';
-	    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>';
+	    blurb = $('<div>')
+		.append($('<b>')
+			.append($('<a>', {tcstat:tcstat + d.id
+					  , target:"_blank"
+					  , href: "http://www.hotelworkersrising.org/"
+					  , text: "Hotel Workers Rising"
+					 })))
+		.append(' advises that there is a risk of a labor dispute at this hotel.');
 	}
 
 	if(icon){

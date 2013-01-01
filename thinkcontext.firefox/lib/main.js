@@ -63,7 +63,6 @@ pageMod.PageMod({
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
-	    //console.log(request.kind);
 	    switch(request.kind){
 	    case 'resource':
 		request.data = iconDir;

@@ -1,22 +1,47 @@
 tc.googlePlaceResponse = function(request){
-
     var sub = {
-	place: function(data,type){
+	place: function(d,type){
 	    var title;
-	    var tcstat = 'gpp' + data.id;
-	    var message;
-	    if(type == 'boycott'){
-		title = '<img src="'+ tc.icons['redCirc'] + '"> Boycott';
-	    message = '<a tcstat="'+tcstat+'" target="_blank" href="http://www.hotelworkersrising.org">Hotel Workers Rising</a> recommends boycotting this establishment';
-	    } else if(type == 'patronize'){
-		title = '<img src="'+ tc.icons['greenCheck'] + '"> Patronize';
-		message = '<a tcstat="'+tcstat+'" target="_blank" href="http://www.hotelworkersrising.org">Hotel Workers Rising</a> recommends patronizing this establishment';
-	    } else if(type == 'risky'){
-		title = 'Risky';
-		message = '<a tcstat="'+tcstat+'" target="_blank" href="http://www.hotelworkersrising.org">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this establishment';
+	    var r = Math.floor(Math.random() * 100000);    
+	    var tcstat = 'gpp' + d.id;
+	    var blurb;
+	    var icon;
+	    if(d.type == 'safe'){
+		icon = 'greenCheck';
+		title = ' Patronize This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' - Recommends patronizing this hotel');
+	    } else if(d.type == 'boycott' || d.type == 'strike'){
+		icon = 'redCirc';
+		title = ' Boycott This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' - Recommends boycotting this hotel');
+	    } else if(d.type == 'risky'){
+		icon = 'infoI';
+		title = 'Risk of Labor Dispute At This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' advises that there is a risk of a labor dispute at this hotel.');
 	    }
 	    
-	    tc.popDialog(title,message,true);
+	    tc.popDialog(title,blurb,r,true);
 	}
 	, placeboycott: function(data){
 	    sub.place(data,'boycott');

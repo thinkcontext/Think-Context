@@ -53,58 +53,43 @@ function queryAsync(statement, parameters, success){
     sqrObject.data = new Array();
     sqrObject.cols = 0;
     sqrObject.rows = 0;
+    
     let query = connection.createStatement(statement);
     for(var p in parameters){
     	query.params[p] = parameters[p];
     }
-
     query.executeAsync({
         handleResult:function(resultSet){
-            for(var row=resultSet.getNextRow();row;row=resultSet.getNextRow()){
+	    for(var row=resultSet.getNextRow();row;row=resultSet.getNextRow()){
                 sqrObject.cols = row.numEntries;
                 let dataRow = new Array(sqrObject.cols);
                 for(var i=0;i<sqrObject.cols;i++){
-                    dataRow[i] = row.getResultByIndex(i);
+		    dataRow[i] = row.getResultByIndex(i);
                 }
                 sqrObject.data[sqrObject.rows] = dataRow;
                 sqrObject.rows++;
-            }
+	    }
         },
         handleError:function(error){
-            success(null,error);
+	    success(null,error);
         },
         handleCompletion:function(reason){
-            success(sqrObject,reason);
+	    success(sqrObject,reason);
         }
     });
+    
 }
 
-function queryAsyncMany(statements,success,fail){
-    /*sqrObject have the information about the result of query*/
-    let queries = [];
-    for(var s in statements){
-	let query = connection.createStatement(statements[s]);
-	queries.push(query);
-    }
-    connection.executeAsync(queries,queries.length
-			    ,{ handleCompletion: 
+// execute a batch of statements created with exported createStatement
+exports.executeMany = function executeMany(statements, success, fail){
+    connection.executeAsync(statements,statements.length
+			    , {handleCompletion: 
 			       function(reason){
 				   if(reason == 0){ 
 				       success() }
 			       }
 			       , handleError: function(error){            console.error(error.name+' - '+error.message); fail(); }
-			       , handleResult: function(resultSet){}
-			     });
-}
-
-exports.executeMany = function executeMany(statements, success, fail){
-    try{
-	queryAsyncMany(statements,success,fail);
-    }
-    catch(e){
-	console.error(e.name + ' - ' +e.message);
-	console.error(connection.lastErrorString);
-    }
+			       , handleResult: function(resultSet){} });   
 }
 
 /*global method to connect with sqlite*/
@@ -129,6 +114,7 @@ exports.execute = function execute(statement){
         }
         catch(e){
             console.error(e.name+' - '+e.message);
+	    console.error(connection.lastErrorString);
         }
     }
 }
@@ -138,3 +124,6 @@ exports.close = function close(){
     connection = null;
 }
 
+exports.createStatement = function(statement){   
+    return connection.createStatement(statement);
+}

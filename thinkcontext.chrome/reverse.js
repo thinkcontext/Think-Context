@@ -4,25 +4,48 @@ tc.registerResponse('reverse',
 			var x;
 			var found = 0;
 			var ex = false;
-			var text = '';
+			var z = Math.floor(Math.random() * 100000);
+			var revDiv = $('<div>',{id:z} )
 			var tcstat = 'rrr';
 			if(data[0]['s'] == 'exact'){
 			    ex = true;
-			    text += "<b>This link was mentioned in</b><br> ";
+			    revDiv.append($('<b>', {text:"This link was mentioned in"})).append($('<br>'));
 			} 
 			for(x in data){
 			    if(data[x]['s'] != 'exact' && found == 0){
-				text += "<b>Other links to this site</b><br> ";
+				revDiv.append($('<b>', {text:"Other links to this site"})).append($('<br>'));
 				found = 1;	
 			    }
-			    text += "<li>";
-			    if(tc.iconStatus[data[x].source] == 1){
-				text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + data[x].source + ".ico"+'">';
-			    }
 			    
-			    text += ' <a tcstat="' + tcstat + data[x].id + '" target="_blank" href="' + data[x].link + '">'+ tc.htmlDecode(data[x].title) + '</a> by <a target="_blank" href="' + data[x].source_link + '">' + data[x].name + '</a> links to <a href="'+ data[x].reverse_link + '">this page</a><br>';
+			    if(tc.iconStatus[data[x].source] == 1){
+
+				revDiv.append($('<li>')
+					      .append($('<img>',{ style: "display:inline;"
+								  , height:"16"
+								  , width:"16"
+			       					  ,src: tc.iconDir + "/" + data[x].source + ".ico"})
+						     )
+					      .append($('<a>', { tcstat: tcstat + data[x].id 
+								 , target: "_blank"
+								 , href: data[x].link
+								 , text: tc.htmlDecode(data[x].title)}))
+					      .append(' links to ')
+					      .append($('<a>', { href: data[x].reverse_link
+								 , text: 'this page'})));
+				
+			    } else {
+				revDiv.append($('<li>')
+					      .append($('<a>', { tcstat: tcstat + data[x].id 
+								 , target: "_blank"
+								 , href: data[x].link
+								 , text: tc.htmlDecode(data[x].title)}))
+					      .append(' links to ')
+					      .append($('<a>', { href: data[x].reverse_link
+								 , text: 'this page'})));
+				
+			    }
 			}
-			tc.popDialog('Progressive Trackback', text, ex);				  
+			tc.popDialog('Progressive Trackback', revDiv, z,ex);
 		    });
 tc.registerResponse('reversehome', tc.reverseResponse);
 tc.sendMessage(

@@ -2,6 +2,21 @@ var sql = require("sqlite");
 var Request = require('request').Request;
 var ss = require("simple-storage");
 var timer = require("timer");
+function bindNums(x){
+    var ret = [];
+    for(var i = 0; i<x; i++){
+	ret.push(":" + i.toString());
+    }
+    return ret.join(',');    
+}
+
+function bindArr(arr){
+    var ret = {};
+    for(var i = 0; i<arr.length; i++ ){
+	ret[i.toString()] = arr[i];
+    }
+    return ret;    
+}
 
 tc = {
     dbName: 'thinkcontext'
@@ -157,10 +172,11 @@ tc = {
 	}
     }
     , checkNoTable: function(table){
-	sql.execute("select count(*) from :table"
-		    ,{table:table}
+	//console.log("checknotable");
+	sql.execute("select count(*) from " + table
+		    ,{}
 		    , tc.onSuccess
-		    , function(e,stmt){ tc.loadTable(table)});
+		    , function(e,stmt){ tc.loadTable(table)});	
     }
     , updateAllTables: function(){
 	for(var t in tc.tables){
@@ -177,23 +193,24 @@ tc = {
 	}
 
 	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
-	//console.log(query);
 	Request({
 	    url: query
 	    ,onComplete: function(response){
 
 		var dataArray = CSVToArray(response);
 		var queries = [];
+		var q;
 		if(dataArray.length > 1){ // see if there's any data to insert
 		    dataArray = dataArray.slice(1);
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
-			    deleteTxt = "DELETE FROM " + table + " WHERE id = '"+dataArray[r] +"'";
-			    queries.push(deleteTxt);
+			    deleteTxt = "DELETE FROM " + table + " WHERE id = :id ";
+			    q = sql.createStatement(deleteTxt);
+			    q.params.id = dataArray[r];
+			    queries.push(q);
 			}
 		    }
-		    //console.log(table);
-		    sql.executeMany(queries, function(){tc.setLocalDeleteTime(table) }, tc.onError);
+		    sql.executeMany(queries, function(){tc.setLocalDeleteTime(table) });
 		}
 	    }
 	}).get();
@@ -204,22 +221,27 @@ tc = {
 	}
 
 	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + " limit 100000");
-	//console.log(query);
 	Request({
 	    url: query
 	    ,onComplete: function(response){
 		var dataArray = CSVToArray(response.text);
 		var insertTxt;
 		var queries = [];
+		var q;
+		var b;
 		if(dataArray.length > 1){ // see if there's any data to insert
 		    dataArray = dataArray.slice(1);
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
-			    insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
-			    queries.push(insertTxt);
+			    insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[r].length) + ' )';
+			    q = sql.createStatement(insertTxt);
+			    b = bindArr(dataArray[r]);
+			    for(var i in b){
+				q.params[i] = b[i];
+			    }
+			    queries.push(q);
 			}
 		    }
-		    //console.log(table);
 		    sql.executeMany(queries
 				    , function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table) }
 				    , tc.onError
@@ -240,25 +262,26 @@ tc = {
 		//		    console.log(dataArray);
 		var len = tc.tableFieldsLength(table);
 		if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
-		    var dropTxt = "DROP TABLE IF EXISTS :table";
-		    var createTxt = "CREATE TABLE :table ( " + bindNums(tc.tableFieldsTypes(table)) + " )";
-		    //console.log(dropTxt);
-		    //console.log(createTxt);
-		    sql.execute(dropTxt, {table:table});
-		    var b = bindArr(tc.tableFieldsTypes(table));
-		    var b['table'] = table;
-		    sql.execute(createTxt, b);
+		    var dropTxt = "DROP TABLE IF EXISTS " + table;
+		    var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
+		    sql.execute(dropTxt);
+		    sql.execute(createTxt);
+
 		    var insertTxt = '';
 		    dataArray = dataArray.slice(1);
+		    var b;
+		    var q;
 		    for (var r in dataArray){
 			if(dataArray[r].length == len){
-			    insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( '" + dataArray[r].map(function(x){ return x.replace(/'/g,"''");}).join("', '") + "') " ;
-			    //console.log(insertTxt);
-			    queries.push(insertTxt);
-			    
+			    insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[r].length) + ' )';
+			    q = sql.createStatement(insertTxt);
+			    b = bindArr(dataArray[r]);
+			    for(var i in b){
+				q.params[i] = b[i];
+			    }
+			    queries.push(q);
 			}
 		    }
-		    //console.log(table);
 		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table) }, tc.onError);
 		}
 	    }
@@ -270,7 +293,7 @@ tc = {
 	    request.data = [];
 	    for(var z = 0; z<r.data.length;z++){
 		var i = 0;
-		var tr = {}
+		var tr = {};
 		for( var f in fields){
 	    	    tr[fields[f]] = r.data[z][i];
 	    	    i++;
@@ -312,16 +335,18 @@ tc = {
 		keys.push(request.data[i].key);
 	    }
 	    
-	    var selTxt = "SELECT * FROM results WHERE key in ( '" + keys.join("','") + "') or '" + keys.join("' like key||'/%' or '") + "' like key||'/%' or '"+ keys.join("' like '%.'||key or '") + "' like '%.'||key or '" + keys.join("' like '%.'||key||'/%' or '") + "' like '%.'||key||'/%'";
+	    var b = bindNums(keys.length);
+	    var c = bindNums(keys.length).split(',');
+	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%'";
 	    request.orig_data = request.data;
 	    sql.execute(selTxt
+			, bindArr(keys)
 			, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));}
 			,tc.onError);
 	}
     }
     
     , lookupPlace: function(key,request,callback){
-	console.log("lookupPlace");
 	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = :key and p.type = :type LIMIT 1";
 	sql.execute(selTxt
 		    ,{key: key, type:request.type}
@@ -332,11 +357,14 @@ tc = {
     , lookupPlaces: function(key,request,callback){
 
 	var data = request.data;
-	var i;
-	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
+	var inStmt = "(" + bindNums(data.map(function(x){ return x.cid }).length) + ")";
+	var i = bindArr(data.map(function(x){ return x.cid }));
+	i['type'] = request.type
 
-	var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = '" + request.type + "'";
-	sql.execute(selTxt, function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);});
+	var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = :type " ;
+	sql.execute(selTxt
+		    , i
+		    , function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);});
     }
 
     , lookupReverse: function(key,request,callback){
@@ -351,7 +379,6 @@ tc = {
 			      ,host1 : 'http://' + host + '/%'
 			      ,host2 : 'http://%.' + host + '/%'}
 			    , function(result,status){
-				console.log(result);
 				tc.onLookupManySuccess(result,status,request
 						       ,callback
 						       ,['id','s','title','link','reverse_link','name','source','source_link'])}
@@ -359,9 +386,7 @@ tc = {
     }
 
     , lookupReverseHome: function(key,request,callback){
-	console.log(key);
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + bindNums(key.length) + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
-	
+	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + bindNums(key.length) + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	request.key = '';
 	sql.execute(selTxt, bindArr(key),function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link'])},tc.onError);
     }
@@ -375,7 +400,7 @@ tc = {
 	//console.log("sendStat " + key);
 	Request({url: 'http://thinkcontext.org/s/?' + key}).get();
     }
-};
+ };
 
 tc.connectDB();
 tc.loadAllTables();
@@ -485,18 +510,3 @@ function getReverseHost(url){
     return null;
 }
 
-bindNums = function(x){
-    var ret = []
-    for(var i = 0; i<x; i++){
-	ret.push(":" + i.toString());
-    }
-    return ret.join(',');    
-}
-
-bindArr = function(arr){
-    var ret = {}
-    for(var i = 0; i<arr.length; i++ ){
-	ret[i.toString()] = arr[i];
-    }
-    return ret;    
-}

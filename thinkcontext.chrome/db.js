@@ -33,18 +33,18 @@ tc = {
 	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
 	    , version: '0.06'
 	}
-	, subverts: { 
-	    fields: {
-		id: 'integer'
-		, sdid: 'integer'
-		, txt: 'text'
-		, location: 'text'
-		, bin_op: 'text'
+	// , subverts: { 
+	//     fields: {
+	// 	id: 'integer'
+	// 	, sdid: 'integer'
+	// 	, txt: 'text'
+	// 	, location: 'text'
+	// 	, bin_op: 'text'
 		
-	    }
-	    , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
-	    , version: '0.02'
-	}
+	//     }
+	//     , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
+	//     , version: '0.02'
+	// }
 	, place: {
 	    fields: {
 		id: 'integer'
@@ -344,18 +344,18 @@ tc = {
     }
 
 
-    , lookupSubvert: function(key, request, callback){
-	tc.db.transaction(
-	    function(tx){
-		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
-		tx.executeSql(selTxt
-			      , [key]
-			      , function(tx,r){ 
-				  tc.onLookupSuccessMany(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    });
-    }
+    // , lookupSubvert: function(key, request, callback){
+    // 	tc.db.transaction(
+    // 	    function(tx){
+    // 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
+    // 		tx.executeSql(selTxt
+    // 			      , [key]
+    // 			      , function(tx,r){ 
+    // 				  tc.onLookupSuccessMany(tx,r,request, callback)
+    // 			      }
+    // 			      , tc.onError);
+    // 	    });
+    // }
 
     , sendStat: function(key){
 	$.get('http://thinkcontext.org/s/?' + key);
