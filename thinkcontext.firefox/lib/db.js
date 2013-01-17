@@ -158,8 +158,8 @@ tc = {
     }
     
     , onError: function(tx,e){
-	//console.log("db error: " + e.message);
-	// console.log("fail");
+	console.error("db error: " + e.message);
+	console.error("fail");
     }
     
     , loadAllTables: function(){
@@ -192,25 +192,25 @@ tc = {
 	    dateClause = "and dm >= " + secs;
 	}
 
-	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
-	Request({
-	    url: query
+	var delQuery  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
+	console.error("del "+delQuery);
+	var delReq = Request({
+	    url: delQuery
 	    ,onComplete: function(response){
-
-		var dataArray = CSVToArray(response);
-		var queries = [];
-		var q;
+		console.error('update del table ' + table);
+		console.error(delQuery);
+		var dataArray = CSVToArray(response.text);
+		var params = [];
 		if(dataArray.length > 1){ // see if there's any data to insert
 		    dataArray = dataArray.slice(1);
+		    deleteTxt = "DELETE FROM " + table + " WHERE id = :id ";
 		    for (var r in dataArray){
-			if(dataArray[r].length == len){
-			    deleteTxt = "DELETE FROM " + table + " WHERE id = :id ";
-			    q = sql.createStatement(deleteTxt);
-			    q.params.id = dataArray[r];
-			    queries.push(q);
+			if(dataArray[r] != ' '  && dataArray[r] != ''){
+			    params.push({id:Number(dataArray[r])});
 			}
 		    }
-		    sql.executeMany(queries, function(){tc.setLocalDeleteTime(table) });
+		    if(params.length > 0)
+			sql.executeMany(deleteTxt, params, function(){console.error("del succeed");tc.setLocalDeleteTime(table); });
 		}
 	    }
 	}).get();
@@ -219,38 +219,42 @@ tc = {
 	if(secs=tc.checkLocalAddTime(table)){
 	    dateClause = "and da >= " + secs;
 	}
-
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + " limit 100000");
-	Request({
-	    url: query
+	
+	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + " limit 100000");
+	console.error("ins " + insQuery);
+	var insReq = Request({
+	    url: insQuery
 	    ,onComplete: function(response){
 		var dataArray = CSVToArray(response.text);
 		var insertTxt;
-		var queries = [];
-		var q;
-		var b;
+		var params = [];
+		var s;
 		if(dataArray.length > 1){ // see if there's any data to insert
 		    dataArray = dataArray.slice(1);
+
+		    insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[0].length) + ' )';
 		    for (var r in dataArray){
-			if(dataArray[r].length == len){
-			    insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[r].length) + ' )';
-			    q = sql.createStatement(insertTxt);
-			    b = bindArr(dataArray[r]);
-			    for(var i in b){
-				q.params[i] = b[i];
-			    }
-			    queries.push(q);
+		    	if(dataArray[r].length == len){
+			    s = {};
+			    for(var j in dataArray[r]){
+		    		s[j] = dataArray[r][j]
+		    	    }
+			    params.push(s);
 			}
 		    }
-		    sql.executeMany(queries
-				    , function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table) }
-				    , tc.onError
-				   );
+		    if(params.length > 0)
+			sql.executeMany(insertTxt
+					, params
+		    			, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table); console.error('succeed ' + table);}
+		    		    , tc.onError
+		    		       );
+		    
 		}
 	    }
-	}).get();
+	}
+			    ).get();
     }
-
+    
     , loadTable: function(table){
 	var query;
 	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + " limit 100000");
@@ -267,23 +271,30 @@ tc = {
 		    sql.execute(dropTxt);
 		    sql.execute(createTxt);
 
-		    var insertTxt = '';
-		    dataArray = dataArray.slice(1);
-		    var b;
-		    var q;
-		    for (var r in dataArray){
-			if(dataArray[r].length == len){
-			    insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[r].length) + ' )';
-			    q = sql.createStatement(insertTxt);
-			    b = bindArr(dataArray[r]);
-			    for(var i in b){
-				q.params[i] = b[i];
+		    var insertTxt;
+		    var params = [];
+		    var s;
+		    if(dataArray.length > 1){ // see if there's any data to insert
+			dataArray = dataArray.slice(1);
+
+			insertTxt = "INSERT OR REPLACE INTO " + table + " VALUES ( " + bindNums(dataArray[0].length) + ' )';
+			for (var r in dataArray){
+		    	    if(dataArray[r].length == len){
+				s = {};
+				for(var j in dataArray[r]){
+		    		    s[j] = dataArray[r][j]
+		    		}
+				params.push(s);
 			    }
-			    queries.push(q);
+			}
+			if(params.length > 0){
+			    sql.executeMany(insertTxt
+					    , params
+					    ,function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table); }
+		    			    , tc.onError);
 			}
 		    }
-		    sql.executeMany(queries, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table);tc.setLocalDeleteTime(table) }, tc.onError);
-		}
+		}		
 	    }
 	}).get();
     }
@@ -403,11 +414,11 @@ tc = {
  };
 
 tc.connectDB();
-tc.loadAllTables();
-//tc.updateTable("reverse");
-timer.setTimeout(tc.updateAllTables,10000); // do at idle?
-timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
-timer.setInterval(tc.updateAllTables, 10870000);
+//tc.loadAllTables();
+tc.updateTable("reverse");
+//timer.setTimeout(tc.updateAllTables,10000); // do at idle?
+//timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
+//timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupResults = tc.lookupResults;

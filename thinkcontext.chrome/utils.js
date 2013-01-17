@@ -83,8 +83,9 @@ ctj:	1,
 innocence:	1,
 altoarizona:	1,
 dcfpi:	1,
-feministing:	1,
-nationb:	1
+		 feministing:	1,
+		 nationb:	1,
+		 greena: 1
 };
 
 tc.insertPrev = function(n,iconName,r,title,theDiv,pre,post){
@@ -327,6 +328,8 @@ tc.reverseResponse = function(request){
 							     , target: "_blank"
 							     , href: out[rl][l].link
 							     , text: tc.htmlDecode(out[rl][l].title)}))
+					  .append(' by ')
+					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].source_name}))
 					  .append(' links to ')
 					  .append($('<a>', { href: out[rl][l].reverse_link
 							     , text: 'this page'})));
@@ -336,6 +339,8 @@ tc.reverseResponse = function(request){
 							     , target: "_blank"
 							     , href: out[rl][l].link
 							     , text: tc.htmlDecode(out[rl][l].title)}))
+					  .append(' by ')
+					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].source_name}))
 					  .append(' links to ')
 					  .append($('<a>', { href: out[rl][l].reverse_link
 							     , text: 'this page'})));

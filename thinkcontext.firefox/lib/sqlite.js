@@ -81,15 +81,32 @@ function queryAsync(statement, parameters, success){
 }
 
 // execute a batch of statements created with exported createStatement
-exports.executeMany = function executeMany(statements, success, fail){
-    connection.executeAsync(statements,statements.length
-			    , {handleCompletion: 
-			       function(reason){
-				   if(reason == 0){ 
-				       success() }
-			       }
-			       , handleError: function(error){            console.error(error.name+' - '+error.message); fail(); }
-			       , handleResult: function(resultSet){} });   
+exports.executeMany = function executeMany(txt, params, success, fail){
+    try{
+	var statement = connection.createStatement(txt);
+	var ps = statement.newBindingParamsArray();
+	for(var i = 0; i < params.length ; i++){
+	    var bp = ps.newBindingParams();
+	    for(var x in params[i]){
+		bp.bindByName(x,params[i][x]);
+	    }
+	    ps.addParams(bp);
+	}
+	statement.bindParameters(ps);
+	statement.executeAsync({handleCompletion: 
+				function(reason){
+				    if (reason != Ci.mozIStorageStatementCallback.REASON_FINISHED)
+					console.error("Query canceled or aborted!");
+				    if(reason == 0){ 
+					success() }
+				}
+				, handleError: function(error){            console.error(error.name+' - '+error.message); 	    console.error(connection.lastErrorString); fail(); }
+			    , handleResult: function(resultSet){} });   
+    }    catch(e){
+        console.error(e.name+' - '+e.message);
+	console.error(connection.lastErrorString);
+ 	
+    }
 }
 
 /*global method to connect with sqlite*/

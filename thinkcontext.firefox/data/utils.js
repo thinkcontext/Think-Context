@@ -352,6 +352,8 @@ if (window.frameElement === null){
 								 , target: "_blank"
 								 , href: out[rl][l].link
 								 , text: tc.htmlDecode(out[rl][l].title)}))
+					      .append(' by ')
+					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
 					      .append(' links to ')
 					      .append($('<a>', { href: out[rl][l].reverse_link
 								 , text: 'this page'})));
@@ -361,6 +363,8 @@ if (window.frameElement === null){
 								 , target: "_blank"
 								 , href: out[rl][l].link
 								 , text: tc.htmlDecode(out[rl][l].title)}))
+					      .append(' by ')
+					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
 					      .append(' links to ')
 					      .append($('<a>', { href: out[rl][l].reverse_link
 								 , text: 'this page'})));
