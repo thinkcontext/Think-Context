@@ -84,8 +84,8 @@ if (window.frameElement === null){
 		     altoarizona:	1,
 		     dcfpi:	1,
 		     feministing:	1,
-		     nationb:	1
-		    };
+		     nationb:	1,
+		     greena:	1	    };
     
     self.postMessage({'kind': 'resource'});
     tc.getReverseHost = function(url){

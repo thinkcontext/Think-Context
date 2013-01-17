@@ -85,7 +85,8 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		     altoarizona:	1,
 		     dcfpi:	1,
 		     feministing:	1,
-		     nationb:	1
+		     nationb:	1,
+		     greena:	1
 		    };
 
     tc.insertPrev = function(n,iconName,title,text,pre,post){

@@ -193,12 +193,9 @@ tc = {
 	}
 
 	var delQuery  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
-	console.error("del "+delQuery);
 	var delReq = Request({
 	    url: delQuery
 	    ,onComplete: function(response){
-		console.error('update del table ' + table);
-		console.error(delQuery);
 		var dataArray = CSVToArray(response.text);
 		var params = [];
 		if(dataArray.length > 1){ // see if there's any data to insert
@@ -210,7 +207,7 @@ tc = {
 			}
 		    }
 		    if(params.length > 0)
-			sql.executeMany(deleteTxt, params, function(){console.error("del succeed");tc.setLocalDeleteTime(table); });
+			sql.executeMany(deleteTxt, params, function(){tc.setLocalDeleteTime(table); });
 		}
 	    }
 	}).get();
@@ -221,7 +218,6 @@ tc = {
 	}
 	
 	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + " limit 100000");
-	console.error("ins " + insQuery);
 	var insReq = Request({
 	    url: insQuery
 	    ,onComplete: function(response){
@@ -245,7 +241,7 @@ tc = {
 		    if(params.length > 0)
 			sql.executeMany(insertTxt
 					, params
-		    			, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table); console.error('succeed ' + table);}
+		    			, function(){tc.setLocalTableVersion(table);tc.setLocalAddTime(table); }
 		    		    , tc.onError
 		    		       );
 		    
@@ -414,11 +410,10 @@ tc = {
  };
 
 tc.connectDB();
-//tc.loadAllTables();
-tc.updateTable("reverse");
-//timer.setTimeout(tc.updateAllTables,10000); // do at idle?
-//timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
-//timer.setInterval(tc.updateAllTables, 10870000);
+tc.loadAllTables();
+timer.setTimeout(tc.updateAllTables,10000); // do at idle?
+timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
+timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupResults = tc.lookupResults;
