@@ -88,14 +88,12 @@ if (window.frameElement === null){
 	    }
 	    
 	    tc.registerResponse('link', function(request){
-		console.error('link response');
 		$("[sid=" + request.sid +"]").map(function(){
 		    this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false);
 		    tc.sub[request.data.func](this,request.key,request.data);});
 	    });
 
 	    tc.registerResponse('links', function(request){
-		console.error('links response');
 		var data = request.data;
 		var orig = request.orig_data;
 		var out = {};
@@ -199,7 +197,6 @@ if (window.frameElement === null){
 	}
 	,  examineResults: function(){
 	    
-	    console.error('examineresults');
 	    // place page in an lclbox brief results
 	    // eg "westin dc"
 	    var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").map(
@@ -218,7 +215,7 @@ if (window.frameElement === null){
 	    );
 
 	    if(urlmap){
-		console.error(jQuery.makeArray(urlmap));
+		//console.error(jQuery.makeArray(urlmap));
 		tc.sendMessage({'kind': 'places'
 				,'type': 'google'
 				,'subtype': 'gs-cid'
