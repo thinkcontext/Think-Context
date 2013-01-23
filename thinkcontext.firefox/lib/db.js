@@ -502,13 +502,27 @@ function CSVToArray( strData, strDelimiter ){
 function getReverseHost(url){
     var host;
     var ar;
+    var tld;
     if(host = url.split('/')[2]){
 	ar = host.split('.');
 	if(ar[0] == 'www'){
 	    ar.shift();
 	}
+	tld = ar[ar.length - 1];
 	if(ar.length <= 2){
 	    return ar.join('.')
+	} else if((tld == 'com'
+		   || tld == 'net'
+		   || tld == 'gov'
+		   || tld == 'edu'
+		   || tld == 'org')
+		  && !(tld == 'com' 
+		       && (ar[ar.length - 2] == 'patch'
+			   || ar[ar.length - 2] == 'cbslocal'
+			   || ar[ar.length - 2] == 'curbed'
+			   || ar[ar.length - 2] == 'craigslist')
+		      )){
+	    return ar.slice(ar.length - 2).join('.')
 	} else {
 	    return ar.slice(ar.length - 3).join('.')
 	}
