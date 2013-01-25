@@ -360,6 +360,20 @@ tc = {
     , sendStat: function(key){
 	$.get('http://thinkcontext.org/s/?' + key);
     }
+
+    , urlResolve: function(request,callback){
+	console.log('urlResolve');
+	console.log(request);
+	$.ajax({url: request.url
+		,type: "HEAD"
+		,success: function(response) {
+		    console.log(response);
+		    request['finalUrl'] = response.finalUrl;
+		    callback(request);
+		}
+	       });
+	
+    }
 };
 
 

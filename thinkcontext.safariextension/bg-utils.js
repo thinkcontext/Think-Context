@@ -99,9 +99,10 @@ function getReverseHost(url){
 		   || tld == 'org')
 		  && !(tld == 'com' 
 		       && (ar[ar.length - 2] == 'patch'
-			    || ar[ar.length - 2] == 'cbslocal'
-			    || ar[ar.length - 2] == 'curbed'
-			    || ar[ar.length - 2] == 'craigslist')
+			   || ar[ar.length - 2] == 'cbslocal'
+			   || ar[ar.length - 2] == 'curbed'
+			   || ar[ar.length - 2] == 'curbed'
+			   || ar[ar.length - 2] == 'craigslist')
 		       )){
 	    return ar.slice(ar.length - 2).join('.')
 	} else {

@@ -26,6 +26,9 @@ function onRequest(request, sender, callback) {
     case 'sendstat':
         tc.sendStat(request.key);
         break;
+    case 'urlresolve':
+	tc.urlResolve(request, callback);
+	break;
     }
 };
 

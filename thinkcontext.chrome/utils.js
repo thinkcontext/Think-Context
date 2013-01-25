@@ -267,6 +267,7 @@ tc.intersect_safe = function(a, b)
 }
 
 tc.onResponse = function(request){
+    console.log(request);
     tc.responses[request.kind](request);
 }
 
@@ -307,7 +308,7 @@ tc.reverseResponse = function(request){
     var tcstat = 'rrh';
     var jsearch = "href";
     if(tc.reverseResponseTwit == 1)
-	jsearch = 'data-ultimate-url';
+	jsearch = 'data-expanded-url';
     for(var rl in out){
 	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
@@ -329,7 +330,7 @@ tc.reverseResponse = function(request){
 							     , href: out[rl][l].link
 							     , text: tc.htmlDecode(out[rl][l].title)}))
 					  .append(' by ')
-					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].source_name}))
+					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
 					  .append(' links to ')
 					  .append($('<a>', { href: out[rl][l].reverse_link
 							     , text: 'this page'})));
@@ -340,7 +341,7 @@ tc.reverseResponse = function(request){
 							     , href: out[rl][l].link
 							     , text: tc.htmlDecode(out[rl][l].title)}))
 					  .append(' by ')
-					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].source_name}))
+					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
 					  .append(' links to ')
 					  .append($('<a>', { href: out[rl][l].reverse_link
 							     , text: 'this page'})));

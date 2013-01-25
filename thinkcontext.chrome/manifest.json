@@ -5,90 +5,95 @@
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
     "web_accessible_resources": ["icons/350.ico",
-"icons/acrj.ico",
-"icons/alter.ico",
-"icons/altoarizona.ico",
-"icons/amazonwatch.ico",
-"icons/bitch.ico",
-"icons/bust.ico",
-"icons/ccan.ico",
-"icons/cepr.ico",
-"icons/change.ico",
-"icons/climprog.ico",
-"icons/cmj.ico",
-"icons/color.ico",
-"icons/ctj.ico",
-"icons/dcfpi.ico",
-"icons/dn.ico",
-"icons/dnb.ico",
-"icons/dom.ico",
-"icons/dwn.ico",
-"icons/eff.ico",
-"icons/ej.ico",
-"icons/fair.ico",
-"icons/feministing.ico",
-"icons/fmc.ico",
-"icons/fp.ico",
-"icons/fpif.ico",
-"icons/fww.ico",
-"icons/ggw.ico",
-"icons/greena.ico",
-"icons/greenCheck.png",
-"icons/greenG.png",
-"icons/grist.ico",
-"icons/infoI.png",
-"icons/innocence.ico",
-"icons/ips.ico",
-"icons/itt.ico",
-"icons/jwj.ico",
-"icons/ledc.ico",
-"icons/mj.ico",
-"icons/narco.ico",
-"icons/nation.ico",
-"icons/nationb.ico",
-"icons/nrdc.ico",
-"icons/onearth.ico",
-"icons/otherwords.ico",
-"icons/pih.ico",
-"icons/pk.ico",
-"icons/pogo.ico",
-"icons/prog.ico",
-"icons/propublica.ico",
-"icons/qcopy.ico",
-"icons/redCirc.png",
-"icons/saveinter.ico",
-"icons/sbdc.ico",
-"icons/sbla.ico",
-"icons/sbnyc.ico",
-"icons/sbsf.ico",
-"icons/sob.ico",
-"icons/soj.ico",
-"icons/splc.ico",
-"icons/sr.png",
-"icons/tc-128.png",
-"icons/thinkprogress.ico",
-"icons/trackback-16.png",
-"icons/trackback-32.png",
-"icons/truthdig.ico",
-"icons/truthout.ico",
-"icons/ucs.ico",
-"icons/unitehere.ico"
-],	    
+				 "icons/acrj.ico",
+				 "icons/alter.ico",
+				 "icons/altoarizona.ico",
+				 "icons/amazonwatch.ico",
+				 "icons/bitch.ico",
+				 "icons/bust.ico",
+				 "icons/ccan.ico",
+				 "icons/cepr.ico",
+				 "icons/change.ico",
+				 "icons/climprog.ico",
+				 "icons/cmj.ico",
+				 "icons/color.ico",
+				 "icons/ctj.ico",
+				 "icons/dcfpi.ico",
+				 "icons/dn.ico",
+				 "icons/dnb.ico",
+				 "icons/dom.ico",
+				 "icons/dwn.ico",
+				 "icons/eff.ico",
+				 "icons/ej.ico",
+				 "icons/fair.ico",
+				 "icons/feministing.ico",
+				 "icons/fmc.ico",
+				 "icons/fp.ico",
+				 "icons/fpif.ico",
+				 "icons/fww.ico",
+				 "icons/ggw.ico",
+				 "icons/greena.ico",
+				 "icons/greenCheck.png",
+				 "icons/greenG.png",
+				 "icons/grist.ico",
+				 "icons/infoI.png",
+				 "icons/innocence.ico",
+				 "icons/ips.ico",
+				 "icons/itt.ico",
+				 "icons/jwj.ico",
+				 "icons/ledc.ico",
+				 "icons/mj.ico",
+				 "icons/narco.ico",
+				 "icons/nation.ico",
+				 "icons/nationb.ico",
+				 "icons/nrdc.ico",
+				 "icons/onearth.ico",
+				 "icons/otherwords.ico",
+				 "icons/pih.ico",
+				 "icons/pk.ico",
+				 "icons/pogo.ico",
+				 "icons/prog.ico",
+				 "icons/propublica.ico",
+				 "icons/qcopy.ico",
+				 "icons/redCirc.png",
+				 "icons/saveinter.ico",
+				 "icons/sbdc.ico",
+				 "icons/sbla.ico",
+				 "icons/sbnyc.ico",
+				 "icons/sbsf.ico",
+				 "icons/sob.ico",
+				 "icons/soj.ico",
+				 "icons/splc.ico",
+				 "icons/sr.png",
+				 "icons/tc-128.png",
+				 "icons/thinkprogress.ico",
+				 "icons/trackback-16.png",
+				 "icons/trackback-32.png",
+				 "icons/truthdig.ico",
+				 "icons/truthout.ico",
+				 "icons/ucs.ico",
+				 "icons/unitehere.ico"
+				],	    
     "icons": {
 	"128": "icons/tc-128.png"
     },
     "permissions": ["*://www.google.com/*"
-    		   ,"*://fusiontables.googleusercontent.com/*"
-    		   ,"*://thinkcontext.org/*"
-		   ,"*://yahoo.com/*"
-		   ,"*://goodsearch.com/*"
-        		    ],
+    		    ,"*://fusiontables.googleusercontent.com/*"
+    		    ,"*://thinkcontext.org/*"
+		    ,"*://yahoo.com/*"
+		    ,"*://goodsearch.com/*"
+		    ,"*://t.co/*"
+		    ,"*://bitly.com/*"
+		    ,"*://nyti.ms/*"
+		    ,"*://bit.ly/*"
+		    ,"*://goo.gl/*"
+        	   ],
     "background": {"scripts": ["jquery-1.8.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
 	{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-search.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
@@ -99,11 +104,11 @@
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
-	}
+	 }
 	,{  "matches": ["*://maps.google.com/*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-maps.js"]
-	}
+	 }
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
@@ -118,13 +123,10 @@
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://*/*"],
-	    "exclude_globs": ["*://www.google.com/*"
-			      ,"*://maps.google.com/maps/place*"
-			      ,"*://plus.google.com/*"
+	    "exclude_globs": ["*://mail.google.com/*"
+			      ,"*://www.google.com/*"
 			      ,"*://www.bing.com/search*"
-			      ,"*://search.yahoo.com/search*"
 			      ,"*://twitter.com/*"
-			      ,"*://maps.google.com/*"
 			     ] ,
 	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}

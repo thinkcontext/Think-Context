@@ -109,6 +109,7 @@ if (window.frameElement === null){
 			   && (ar[ar.length - 2] == 'patch'
 			       || ar[ar.length - 2] == 'cbslocal'
 			       || ar[ar.length - 2] == 'curbed'
+			       || ar[ar.length - 2] == 'curbed'
 			       || ar[ar.length - 2] == 'craigslist')
 			  )){
 		return ar.slice(ar.length - 2).join('.')
@@ -346,7 +347,7 @@ if (window.frameElement === null){
 	var tcstat = 'rrh';
 	var jsearch = "href";
 	if(tc.reverseResponseTwit == 1)
-	    jsearch = 'data-ultimate-url';
+	    jsearch = 'data-expanded-url';
 	for(var rl in out){
 	    $('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){

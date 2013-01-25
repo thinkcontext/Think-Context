@@ -1,4 +1,4 @@
-//console.log("google-search.js");
+console.log("google-search.js");
 
 tc.googleSearch = {
 
