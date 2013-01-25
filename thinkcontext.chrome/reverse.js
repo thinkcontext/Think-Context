@@ -1,4 +1,3 @@
-console.log('reverse');
 tc.reverse = {};
 tc.reverse.revGotResponse = 0;
 

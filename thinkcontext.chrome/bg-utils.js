@@ -112,7 +112,3 @@ function getReverseHost(url){
     }
     return null;
 }
-
-function arrayQuoteEscape(arr){
-    return arr.map(function(x){ return x.replace("'","''")})
-}

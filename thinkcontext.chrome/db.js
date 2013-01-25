@@ -328,14 +328,21 @@ tc = {
     }
 
     , lookupReverseHome: function(key,request,callback){
-	key = arrayQuoteEscape(key);
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in ('" + key.join("','") + "') group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
+	var parSt;
+	for(var i in key){
+	    if(i == 0)
+		parSt = "?";
+	    else 
+		parSt += ",?";
+	}
+	
+	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + parSt + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	request.key = '';
 	//	console.log(selTxt);
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(selTxt
-			      , []
+			      , key
 			      , function(tx,r){ 
 				  tc.onLookupSuccessMany(tx,r,request, callback)
 			      }
@@ -366,7 +373,10 @@ tc = {
 	console.log(request);
 	$.ajax({url: request.url
 		,type: "HEAD"
-		,success: function(response) {
+		, beforeSend: function( xhr ) {
+		    xhr.setRequestHeader('X-Requested-With', {toString: function(){ return ''; }});
+		}
+		, success: function(response) {
 		    console.log(response);
 		    request['finalUrl'] = response.finalUrl;
 		    callback(request);
@@ -375,5 +385,3 @@ tc = {
 	
     }
 };
-
-

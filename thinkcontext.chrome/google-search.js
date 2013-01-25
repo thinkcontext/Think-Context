@@ -1,5 +1,3 @@
-console.log("google-search.js");
-
 tc.googleSearch = {
 
     googlePreInsert: function(n){
