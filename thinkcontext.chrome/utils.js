@@ -307,7 +307,7 @@ tc.reverseResponse = function(request){
     var tcstat = 'rrh';
     var jsearch = "href";
     if(tc.reverseResponseTwit == 1)
-	jsearch = 'data-expanded-url';
+	jsearch = 'tcurl';
     for(var rl in out){
 	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
@@ -446,7 +446,6 @@ tc.sub.greenResult = function(n,key,data){
 		  ,r
 		  ,'Member of the Green Business Network'
 		  , d
-		  //		      ,'<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
 		  , null
 		  , null
 		 );

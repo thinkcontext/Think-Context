@@ -369,19 +369,27 @@ tc = {
     }
 
     , urlResolve: function(request,callback){
-	console.log('urlResolve');
-	console.log(request);
-	$.ajax({url: request.url
-		,type: "HEAD"
-		, beforeSend: function( xhr ) {
-		    xhr.setRequestHeader('X-Requested-With', {toString: function(){ return ''; }});
-		}
-		, success: function(response) {
-		    console.log(response);
-		    request['finalUrl'] = response.finalUrl;
-		    callback(request);
-		}
-	       });
+	var s = request.key.split('/');
+	if(s.length > 3){
+	    var domain = s[2];
+	    if(bitlyDomain(domain)){
+		$.get( request.key + '+'
+		       , function(r){
+			   var h = $(r).find('#item_title a');
+			   if(h.length > 0){
+			       request.url = h[0].href;
+			       callback(request);
+			   }
+		       }
+		     );
 	
+	    } else if(domain == 'goo.gl'){
+		$.getJSON('https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
+			  , function(data){
+			      request.url = data.longUrl;
+			      callback(request);
+			  });
+	    }
+	}
     }
 };

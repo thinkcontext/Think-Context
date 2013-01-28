@@ -1,7 +1,6 @@
 function onRequest(request, sender, callback) {
     var key = request.key;
     var data;
-    //console.log(request);
     switch(request.kind){
     case 'link': 
 	tc.lookupResult(key, request, callback);

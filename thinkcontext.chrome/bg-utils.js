@@ -112,3 +112,19 @@ function getReverseHost(url){
     }
     return null;
 }
+
+function bitlyDomain(domain){
+    if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
+	return 1
+}
+
+function resolveMap(url){
+    var s = url.split('/');
+    if(s.length > 3){
+	var domain = s[2];
+	if(bitlyDomain(domain))
+	    return 'https://bitly.com/' + s[3];
+	else if(domain == 'goo.gl')
+	    return url;	
+    }
+}

@@ -1,60 +1,50 @@
-console.log('twitter');
 tc.reverseResponseTwit = 1;
+tc.registerResponse('link'
+		    ,function(request){
+			$("[sid=" + request.sid +"]").map(function(){
+			    tc.sub[request.data.func](this,request.key,request.data);});
+		    });
+
 tc.registerResponse('reversehome', tc.reverseResponse);
-tc.registerResponse('urlresolve', function(request){
-    console.log(request);
-});
-
-// setInterval(function(){
-//     var urlmap = $('a[data-expanded-url]').map(
-// 	function(){
-// 	    if(! this.getAttribute('subv'))
-// 		return this.getAttribute('data-expanded-url');
-// 	});
-// //    console.log(urlmap);
-//     if(urlmap){
-// 	tc.sendMessage({'kind':'reversehome'
-// 			, 'type':'twitter'
-// 			, 'key': jQuery.makeArray(urlmap)}
-// 		      )
-//     }
-// }
-// 	    , 3000);
-
-function httpExpandURI(element) {
-    tc.sendMessage({'kind': 'urlresolve'
-    		    , 'type': 'twitter'
-    		    , 'url': element.getAttribute("data-expanded-url")
-    		   });
-}
-
-function modify(element, url) {
-    element.setAttribute("href", url);
-    element.setAttribute("subv", url);
-
-    // tc.sendMessage({'kind':'reversehome'
-    // 		    , 'type':'twitter'
-    // 		    , 'key': [url]}
-    // 		  );
-    
-    
-    element.removeAttribute("data-ultimate-url");
-    element.removeAttribute("title");
-    element.removeAttribute("data-expanded-url");
-    docHeight = document.getElementById("stream-items-id").scrollHeight;
-}
+tc.registerResponse('urlresolve', 
+		    function(response){
+			$("a[tcurl='" + response.key + "']").map(
+			    function(){
+				this.setAttribute("tcurl",response.url);
+				tc.sendMessage({ kind: 'reversehome'
+						 , type: 'twitter'
+						 , key: [ tc.sigURL(response.url)]});
+				var sid = "gs" + Math.floor(Math.random() * 100000);
+				this.setAttribute("sid",sid);
+				tc.sendMessage({'kind': 'link'
+     						, 'sid': sid
+     						, 'key': tc.sigURL(response.url).replace(/https?:\/\//,'').replace(/\/$/,'') });
+			    });
+		    });
 
 function expandURL() {
-    $('a.twitter-timeline-link').map(
+    $('a.twitter-timeline-link').filter(':visible').map(
 	function() {
 	    var element = this;
-	    if(!element.getAttribute('subv') && element.getAttribute("data-expanded-url")) {
-		if(element.getAttribute("data-ultimate-url")) {
-		    modify(element, element.getAttribute("data-ultimate-url"));
-   		}
-		else {
-		    httpExpandURI(element);
-		}      
+	    var url = element.getAttribute("data-expanded-url");
+	    if(!element.getAttribute('tcurl') && url){
+		var newUrl;
+		if(newUrl = resolveMap(url)){
+		    element.setAttribute('tcurl',newUrl); // don't check an element more than once
+		    tc.sendMessage({key:newUrl, kind:'urlresolve'});
+		} else {
+		    element.setAttribute('tcurl',url); // don't check an element more than once
+		    tc.sendMessage({'kind':'reversehome'
+    				    , 'type':'twitter'
+    				    , 'key': [tc.sigURL(url)]}
+    				  );
+		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    this.setAttribute("sid",sid);
+		    tc.sendMessage({'kind': 'link'
+     				    , 'sid': sid
+     				    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+		    
+		}
 	    }
 	});    
 }
@@ -99,4 +89,3 @@ window.addEventListener("load", function(e) {
 window.setInterval(newTweetsBar, 1000);
 window.addEventListener("scroll", onScroll, false);
 
-console.log(tc);
