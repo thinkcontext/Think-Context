@@ -1,4 +1,3 @@
-console.log('facebook');
 tc.registerResponse('link', function(request){
     $("[sid=" + request.sid +"]").map(function(){
 	tc.sub[request.data.func](this,request.key,request.data);});
@@ -6,7 +5,6 @@ tc.registerResponse('link', function(request){
 
 $('div.adInfo a').map(
     function(){
-	console.log(this.innerText);
 	var sid = "gs" + Math.floor(Math.random() * 100000);
 	this.setAttribute("sid",sid);
 	tc.sendMessage({'kind': 'link'
