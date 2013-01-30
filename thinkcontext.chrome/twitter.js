@@ -84,7 +84,8 @@ var docHeight;
 var startId;
 
 window.addEventListener("load", function(e) {
-  startId = window.setInterval(start, 1000);
+    start();
+    startId = window.setInterval(start, 1000);
 }, false);
 window.setInterval(newTweetsBar, 1000);
 window.addEventListener("scroll", onScroll, false);
