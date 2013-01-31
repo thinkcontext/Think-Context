@@ -14,7 +14,7 @@ tc.registerResponse('urlresolve',
 				tc.sendMessage({ kind: 'reversehome'
 						 , type: 'twitter'
 						 , key: [ tc.sigURL(response.url)]});
-				var sid = "gs" + Math.floor(Math.random() * 100000);
+				var sid = "gs" + tc.random();
 				this.setAttribute("sid",sid);
 				tc.sendMessage({'kind': 'link'
      						, 'sid': sid
@@ -38,7 +38,7 @@ function expandURL() {
     				    , 'type':'twitter'
     				    , 'key': [tc.sigURL(url)]}
     				  );
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({'kind': 'link'
      				    , 'sid': sid

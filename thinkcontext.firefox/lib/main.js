@@ -11,7 +11,7 @@ pageMod.PageMod({
     contentScriptFile: [
 			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
+			,data.url('utils.js')
 			,data.url('google-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
@@ -57,7 +57,7 @@ pageMod.PageMod({
     contentScriptFile: [
 			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
+			,data.url('utils.js')
 			,data.url('google-place-page.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
@@ -86,26 +86,27 @@ pageMod.PageMod({
     contentScriptFile: [
 			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
-			,data.url('reverse.js')],
+			,data.url('utils.js')
+			,data.url('reverse.js')
+],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){
 	    case 'resource':
-		request.data = iconDir;
-		worker.postMessage(request);
-		break;
+	    	request.data = iconDir;
+	    	worker.postMessage(request);
+	    	break;
 	    case 'sendstat':
-		db.sendStat(request.key);
-		break;
+	    	db.sendStat(request.key);
+	    	break;
             case 'reverse':
-		db.lookupReverse(key,request,function(r){worker.postMessage(r)});
-		break;
+	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});
+	    	break;
             case 'reversehome':
-		db.lookupReverseHome(key,request,function(r){worker.postMessage(r)});
-		break;
+	    	db.lookupReverseHome(key,request,function(r){worker.postMessage(r)});
+	    	break;
 	    }
 	}
 		 )
@@ -118,7 +119,7 @@ pageMod.PageMod({
     contentScriptFile: [
 			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
+			,data.url('utils.js')
 			,data.url('yahoo-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
@@ -153,7 +154,7 @@ pageMod.PageMod({
     contentScriptFile: [
 			data.url('jquery-1.7.1.min.js')
 			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js'),
+			,data.url('utils.js')
 			,data.url('bing-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){

@@ -5,7 +5,6 @@ if (window.frameElement === null){
 	  || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
 	 )
       ){    
-	//console.log("reverse");
 	tc.reverse = {};
 	tc.reverse.revGotResponse = 0;
 
@@ -18,7 +17,7 @@ if (window.frameElement === null){
 				    var x;
 				    var found = 0;
 				    var ex = false;
-				    var z = Math.floor(Math.random() * 100000);
+				    var z = tc.random();
 				    var revDiv = $('<div>',{id:z} )
 				    var tcstat = 'rrr';
 				    if(data[0]['s'] == 'exact'){

@@ -5,9 +5,9 @@ tc.registerResponse('link', function(request){
 
 tc.facebook = {};
 tc.facebook.examine = function(){
-    $('div.adInfo a').map(
+    $('div.adInfo a').not('a[sid]').map(
 	function(){
-	    var sid = "gs" + Math.floor(Math.random() * 100000);
+	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid

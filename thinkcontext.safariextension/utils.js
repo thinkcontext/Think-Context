@@ -89,9 +89,9 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		     greena:	1
 		    };
 
-    tc.insertPrev = function(n,iconName,title,text,pre,post){
+    tc.insertPrev = function(n,iconName,title,text){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	    var r = Math.floor(Math.random() * 100000);
+	    var r = tc.random();
 	    var resDiv = document.createElement("div");
 	    resDiv.setAttribute("id",r);
 	    resDiv.setAttribute("subv",true);
@@ -99,18 +99,15 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	    var imgG = document.createElement("img");
 	    imgG.src = tc.icons[iconName];
 	    resDiv.appendChild(imgG);
-	    if(pre)pre(n);
 	    n.parentNode.insertBefore(resDiv,n);
 	    n.style.display = "inline";
 	    tc.iconDialog(title,text,r);
-	    if(post)post(n);
 	}
     };
 
-
     tc.popDialog = function(title, body, autoOpen){
-	var r = Math.floor(Math.random() * 100000);
-	var z = Math.floor(Math.random() * 100000);
+	var r = tc.random();
+	var z = tc.random();
 	$('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
 
 	var d = $('<div id="' + z + '">'+body+'</div>').dialog(
@@ -274,8 +271,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	tc.responses[request.kind](request);
     }
 
-    //safari.self.addEventListener("message",tc.onResponse, false);
-
     tc.sendMessage = function(request){
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
@@ -326,7 +321,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		    if(this.innerText.match(/\w/)){
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
-			var r = Math.floor(Math.random() * 100000);
+			var r = tc.random();
 			resDiv.setAttribute("id",r);
 			resDiv.setAttribute("subv",true);
 			resDiv.style.display = "inline";
@@ -354,3 +349,5 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	}
     }
 }
+
+tc.random = function(){return Math.floor(Math.random() * 100000);}

@@ -1,15 +1,6 @@
 tc.googleSearch = {
 
-    googlePreInsert: function(n){
-	n.addEventListener('DOMNodeRemoved',function(){ listenResults(); },false);
-	tc.googleSearch.nolistenResults();
-    }
-
-    , googlePostInsert: function(n){
-	tc.googleSearch.listenResults();
-    }
-
-    , doit: function(){
+    doit: function(){
 	var sub = {
 
 	};
@@ -23,7 +14,7 @@ tc.googleSearch = {
 	    // 	var x = 0;
 	    // 	if(subvs.length > 3){
 	    // 	    for(x=0;x<=2;x++){
-	    // 		var i = Math.floor(Math.random() * 100000)% subvs.length ;
+	    // 		var i = tc.random()% subvs.length ;
 	    // 		sel.push(subvs[i]);
 	    // 		subvs.splice(i,1);
 	    // 	    }
@@ -67,13 +58,11 @@ tc.googleSearch = {
 	    // 	    var subvDiv = document.createElement("tr");
 	    // 	    subvDiv.setAttribute("subv",true);
 	    // 	    subvDiv.innerHTML = "<ol>"+ result + "</ol>";
-	    // 	    nolistenRightColumn();
 	    // 	    if(this.firstChild.getAttribute("subv") == null){
 	    // 		this.insertBefore(subvDiv,this.firstChild);
 	    // 	    } else {
 	    // 		this.replaceChild(subvDiv,this.firstChild);
 	    // 	    }
-	    // 	    listenRightColumn();
 	    // 	}
 	    // }
 	    // 			);
@@ -86,13 +75,12 @@ tc.googleSearch = {
     
 	tc.registerResponse('link', function(request){
 	    $("[sid=" + request.sid +"]").map(function(){
-		this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false);
 		tc.sub[request.data.func](this,request.key,request.data);});
 	});
 
 	tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
 	    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
-		tc.insertPrev(this,icon,title,blurb,tc.googlePreInsert,tc.googlePostInsert);});	    
+		tc.insertPrev(this,icon,title,blurb);});	    
 	}
 
 	tc.registerResponse('places', tc.googlePlaces);
@@ -110,7 +98,6 @@ tc.googleSearch = {
 		break;
 	    case 'gs-lcll':
 		$("[sid=" + request.sid +"]").map(function(){
-		    this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false)
 		    sub['place'+request.data.type](this,request.key,request.data);});
 		break;
 	    }
@@ -120,36 +107,6 @@ tc.googleSearch = {
 	//     insertSubvertisements(request);
 	// });
 
-	
-	// function listenQuery(){
-	//     //console.log("listenQuery");
-	//     $('p#bfl').live('DOMSubtreeModified',function(){examineQuery();});
-	// }
-
-	function listenResults(){
-	    //console.log("listenResults");
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){ tc.closeAllDialogs(); tc.googleSearch.examineResults();});
-	}
-
-	function listenRightColumn(){
-	    //    console.log("started listenRightColumn");
-	    //$("div#rhscol").live("DOMNodeInserted",function(){console.log("listen mbEnd");examineQuery();});
-	}
-	
-	// function nolistenQuery(){
-	//     //console.log("stopped listenQuery");
-	//     $('p#bfl').die('DOMSubtreeModified');
-	// }
-
-	function nolistenResults(){
-	    //console.log("stopped listenResults");
-	    $("ol#rso > li:first").die("DOMNodeInserted");
-	}
-
-	function nolistenRightColumn(){
-	    //console.log("stopped listenRightColumn");
-	    //$("div#rhscol").die("DOMNodeInserted");
-	}
 
 	// function examineQuery(){
 	//     //the query text
@@ -172,14 +129,6 @@ tc.googleSearch = {
 	// 	});
 	// }
 
-
-	function installListeners(){
-	    //console.log("installListeners");
-	    //listenQuery();
-	    listenResults();
-	    //listenRightColumn();
-	}
-	
 	function pageExamine(){
 	    //console.log("pageExamine");
 	    //examineQuery();
@@ -188,21 +137,21 @@ tc.googleSearch = {
 	}
 
 	pageExamine();
-	installListeners();
+	window.setInterval(pageExamine,500);
     }
 
     ,  examineResults: function(){
-	
 	// place page in an lclbox brief results
 	// eg "westin dc"
-	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").map(
+	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
     		if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
-			//var sid = "gs" + Math.floor(Math.random() * 100000);
+			//var sid = "gs" + tc.random();
 			//this.parentNode.children[0].setAttribute("sid",sid);
 			return [ {cid:cid} ];
 		    }
@@ -222,15 +171,16 @@ tc.googleSearch = {
 	
 	// place page in an lclbox long result
 	// eg "hay adams hotel"
-	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").map(
+	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
 		var target = this.parentNode.parentNode.parentNode.children[0].children[0];
     		if(target && target.getAttribute && !target.getAttribute('subv')){
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
-			var sid = "gs" + Math.floor(Math.random() * 100000);
+			var sid = "gs" + tc.random();
 			target.setAttribute("sid",sid);
 			tc.sendMessage({'kind': 'place'
 					, 'type': 'google'
@@ -244,13 +194,14 @@ tc.googleSearch = {
 	
 	// place not in an lclbox
 	// boston hotels
-	$("div.intrlu > div > span > a[href*='//plus.google.com/']").map(
+	$("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
 		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		cid_res = cid_regex.exec(this.href);
 		if(cid_res[1]){
 		    var cid = cid_res[1];
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({ 'kind': 'place'
 				     ,'subtype': 'gs-ptable'
@@ -262,8 +213,9 @@ tc.googleSearch = {
 	);
 
 //	result link	
-	$("ol#rso > li.g > div > h3 > a").map(function(){
-	    var sid = "gs" + Math.floor(Math.random() * 100000);
+	$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
+	    this.setAttribute('tcLink','tcLink');
+	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid

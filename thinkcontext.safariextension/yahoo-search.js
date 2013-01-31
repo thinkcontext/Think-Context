@@ -94,7 +94,7 @@ if(document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 ){
 		var x = 0;
 		if(subvs.length > 3){
 		    for(x=0;x<=2;x++){
-			var i = Math.floor(Math.random() * 100000)% subvs.length ;
+			var i = tc.random()% subvs.length ;
 			sel.push(subvs[i]);
 			subvs.splice(i,1);
 		    }
@@ -158,7 +158,7 @@ if(document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 ){
     $('div#web > ol h3 > a').map(
 	function(){
     	    if(!this.previousSibling || !this.previousSibling.getAttribute || !this.previousSibling.getAttribute('subv')){
-		var sid = "gs" + Math.floor(Math.random() * 100000);
+		var sid = "gs" + tc.random();
 		this.setAttribute("sid",sid);
 		var yid_regex = new RegExp('local.yahoo.com/info-([0-9]+)');
     		yid_res = yid_regex.exec(this.href);

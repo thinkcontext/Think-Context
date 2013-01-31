@@ -7,16 +7,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 tc.googleSearch = {
 
-    googlePreInsert: function(n){
-	n.addEventListener('DOMNodeRemoved',function(){ listenResults(); },false);
-	tc.googleSearch.nolistenResults();
-
-    }
-
-    , googlePostInsert: function(n){
-	tc.googleSearch.listenResults();
-    }
-
     , doit: function(){
 	var sub = {
 
@@ -29,8 +19,6 @@ tc.googleSearch = {
 			      , 'stopRush'
 			      , 'Rush Limbaugh Advertiser'
 			      , detail.name + ' is listed as an advertiser of Rush Limbaugh\'s by <a href="http://www.stoprush.net/" target="_blank" tcstat="'+tcstat+key + '">The Stop Rush Project</a>.  Click <a href="'+ data.url + '" target="_blank" tcstat="'+tcstat+key + '">here</a> for more information on this particular advertiser\'s activity.'
-			      , tc.googlePreInsert
-			      , tc.googlePostInsert			      
 			     )
 	    }
 
@@ -40,8 +28,6 @@ tc.googleSearch = {
 		tc.insertPrev(n
 			      ,'greenG'
 			      ,'Member of the Green Business Network','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
-			      , tc.googlePreInsert
-			      , tc.googlePostInsert
 			     );
 	    },
 	    
@@ -53,8 +39,6 @@ tc.googleSearch = {
 		tc.insertPrev(n
 			      ,'infoI'
 			      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-			      , tc.googlePreInsert
-			      , tc.googlePostInsert
 			     );
 	    }
 
@@ -65,24 +49,18 @@ tc.googleSearch = {
 				  ,'greenCheck'
 				  ,'Patronize This Hotel'
 				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>'
-				  , tc.googlePreInsert
-				  , tc.googlePostInsert
 				 );
 		} else if(pb == 'boycott'){
 		    tc.insertPrev(n
 				  ,'redCirc'
 				  ,'Boycott This Hotel'
 				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>'
-				  , tc.googlePreInsert
-				  , tc.googlePostInsert
 				 );
 		} else if(pb == 'risky'){
 		    tc.insertPrev(n
 				  ,'infoI'
 				  ,'Risk of Labor Dispute At This Hotel'
 				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>'
-				  , tc.googlePreInsert
-				  , tc.googlePostInsert
 				 );
 		}
 	    },
@@ -131,7 +109,7 @@ tc.googleSearch = {
 		var x = 0;
 		if(subvs.length > 3){
 		    for(x=0;x<=2;x++){
-			var i = Math.floor(Math.random() * 100000)% subvs.length ;
+			var i = tc.random()% subvs.length ;
 			sel.push(subvs[i]);
 			subvs.splice(i,1);
 		    }
@@ -222,7 +200,7 @@ tc.googleSearch = {
 
 		if(icon){
 		    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + d.siteid +"']) div > h4 > a").map(function(){
-			tc.insertPrev(this,icon,title,blurb,tc.googlePreInsert,tc.googlePostInsert);});
+			tc.insertPrev(this,icon,title,blurb);});
 		}
 	    }
 	});
@@ -246,40 +224,9 @@ tc.googleSearch = {
 	    }
 	});
 
-	tc.registerResponse('gs-text', function(request){
-	    insertSubvertisements(request);
-	});
-
-	
-	function listenQuery(){
-	    //console.log("listenQuery");
-	    $('p#bfl').live('DOMSubtreeModified',function(){examineQuery();});
-	}
-
-	function listenResults(){
-	    //console.log("listenResults");
-	    $("ol#rso > li:first").live("DOMNodeInserted",function(){tc.closeAllDialogs(); tc.googleSearch.examineResults();});
-	}
-
-	function listenRightColumn(){
-	    //    console.log("started listenRightColumn");
-	    //$("div#rhscol").live("DOMNodeInserted",function(){console.log("listen mbEnd");examineQuery();});
-	}
-	
-	function nolistenQuery(){
-	    //console.log("stopped listenQuery");
-	    $('p#bfl').die('DOMSubtreeModified');
-	}
-
-	function nolistenResults(){
-	    //console.log("stopped listenResults");
-	    $("ol#rso > li:first").die("DOMNodeInserted");
-	}
-
-	function nolistenRightColumn(){
-	    //console.log("stopped listenRightColumn");
-	    $("div#rhscol").die("DOMNodeInserted");
-	}
+	// tc.registerResponse('gs-text', function(request){
+	//     insertSubvertisements(request);
+	// });
 
 	function examineQuery(){
 	    //the query text
@@ -302,35 +249,28 @@ tc.googleSearch = {
 		});
 	}
 
-
-	function installListeners(){
-	    listenQuery();
-	    listenResults();
-	    //listenRightColumn();
-	}
-	
 	function pageExamine(){
-	    examineQuery();
+	    //examineQuery();
 	    tc.googleSearch.examineResults();
 	    //tc.reverseExamine();
 	}
 
 	pageExamine();
-	installListeners();
+	window.setInterval(pageExamine,500);
     }
 
     ,  examineResults: function(){
-	
 	// place page in an lclbox brief results
 	// eg "westin dc"
-	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").map(
+	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
     		if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
-			//var sid = "gs" + Math.floor(Math.random() * 100000);
+			//var sid = "gs" + tc.random();
 			//this.parentNode.children[0].setAttribute("sid",sid);
 			return [ {cid:cid} ];
 		    }
@@ -350,15 +290,16 @@ tc.googleSearch = {
 	
 	// place page in an lclbox long result
 	// eg "hay adams hotel"
-	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").map(
+	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
 		var target = this.parentNode.parentNode.parentNode.children[0].children[0];
     		if(target && target.getAttribute && !target.getAttribute('subv')){
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
-			var sid = "gs" + Math.floor(Math.random() * 100000);
+			var sid = "gs" + tc.random();
 			target.setAttribute("sid",sid);
 			tc.sendMessage({'kind': 'place'
 					, 'type': 'google'
@@ -372,13 +313,14 @@ tc.googleSearch = {
 	
 	// place not in an lclbox
 	// boston hotels
-	$("div.intrlu > div > span > a[href*='//plus.google.com/']").map(
+	$("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
 	    function(){
+		this.setAttribute('tcPlace','tcPlace');
 		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		cid_res = cid_regex.exec(this.href);
 		if(cid_res[1]){
 		    var cid = cid_res[1];
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({ 'kind': 'place'
 				     ,'subtype': 'gs-ptable'
@@ -388,10 +330,11 @@ tc.googleSearch = {
 		}
 	    }
 	);
-	
-//	result link	
-	$("ol#rso > li.g > div > h3 > a").map(function(){
-	    var sid = "gs" + Math.floor(Math.random() * 100000);
+
+	//	result link	
+	$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
+	    this.setAttribute('tcLink','tcLink');
+	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid

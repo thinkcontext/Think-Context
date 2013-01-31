@@ -9,7 +9,7 @@ tc.registerResponse('reverse',
 			    var x;
 			    var found = 0;
 			    var ex = false;
-			    var z = Math.floor(Math.random() * 100000);
+			    var z = tc.random();
 			    var revDiv = $('<div>',{id:z} )
 			    var tcstat = 'rrr';
 			    if(data[0]['s'] == 'exact'){

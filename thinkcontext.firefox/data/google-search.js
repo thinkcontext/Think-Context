@@ -1,18 +1,7 @@
 if (window.frameElement === null){
-    //console.log("google-search.js");
     tc.googleSearch = {
 
-	googlePreInsert: function(n){
-	    n.addEventListener('DOMNodeRemoved',function(){ listenResults(); },false);
-	    tc.googleSearch.nolistenResults();
-
-	}
-
-	, googlePostInsert: function(n){
-	    tc.googleSearch.listenResults();
-	}
-
-	, doit: function(){
+	doit: function(){
 	    var sub = {
 	    };
 
@@ -26,7 +15,7 @@ if (window.frameElement === null){
 		//     var x = 0;
 		//     if(subvs.length > 3){
 		// 	for(x=0;x<=2;x++){
-		// 	    var i = Math.floor(Math.random() * 100000)% subvs.length ;
+		// 	    var i = tc.random()% subvs.length ;
 		// 	    sel.push(subvs[i]);
 		// 	    subvs.splice(i,1);
 		// 	}
@@ -89,7 +78,6 @@ if (window.frameElement === null){
 	    
 	    tc.registerResponse('link', function(request){
 		$("[sid=" + request.sid +"]").map(function(){
-		    this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false);
 		    tc.sub[request.data.func](this,request.key,request.data);});
 	    });
 
@@ -124,7 +112,6 @@ if (window.frameElement === null){
 		    break;
 		case 'gs-lcll':
 		    $("[sid=" + request.sid +"]").map(function(){
-			this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false)
 			tc.sub['place'+request.data.type](this,request.key,request.data);});
 		    break;
 		}
@@ -134,79 +121,26 @@ if (window.frameElement === null){
 	    // 	insertSubvertisements(request);
 	    // });
 	    
-	    // function listenQuery(){
-	    // 	$('p#bfl').live('DOMNodeRemoved',function(){examineQuery();});
-	    // }
-
-	    function listenResults(){
-		$("ol#rso > li:first").live("DOMNodeInserted"
-					    ,function(){ 
-						tc.closeAllDialogs(); 
-						tc.googleSearch.examineResults();});
-	    }
-
-	    function listenRightColumn(){
-		//$("div#rhscol").live("DOMNodeInserted",function(){examineQuery();});
-	    }
-	    
-	    // function nolistenQuery(){
-	    // 	$('p#bfl').die('DOMNodeRemoved');
-	    // }
-
-	    function nolistenResults(){
-		$("ol#rso > li:first").die("DOMNodeInserted");
-	    }
-
-	    // function nolistenRightColumn(){
-	    // 	$("div#rhscol").die("DOMNodeInserted");
-	    // }
-
-	    // function examineQuery(){
-	    // 	//the query text
-		
-	    // 	var qt =  $("input[name=q]").val();
-	    // 	// check if we're doing instant search
-	    // 	if(tc.googleSearch.instant){
-	    // 	    var nq = $("a#sflas")[0].search;
-	    // 	    var nqr = new RegExp('q=([^&]+)');
-	    // 	    qt = decodeURIComponent(nqr.exec(nq)[1]);
-	    // 	}
-	    // 	var result='';
-	    // 	var location = $("div#lc li.tbos").text();
-	    // 	//console.log("query text and location " + qt + " " + location);
-	    // 	tc.sendMessage(
-	    // 	    {'kind' : "gs-text"
-	    // 	     , 'key' : qt.replace('+',' ')
-	    // 	     , 'location' : location
-	    // 	    });
-	    // }
-
-	    function installListeners(){
-		//listenQuery();
-		listenResults();
-		//listenRightColumn();
-	    }
-	    
 	    function pageExamine(){
 		//examineQuery();
 		tc.googleSearch.examineResults();
 	    }
 
 	    pageExamine();
-	    setTimeout(installListeners,300);
+	    window.setInterval(pageExamine,500);
 	}
 	,  examineResults: function(){
-	    
 	    // place page in an lclbox brief results
 	    // eg "westin dc"
-	    var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").map(
+	    var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
 		function(){
+		    this.setAttribute('tcPlace','tcPlace');
     		    if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
 			var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     			cid_res = cid_regex.exec(this.href);
 			if(cid_res[1]){
 			    var cid = cid_res[1];
-			    //var sid = "gs" + Math.floor(Math.random() * 100000);
+			    //var sid = "gs" + tc.random();
 			    //this.parentNode.children[0].setAttribute("sid",sid);
 			    return [ {cid:cid} ];
 			}
@@ -215,7 +149,7 @@ if (window.frameElement === null){
 	    );
 
 	    if(urlmap){
-		//console.error(jQuery.makeArray(urlmap));
+		//console.log(jQuery.makeArray(urlmap));
 		tc.sendMessage({'kind': 'places'
 				,'type': 'google'
 				,'subtype': 'gs-cid'
@@ -226,15 +160,16 @@ if (window.frameElement === null){
 	    
 	    // place page in an lclbox long result
 	    // eg "hay adams hotel"
-	    $("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").map(
+	    $("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
 		function(){
+		    this.setAttribute('tcPlace','tcPlace');
 		    var target = this.parentNode.parentNode.parentNode.children[0].children[0];
     		    if(target && target.getAttribute && !target.getAttribute('subv')){
 			var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     			cid_res = cid_regex.exec(this.href);
 			if(cid_res[1]){
 			    var cid = cid_res[1];
-			    var sid = "gs" + Math.floor(Math.random() * 100000);
+			    var sid = "gs" + tc.random();
 			    target.setAttribute("sid",sid);
 			    tc.sendMessage({'kind': 'place'
 					    , 'type': 'google'
@@ -248,13 +183,15 @@ if (window.frameElement === null){
 	    
 	    // place not in an lclbox
 	    // boston hotels
-	    $("div.intrlu > div > span > a[href*='//plus.google.com/']").map(
+	    $("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
 		function(){
+		    this.setAttribute('tcPlace','tcPlace');
+		    this.setAttribute('tcPlace');
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){
 			var cid = cid_res[1];
-			var sid = "gs" + Math.floor(Math.random() * 100000);
+			var sid = "gs" + tc.random();
 			this.setAttribute("sid",sid);
 			tc.sendMessage({ 'kind': 'place'
 					 ,'subtype': 'gs-ptable'
@@ -267,9 +204,22 @@ if (window.frameElement === null){
 
 	    //	result link	
 
-	    var resultmap = $("ol#rso > li.g > div > h3 > a").map(function(){
+	    // performance is slow, code not in sync w/ other browsers
+	    //     $("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
+	    //     this.setAttribute('tcLink');
+	    //     var sid = "gs" + tc.random();
+	    //     this.setAttribute("sid",sid);
+	    //     tc.sendMessage({'kind': 'link'
+     	    // 		    , 'sid': sid
+     	    // 		    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+	    // });
+
+
+
+	    var resultmap = $("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
+		this.setAttribute('tcLink','tcLink');
 	    	if(!this.getAttribute('sid')){
-	    	    var sid = "gs" + Math.floor(Math.random() * 100000);
+	    	    var sid = "gs" + tc.random();
 	    	    this.setAttribute("sid",sid);
 	    	    return [ { sid: sid
 	    		       , key: tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'')}];
@@ -280,9 +230,9 @@ if (window.frameElement === null){
 	    			, data: jQuery.makeArray(resultmap).slice(0,15)});
 	    }
 	    
-	    // performance is slow, code not in sync w/ other browsers
+
 	    // $("ol#rso > li.g > div > h3 > a").map(function(){
-	    // 	var sid = "gs" + Math.floor(Math.random() * 100000);
+	    // 	var sid = "gs" + tc.random();
 	    // 	this.setAttribute("sid",sid);
 	    // 	tc.sendMessage({'kind': 'link'
      	    // 			, 'sid': sid

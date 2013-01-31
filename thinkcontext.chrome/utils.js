@@ -88,23 +88,21 @@ dcfpi:	1,
 		 greena: 1
 };
 
-tc.insertPrev = function(n,iconName,r,title,theDiv,pre,post){
+tc.insertPrev = function(n,iconName,r,title,theDiv){
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	var resDiv = $('<div>'
 		       , { id: r
 			   , subv: true
 			   , style: 'display: inline;' })
 	    .append($('<img>', { src: tc.icons[iconName]}))[0];
-	if(pre)pre(n);
 	n.parentNode.insertBefore(resDiv,n);
 	n.style.display = "inline";
 	tc.iconDialog(title,theDiv,r);
-	if(post)post(n);
     }
 };
 
 tc.popDialog = function(title, revDiv, z, autoOpen){
-    var r = Math.floor(Math.random() * 100000);
+    var r = tc.random();
     $('body').append($('<img>', { id: r
 				  ,src: tc.icons.trackback32 
 				  ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
@@ -312,7 +310,7 @@ tc.reverseResponse = function(request){
 	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		if(this.innerText.match(/\w/)){
-		    var r = Math.floor(Math.random() * 100000);
+		    var r = tc.random();
 		    var revDiv = $('<div>',{id: "d"+r});
 		    revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
 		    var build = ''
@@ -431,7 +429,7 @@ tc.sub = {};
 tc.sub.greenResult = function(n,key,data){
     var detail = JSON.parse(data.data);
     var tcstat = 'bsg';
-    var r = Math.floor(Math.random() * 100000);
+    var r = tc.random();
     var d = $("<div>",{id: "d"+r})
 	.append($('<b>')
 		.append($('<a>'
@@ -446,8 +444,6 @@ tc.sub.greenResult = function(n,key,data){
 		  ,r
 		  ,'Member of the Green Business Network'
 		  , d
-		  , null
-		  , null
 		 );
 }
 
@@ -455,7 +451,7 @@ tc.sub.rushBoycott = function(n,key,data){
     var detail = JSON.parse(data.data);
     var tcstat = 'grb';
 
-    var r = Math.floor(Math.random() * 100000);
+    var r = tc.random();
     var d = $("<div>",{id: "d"+r})
 	.append($('<b>', {text: detail.name})
 		.append(' is listed as an advertiser of Rush Limbaugh\'s by ')
@@ -476,14 +472,12 @@ tc.sub.rushBoycott = function(n,key,data){
 		  , r
 		  , 'Rush Limbaugh Advertiser'
 		  , d
-		  , tc.googlePreInsert
-		  , tc.googlePostInsert			      
 		 )
 }
 
 tc.sub.place = function(n, cid, pb,data){
     var tcstat = 'bsp';
-    var r = Math.floor(Math.random() * 100000);
+    var r = tc.random();
     var d = $("<div>",{id: "d"+r})
 	.append($('<b>')
 		.append($('<a>'
@@ -498,8 +492,6 @@ tc.sub.place = function(n, cid, pb,data){
 		      , r
 		      ,'Patronize This Hotel'
 		      , d.append('- Recommends patronizing this hotel')
-		  , tc.googlePreInsert
-		  , tc.googlePostInsert			      
 		     );
     } else if(pb == 'boycott'){
 	tc.insertPrev(n
@@ -507,8 +499,6 @@ tc.sub.place = function(n, cid, pb,data){
 		      ,r
 		      ,'Boycott This Hotel'
 		      , d.append('- Recommends boycotting this hotel')
-		  , tc.googlePreInsert
-		  , tc.googlePostInsert			      
 		     );
     } else if(pb == 'risky'){
 	tc.insertPrev(n
@@ -516,8 +506,6 @@ tc.sub.place = function(n, cid, pb,data){
 		      ,r
 		      ,'Risk of Labor Dispute At This Hotel'
 		      , d.append(' advises that there is a risk of a labor dispute at this hotel.')
-		      , tc.googlePreInsert
-		      , tc.googlePostInsert			      
 		     );
     }
 }
@@ -565,7 +553,7 @@ tc.sub.hotelsafe = function(n, cid, data){
 	    // 	tc.insertPrev(n
 	    // 		      ,'infoI'
 	    // 		      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-	    // 		      , tc.googlePreInsert
-	    // 		      , tc.googlePostInsert
 	    // 		     );
 	    // }
+
+tc.random = function(){return Math.floor(Math.random() * 100000);}

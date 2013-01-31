@@ -2,7 +2,7 @@ tc.googlePlaceResponse = function(request){
     var sub = {
 	place: function(d,type){
 	    var title;
-	    var r = Math.floor(Math.random() * 100000);    
+	    var r = tc.random();    
 	    var tcstat = 'gpp' + d.id;
 	    var blurb;
 	    var icon;

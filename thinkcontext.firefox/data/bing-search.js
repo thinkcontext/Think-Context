@@ -12,7 +12,7 @@ function insertSubvertisements(message){
     // 	var x = 0;
     // 	if(subvs.length > 3){
     // 	    for(x=0;x<=2;x++){
-    // 		var i = Math.floor(Math.random() * 100000)% subvs.length ;
+    // 		var i = tc.random()% subvs.length ;
     // 		sel.push(subvs[i]);
     // 		subvs.splice(i,1);
     // 	    }
@@ -77,7 +77,7 @@ tc.registerResponse('place'
 // result link
 $('div#results  li  div  div  h3  a').map(
     function(){
-	var sid = "gs" + Math.floor(Math.random() * 100000);
+	var sid = "gs" + tc.random();
 	this.setAttribute("sid",sid);
 	self.postMessage({'kind': 'link'
      			  , 'sid': sid
@@ -94,7 +94,7 @@ $("li.hip_htlnm a[href*='lid=']").map(
     		lid_res = lid_regex.exec(this.href);
 		if(lid_res[1]){
 		    var lid = lid_res[1];
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    self.postMessage({'kind': 'place'
 				      ,'type': 'bing'
@@ -116,7 +116,7 @@ $("div h2 div a[href*='lid=']").map(
 		tc.debug(lid_res);
 		if(lid_res[1]){
 		    var lid = lid_res[1];
-		    var sid = "gs" + Math.floor(Math.random() * 100000);
+		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    self.postMessage({'kind': 'place'
 				      ,'type': 'bing'
