@@ -274,20 +274,25 @@ tc.sendMessage = function(request){
 
 tc.reverseExamine = function(){
     var urlmap;
-    urlmap = $("a[href^='http']:visible").map(function(){
+    urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
+	this.setAttribute('tcRev','tcRev');
 	if(this.innerText.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
 	    return tc.sigURL(this.href);
 	}});
-    if(urlmap){
-	tc.sendMessage(
-    	    {'kind': 'reversehome'
-    	     , 'key': jQuery.makeArray(urlmap).slice(0,400)
-    	    });
+    if(urlmap.length > 0){
+    	var revArr = jQuery.makeArray(urlmap);
+    	while(revArr.length > 0){
+    	    tc.sendMessage(
+    		{'kind': 'reversehome'
+    		 , 'key': revArr.slice(0,400)
+    		});
+    	    revArr.splice(0,400);
+    	}
     }
 }
 
 tc.reverseResponseTwit = 0;
-
+tc.reverseResponseFB = 0;
 tc.reverseResponse = function(request){
     var data = request.data;
     var out = {};
@@ -303,11 +308,15 @@ tc.reverseResponse = function(request){
 	}
     }
     var tcstat = 'rrh';
-    var jsearch = "href";
-    if(tc.reverseResponseTwit == 1)
-	jsearch = 'tcurl';
+    var jsearch;
     for(var rl in out){
-	$('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
+
+	jsearch = 'a[href^="'+rl+'"]:visible';
+	if(tc.reverseResponseTwit == 1)
+	    jsearch = 'a[tcurl^="'+rl+'"]:visible';	
+	else if(tc.reverseResponseFB == 1)
+	    jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
+	$(jsearch).map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		if(this.innerText.match(/\w/)){
 		    var r = tc.random();
