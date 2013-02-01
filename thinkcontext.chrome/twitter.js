@@ -73,7 +73,7 @@ function onScroll(e) {
 
 function start() {
   if(document.getElementById("stream-items-id")) {
-    window.clearTimeout(startId);
+      window.clearTimeout(startId);
     docHeight = document.getElementById("stream-items-id").scrollHeight;
     expandURL();
   }
