@@ -497,13 +497,13 @@ if (window.frameElement === null){
 
 	var r = tc.random();
 	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>', {text: detail.name})
-		    .append(' is listed as an advertiser of Rush Limbaugh\'s by ')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://stoprush.net/'
-				, text: 'The Stop Rush Project'})))
+	    .append($('<b>', {text: detail.name}))
+	    .append(' is listed as an advertiser of Rush Limbaugh\'s by ')
+	    .append($('<a>'
+		      ,{tcstat: tcstat+data.id
+			, target: '_blank'
+			, href: 'http://stoprush.net/'
+			, text: 'The Stop Rush Project'}))
 	    .append('. Click ')
 	    .append($('<a>', {tcstat: tcstat+data.id
 			      , target: '_blank'
