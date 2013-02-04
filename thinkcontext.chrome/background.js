@@ -11,11 +11,11 @@ function onRequest(request, sender, callback) {
     case 'places':
         tc.lookupPlaces(request,callback);
 	break;
-    case 'yahoo-text':
-    case 'gs-text':
-    case 'bing-text':
-	tc.lookupSubvert(request.key, request, callback);
-	break;
+    // case 'yahoo-text':
+    // case 'gs-text':
+    // case 'bing-text':
+    // 	tc.lookupSubvert(request.key, request, callback);
+    // 	break;
     case 'reverse':
         tc.lookupReverse(request.key,request,callback);
         break;
@@ -31,7 +31,6 @@ function onRequest(request, sender, callback) {
     }
 };
 
-//console.log("background.html");
 tc.connectSubvDB();
 chrome.extension.onRequest.addListener(onRequest);
 setInterval(function(){tc.updateTable('reverse')}, 3650000);

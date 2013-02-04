@@ -1,5 +1,7 @@
 tc = {
-    dbName: 'thinkcontext'
+    optVal: function(o){ return localStorage[o];}
+    
+    , dbName: 'thinkcontext'
     , tables: {
 	source: {
 	    fields: {
@@ -10,6 +12,7 @@ tc = {
 	    }
 	    , googFTNumber: '16npeDRrzx9J6X4P4w2KplYwF9wPmSrLEZSQdiBE' //1040216'
 	    , version: '0.05'
+	    , opt : 'opt_news'
 	}
 	, reverse: {
 	    fields: {
@@ -20,6 +23,7 @@ tc = {
 		, link: 'text'
 	    }
 	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
+	    , opt: 'opt_news'
 	    , version: '0.06'
 	}
 	, results: { 
@@ -53,6 +57,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , googFTNumber: '1H38qhAMz280fqktszJRVyAtHuS0OBdcsC7-WZsE'
+	    , opt: 'opt_hotel'
 	    , version: '0.06'
 	}
 	, place_data: {
@@ -62,6 +67,7 @@ tc = {
 		, type: 'text'
 	    }
 	    , googFTNumber: '10TYcA0TD-DdArVh5oYxq9KdwBJa0WCin6GNnV8Y'
+	    , opt: 'opt_hotel'
 	    , version: '0.06'
 	}
     }
@@ -98,6 +104,14 @@ tc = {
 	return r;
     }
 
+    , simpleSql: function(sqlTxt){
+	console.log(sqlTxt);
+	tc.db.transaction(
+	    function(tx){
+		tx.executeSql(sqlTxt,[]);
+	    });
+    }
+
     , googFT : 'https://www.googleapis.com/fusiontables/v1/query?key=AIzaSyDZ28Q_ZRg6SXUEVsR-AqRbyIJdoE0qGYg&alt=csv&sql='
 
     , checkLocalTableVersion: function(t){
@@ -106,7 +120,9 @@ tc = {
     , setLocalTableVersion: function(t){
 	localStorage.setItem(t + 'version', tc.tables[t].version);
     }
-
+    , removeLocalTableVersion: function(t){
+	localStorage.removeItem(t + 'version');
+    }
     , checkLocalDeleteTime: function(t){
 	return localStorage.getItem(t + 'deletetime');
     }
@@ -133,7 +149,7 @@ tc = {
 	}
     }
 
-    , onSuccess: function(tx,r){
+    , onSuccess: function(tx,r){	
 	//console.log("success");
     }
     
@@ -142,14 +158,44 @@ tc = {
     }
     
     , loadAllTables: function(){
-	for(var t in tc.tables){
-	    if(!tc.checkLocalTableVersion(t)){
-		tc.loadTable(t);
+	if(tc.optVal('opt_hotel') == 0){
+	    tc.db.transaction(
+		function(tx){
+		    tx.executeSql("delete from results where func like 'hotel%'");
+		}
+	    );
+	}
+	if(tc.optVal('opt_rush') == 0){
+	    tc.db.transaction(
+		function(tx){
+		    tx.executeSql("delete from results where func = 'rushBoycott'");
+		}
+	    );
+	}
+	if(tc.optVal('opt_green') == 0){
+	    tc.db.transaction(
+		function(tx){
+		    tx.executeSql("delete from results where func = 'greenResult'");
+		}
+	    );
+	}
+	var t;
+	for(t in tc.tables){
+	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
+		if(!tc.checkLocalTableVersion(t)){
+		    tc.loadTable(t);
+		} else {
+		    tc.checkNoTable(t);
+		}
 	    } else {
-		tc.checkNoTable(t);
+		console.log("remove " + t);
+		var delTxt = "delete from " + t;
+		tc.removeLocalTableVersion(t);
+		tc.simpleSql(delTxt);
 	    }
 	}
     }
+    
     , checkNoTable: function(table){
 	tc.db.transaction(
 	    function(tx){
@@ -160,18 +206,29 @@ tc = {
     }
     , updateAllTables: function(){
 	for(var t in tc.tables){
-	    tc.updateTable(t);
+	    if(! (tc.optVal(tc.tables[t].opt) == 0))
+		tc.updateTable(t);
 	}
     }
     
     , updateTable: function(table){
+	var resClause = '';
+	if(table == 'results'){
+	    if(tc.optVal('opt_green') == 0)
+		resClause += " and func not equal to 'greenResult' ";
+	    if(tc.optVal('opt_rush') == 0)
+		resClause += " and func not equal to 'rushBoycott' ";
+	    if(tc.optVal('opt_hotel') == 0)
+		resClause += " and func does not contain 'hotel' ";
+	}
 	var dateClause = '';
 	var secs;
+
 	if(secs=tc.checkLocalDeleteTime(table)){
 	    dateClause = "and dm >= " + secs;
 	}
 
-	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
+	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + resClause + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    if(dataArray.length > 1){ // see if there's any data to insert
@@ -192,7 +249,7 @@ tc = {
 	if(secs=tc.checkLocalAddTime(table)){
 	    dateClause = "and da >= " + secs;
 	}
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause  + " limit 100000");
+	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + resClause + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -219,7 +276,17 @@ tc = {
     
     , loadTable: function(table){
 	var query;
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + " limit 100000");
+	var resClause = '';
+	if(table == 'results'){
+	    if(tc.opt_green == 0)
+		resClause += " and func not equal to 'greenResult' ";
+	    if(tc.opt_rush == 0)
+		resClause += " and func not equal to 'rushBoycott' ";
+	    if(tc.opt_hotel == 0)
+		resClause += " and func does not contain 'hotel' ";
+	}
+
+	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + resClause + " limit 100000");
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -253,7 +320,6 @@ tc = {
 	    for(var i=0;i<r.rows.length;i++){
 		request.data[i]=r.rows.item(i);
 	    }
-	    //console.log(request);
 	    callback(request);
 	}
     }
@@ -268,8 +334,6 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key  LIMIT 1";
-		//console.log(selTxt);
-		//console.log(key);
 		tx.executeSql(selTxt
 			      , [key,key,key,key]
 			      , function(tx,r){ 
@@ -283,7 +347,6 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = ? and p.type = ? LIMIT 1";
-		//console.log(selTxt + " " + key + " " + request.type);
 		tx.executeSql(selTxt
 			      , [key,request.type]
 			      , function(tx,r){ 
@@ -294,8 +357,6 @@ tc = {
 	);
     }
     , lookupPlaces: function(request,callback){
-	//console.log("lookupPlaces");
-	//console.log(request);
 	var data = request.data;
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
@@ -303,7 +364,6 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = ?";
-		//console.log(selTxt + " " + request.type);
 		tx.executeSql(selTxt
 			      , [request.type]
 			      , function(tx,r){tc.onLookupSuccessMany(tx,r,request,callback)}
@@ -338,7 +398,6 @@ tc = {
 	
 	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + parSt + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
 	request.key = '';
-	//	console.log(selTxt);
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(selTxt

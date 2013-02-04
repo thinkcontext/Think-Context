@@ -2,6 +2,21 @@ var sql = require("sqlite");
 var Request = require('request').Request;
 var ss = require("simple-storage");
 var timer = require("timer");
+
+var prefSet = require("simple-prefs");
+var opt_news = prefSet.prefs.opt_news;
+var opt_green = prefSet.prefs.opt_green;
+var opt_rush = prefSet.prefs.opt_rush;
+var opt_hotel = prefSet.prefs.opt_hotel;
+function onPrefChange(prefName) {  
+    console.error(prefName, prefSet.prefs[prefName]);
+    prefSet.prefs[prefName]; 
+}
+prefSet.on('opt_news', onPrefChange);
+prefSet.on('opt_green', onPrefChange);
+prefSet.on('opt_rush', onPrefChange);
+prefSet.on('opt_hotel', onPrefChange);
+
 function bindNums(x){
     var ret = [];
     for(var i = 0; i<x; i++){
@@ -412,26 +427,32 @@ tc = {
 	var s = request.key.split('/');
 	if(s.length > 3){
 	    var domain = s[2];
+	    console.error(domain);
 	    if(bitlyDomain(domain)){
-		var r = new require("xhr").XMLHttpRequest();
-		r.open('GET', request.key + '+', true);
-		r.onreadystatechange = function (aEvt) {
-		    if (r.readyState == 4) {
-			if(r.status == 200) {
-			    var h = r.responseXML.documentElement.querySelector('#item_title a');
-			    if(h.length > 0){
-				request.url = h[0].href;
-				callback(request);
-			    }
-			}
-		    }
-		}
+		// do nothing because after trying several techniques we 
+		// can't resolve bitly url's
+		// xmlhttprequest doesn't expose redirects (WTF!)
+		// and bitly refuses to let FF see the link info page (Origin header?)
+		
+		// var {XMLHttpRequest} = require("xhr");
+		// var r = new XMLHttpRequest();
+                // r.open('HEAD', request.key , true);
+                // r.onreadystatechange = function (aEvt) {
+		//     if(r.status != 200){
+		//     	console.error(r.status);
+		//     	console.error(r.readyState);
+		//     	console.error(r.getAllResponseHeaders());
+		//     	console.error(r.responseText);
+		//     }
+		// }
+		// r.send();
 	    } else if(domain == 'goo.gl'){
-		$.getJSON('https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
-			  , function(data){
-			      request.url = data.longUrl;
-			      callback(request);
-			  });
+		var r = new Request({
+		    url: 'https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
+		    ,onComplete: function(response){
+			request.url = response.json.longUrl;
+			callback(request);
+		    }});
 	    }
 	}
     }
