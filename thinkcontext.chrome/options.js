@@ -11,6 +11,8 @@ function save_options() {
 	    val = 0;
 	localStorage[opts[i]] = val;
     }
+    // 'results' is a shared table so we have to always refresh 
+    chrome.extension.getBackgroundPage().tc.removeLocalTableVersion('results');
     chrome.extension.getBackgroundPage().tc.loadAllTables();
     // Update status to let user know options were saved.
     var status = document.getElementById("status");

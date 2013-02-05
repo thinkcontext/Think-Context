@@ -8,8 +8,11 @@ var opt_news = prefSet.prefs.opt_news;
 var opt_green = prefSet.prefs.opt_green;
 var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
+
 function onPrefChange(prefName) {  
     console.error(prefName, prefSet.prefs[prefName]);
+    // 'results' is a shared table so we have to always refresh 
+    tc.removeLocalTableVersion('results');
     prefSet.prefs[prefName]; 
 }
 prefSet.on('opt_news', onPrefChange);
@@ -44,6 +47,7 @@ tc = {
 		, link: 'text'
 	    }
 	    , googFTNumber: '16npeDRrzx9J6X4P4w2KplYwF9wPmSrLEZSQdiBE' //1040216'
+	    , opt : 'opt_news'
 	    , version: '0.05'
 	}
 	, reverse: {
@@ -55,6 +59,7 @@ tc = {
 		, link: 'text'
 	    }
 	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
+	    , opt : 'opt_news'
 	    , version: '0.06'
 	}
 	, results: { 
@@ -68,18 +73,18 @@ tc = {
 	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
 	    , version: '0.06'
 	}
-	, subverts: { 
-	    fields: {
-		id: 'integer'
-		, sdid: 'integer'
-		, txt: 'text'
-		, location: 'text'
-		, bin_op: 'text'
+	// , subverts: { 
+	//     fields: {
+	// 	id: 'integer'
+	// 	, sdid: 'integer'
+	// 	, txt: 'text'
+	// 	, location: 'text'
+	// 	, bin_op: 'text'
 		
-	    }
-	    , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
-	    , version: '0.02'
-	}
+	//     }
+	//     , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
+	//     , version: '0.02'
+	// }
 	, place: {
 	    fields: {
 		id: 'integer'
@@ -88,6 +93,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , googFTNumber: '1H38qhAMz280fqktszJRVyAtHuS0OBdcsC7-WZsE'
+	    , opt: 'opt_hotel'
 	    , version: '0.06'
 	}
 	, place_data: {
@@ -97,9 +103,11 @@ tc = {
 		, type: 'text'
 	    }
 	    , googFTNumber: '10TYcA0TD-DdArVh5oYxq9KdwBJa0WCin6GNnV8Y'
+	    , opt: 'opt_hotel'
 	    , version: '0.06'
 	}
     }
+    , optVal: function(o){ return prefSet.prefs[o]; }
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -141,7 +149,9 @@ tc = {
     , setLocalTableVersion: function(t){
 	ss.storage[t + 'version'] = tc.tables[t].version;
     }
-
+    , removeLocalTableVersion: function(t){
+	ss.storage[t + 'version'] = null;
+    }
     , checkLocalDeleteTime: function(t){
 	return ss.storage[t + 'deletetime'];
     }
@@ -178,11 +188,25 @@ tc = {
     }
     
     , loadAllTables: function(){
+	if(tc.optVal('opt_hotel') == false)
+	    sql.execute("delete from results where func like 'hotel%'");
+	if(tc.optVal('opt_rush') == false)
+	    sql.execute("delete from results where func = 'rushBoycott'");
+	if(tc.optVal('opt_green') == false)
+	    sql.execute("delete from results where func = 'greenResult'");
+	
 	for(var t in tc.tables){
-	    if(!tc.checkLocalTableVersion(t)){
-		tc.loadTable(t);
+	    if(! (tc.optVal(tc.tables[t].opt) == false)){
+		if(!tc.checkLocalTableVersion(t)){
+		    tc.loadTable(t);
+		} else {
+		    tc.checkNoTable(t);
+		}
 	    } else {
-		tc.checkNoTable(t);
+		console.log("remove " + t);
+		var delTxt = "delete from " + t;
+		tc.removeLocalTableVersion(t);
+		sql.execute(delTxt);
 	    }
 	}
     }
@@ -195,11 +219,22 @@ tc = {
     }
     , updateAllTables: function(){
 	for(var t in tc.tables){
-	    tc.updateTable(t);
+	    if(! (tc.optVal(tc.tables[t].opt) == false))
+		tc.updateTable(t);
 	}
     }
     
     , updateTable: function(table){
+	var resClause = '';
+	if(table == 'results'){
+	    if(tc.optVal('opt_green') == false)
+		resClause += " and func not equal to 'greenResult' ";
+	    if(tc.optVal('opt_rush') == false)
+		resClause += " and func not equal to 'rushBoycott' ";
+	    if(tc.optVal('opt_hotel') == false)
+		resClause += " and func does not contain 'hotel' ";
+	}
+
 	var len = tc.tableFieldsLength(table);
 	var dateClause = '';
 	var secs;
@@ -207,7 +242,7 @@ tc = {
 	    dateClause = "and dm >= " + secs;
 	}
 
-	var delQuery  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + " limit 100000");
+	var delQuery  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + resClause + " limit 100000");
 	var delReq = Request({
 	    url: delQuery
 	    ,onComplete: function(response){
@@ -232,7 +267,7 @@ tc = {
 	    dateClause = "and da >= " + secs;
 	}
 	
-	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + " limit 100000");
+	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + resClause + " limit 100000");
 	var insReq = Request({
 	    url: insQuery
 	    ,onComplete: function(response){
@@ -268,7 +303,16 @@ tc = {
     
     , loadTable: function(table){
 	var query;
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + " limit 100000");
+	var resClause = '';
+	if(table == 'results'){
+	    if(tc.opt_green == false)
+		resClause += " and func not equal to 'greenResult' ";
+	    if(tc.opt_rush == false)
+		resClause += " and func not equal to 'rushBoycott' ";
+	    if(tc.opt_hotel == false)
+		resClause += " and func does not contain 'hotel' ";
+	}
+	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + resClause + " limit 100000");
 	Request({
 	    url: query
 	    ,onComplete: function(response){

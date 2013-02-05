@@ -158,27 +158,12 @@ tc = {
     }
     
     , loadAllTables: function(){
-	if(tc.optVal('opt_hotel') == 0){
-	    tc.db.transaction(
-		function(tx){
-		    tx.executeSql("delete from results where func like 'hotel%'");
-		}
-	    );
-	}
-	if(tc.optVal('opt_rush') == 0){
-	    tc.db.transaction(
-		function(tx){
-		    tx.executeSql("delete from results where func = 'rushBoycott'");
-		}
-	    );
-	}
-	if(tc.optVal('opt_green') == 0){
-	    tc.db.transaction(
-		function(tx){
-		    tx.executeSql("delete from results where func = 'greenResult'");
-		}
-	    );
-	}
+	if(tc.optVal('opt_hotel') == 0)
+	    tc.simpleSql("delete from results where func like 'hotel%'");
+	if(tc.optVal('opt_rush') == 0)
+	    tc.simpleSql("delete from results where func = 'rushBoycott'");
+	if(tc.optVal('opt_green') == 0)
+	    tc.simpleSql("delete from results where func = 'greenResult'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
