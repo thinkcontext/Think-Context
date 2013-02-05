@@ -141,7 +141,7 @@ if (window.frameElement === null){
 	    var resDiv = $('<div>'
 			   , { id: r
 			       , subv: true
-			       , style: 'display: inline;' })
+			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
 		.append($('<img>', { src: tc.icons[iconName]}))[0];
 	    n.parentNode.insertBefore(resDiv,n);
 	    n.style.display = "inline";
