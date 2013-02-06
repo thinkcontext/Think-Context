@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.83</string>
+	<string>0.85</string>
 	<key>CFBundleVersion</key>
-	<string>0.83</string>
+	<string>0.85</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
@@ -35,6 +35,8 @@
 				<string>bing-search.js</string>
 				<string>yahoo-search.js</string>
 				<string>google-place-page.js</string>
+				<string>facebook.js</string>
+				<string>twitter.js</string>
 				<string>bg-utils.js</string>
 			</array>
 		</dict>

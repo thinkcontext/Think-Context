@@ -276,7 +276,7 @@ tc.reverseExamine = function(){
     var urlmap;
     urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
 	this.setAttribute('tcRev','tcRev');
-	if(this.innerText.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
+	if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
 	    return tc.sigURL(this.href);
 	}});
     if(urlmap.length > 0){
@@ -318,7 +318,7 @@ tc.reverseResponse = function(request){
 	    jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
 	$(jsearch).map(function(){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
-		if(this.innerText.match(/\w/)){
+		if(this.textContent.match(/\w/)){
 		    var r = tc.random();
 		    var revDiv = $('<div>',{id: "d"+r});
 		    revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));

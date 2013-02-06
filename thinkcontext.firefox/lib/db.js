@@ -10,10 +10,10 @@ var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
 
 function onPrefChange(prefName) {  
-    console.error(prefName, prefSet.prefs[prefName]);
     // 'results' is a shared table so we have to always refresh 
     tc.removeLocalTableVersion('results');
     prefSet.prefs[prefName]; 
+    tc.loadAllTables();
 }
 prefSet.on('opt_news', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
@@ -183,8 +183,8 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.error("db error: " + e.message);
-	console.error("fail");
+	//console.error("db error: " + e.message);
+	//console.error("fail");
     }
     
     , loadAllTables: function(){
@@ -203,7 +203,6 @@ tc = {
 		    tc.checkNoTable(t);
 		}
 	    } else {
-		console.log("remove " + t);
 		var delTxt = "delete from " + t;
 		tc.removeLocalTableVersion(t);
 		sql.execute(delTxt);
@@ -211,7 +210,6 @@ tc = {
 	}
     }
     , checkNoTable: function(table){
-	//console.log("checknotable");
 	sql.execute("select count(*) from " + table
 		    ,{}
 		    , tc.onSuccess
@@ -318,7 +316,6 @@ tc = {
 	    ,onComplete: function(response){
 		var queries = [];
 		var dataArray = CSVToArray(response.text);
-		//		    console.log(dataArray);
 		var len = tc.tableFieldsLength(table);
 		if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
 		    var dropTxt = "DROP TABLE IF EXISTS " + table;
@@ -371,7 +368,6 @@ tc = {
     }
 
     , onLookupSuccess: function(r, status, request, callback, fields){
-	//	console.log("in onlookupSuccess " + r.data.length);
 	if(r.data.length > 0){
 	    request.data = {};
 	    var i = 0;
@@ -463,43 +459,38 @@ tc = {
     }
 
     , sendStat: function(key){
-	//console.log("sendStat " + key);
 	Request({url: 'http://thinkcontext.org/s/?' + key}).get();
     }
 
-    , urlResolve: function(request,callback){
-	var s = request.key.split('/');
-	if(s.length > 3){
-	    var domain = s[2];
-	    console.error(domain);
-	    if(bitlyDomain(domain)){
-		// do nothing because after trying several techniques we 
-		// can't resolve bitly url's
-		// xmlhttprequest doesn't expose redirects (WTF!)
-		// and bitly refuses to let FF see the link info page (Origin header?)
+    // , urlResolve: function(request,callback){
+    // 	var s = request.key.split('/');
+    // 	if(s.length > 3){
+    // 	    var domain = s[2];
+    // 	    if(bitlyDomain(domain)){
+    // 		// do nothing because after trying several techniques we 
+    // 		// can't resolve bitly url's
+    // 		// xmlhttprequest doesn't expose redirects (WTF!)
+    // 		// and bitly refuses to let FF see the link info page (Origin header?)
 		
-		// var {XMLHttpRequest} = require("xhr");
-		// var r = new XMLHttpRequest();
-                // r.open('HEAD', request.key , true);
-                // r.onreadystatechange = function (aEvt) {
-		//     if(r.status != 200){
-		//     	console.error(r.status);
-		//     	console.error(r.readyState);
-		//     	console.error(r.getAllResponseHeaders());
-		//     	console.error(r.responseText);
-		//     }
-		// }
-		// r.send();
-	    } else if(domain == 'goo.gl'){
-		var r = new Request({
-		    url: 'https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
-		    ,onComplete: function(response){
-			request.url = response.json.longUrl;
-			callback(request);
-		    }});
-	    }
-	}
-    }
+    // 		// var {XMLHttpRequest} = require("xhr");
+    // 		// var r = new XMLHttpRequest();
+    //             // r.open('HEAD', request.key , true);
+    //             // r.onreadystatechange = function (aEvt) {
+    // 		//     if(r.status != 200){
+
+    // 		//     }
+    // 		// }
+    // 		// r.send();
+    // 	    } else if(domain == 'goo.gl'){
+    // 		var r = new Request({
+    // 		    url: 'https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
+    // 		    ,onComplete: function(response){
+    // 			request.url = response.json.longUrl;
+    // 			callback(request);
+    // 		    }});
+    // 	    }
+    // 	}
+    // }
 };
 
 tc.connectDB();
@@ -516,7 +507,7 @@ exports.lookupReverse = tc.lookupReverse;
 exports.lookupReverseHome = tc.lookupReverseHome;
 exports.lookupSubvert = tc.lookupSubvert;
 exports.sendStat = tc.sendStat;
-exports.urlResolve = tc.urlResolve;
+//exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this
 // can be overriden in the second argument.
@@ -624,18 +615,18 @@ function getReverseHost(url){
     return null;
 }
 
-function bitlyDomain(domain){
-    if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
-	return 1
-}
+// function bitlyDomain(domain){
+//     if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
+// 	return 1
+// }
 
-function resolveMap(url){
-    var s = url.split('/');
-    if(s.length > 3){
-	var domain = s[2];
-	if(bitlyDomain(domain))
-	    return 'https://bitly.com/' + s[3];
-	else if(domain == 'goo.gl')
-	    return url;	
-    }
-}
+// function resolveMap(url){
+//     var s = url.split('/');
+//     if(s.length > 3){
+// 	var domain = s[2];
+// 	if(bitlyDomain(domain))
+// 	    return 'https://bitly.com/' + s[3];
+// 	else if(domain == 'goo.gl')
+// 	    return url;	
+//     }
+// }

@@ -15,7 +15,7 @@ tc.facebook.examine = function(){
 	var url, m = this.href.match(/u=(http[^\&]*)/);
 	if(m.length == 2){
 	    url = decodeURIComponent(m[1]);
-	    if(this.innerText.match(/\w/) && tc.sigURL(url) != tc.sigURL(document.URL)){
+	    if(this.textContent.match(/\w/) && tc.sigURL(url) != tc.sigURL(document.URL)){
 		return tc.sigURL(url);
 	    }}});
     if(urlmap.length > 0){
@@ -36,7 +36,7 @@ tc.facebook.examine = function(){
 	    this.setAttribute("sid",sid);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid
-     			    , 'key': tc.sigURL(this.innerText).replace(/https?:\/\//,'').replace(/\/$/,'') });
+     			    , 'key': tc.sigURL(this.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
 	    
 	});}
 

@@ -182,38 +182,38 @@ pageMod.PageMod({
 	    }
 	})
     }});
+// pageMod.PageMod({
+//     include : ["http://twitter.com/*","https://twitter.com/*"],
+//     contentStyleFile: data.url("jquery-ui.css"),
+//     contentScriptWhen:  'ready',
+//     contentScriptFile: [
+// 			data.url('jquery-1.7.1.min.js')
+// 			,data.url('jquery-ui-1.8.16.custom.min.js')
+// 			,data.url('utils.js')
+// 			,data.url('twitter.js')],
+//     onAttach: function(worker){
+// 	worker.on('message', function(request){
+// 	    var key = request.key;
+// 	    var data;
+// 	    switch(request.kind){
+// 	    case 'resource':
+// 		request.data = iconDir;
+// 		worker.postMessage(request);
+// 		break;
+// 	    case 'sendstat':
+// 		db.sendStat(request.key);
+// 		break;
+// 	    case 'link':
+// 		db.lookupResult(request, function(r){worker.postMessage(r)});
+// 		break;
+// 	    case 'urlresolve':
+// 		db.urlResolve(request, function(r){worker.postMessage(r)});
+// 		break;
+// 	    }
+// 	})
+//     }});
 pageMod.PageMod({
-    include : ["http://twitter.com/*","https://twitter.com/*"],
-    contentStyleFile: data.url("jquery-ui.css"),
-    contentScriptWhen:  'ready',
-    contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('twitter.js')],
-    onAttach: function(worker){
-	worker.on('message', function(request){
-	    var key = request.key;
-	    var data;
-	    switch(request.kind){
-	    case 'resource':
-		request.data = iconDir;
-		worker.postMessage(request);
-		break;
-	    case 'sendstat':
-		db.sendStat(request.key);
-		break;
-	    case 'link':
-		db.lookupResult(request, function(r){worker.postMessage(r)});
-		break;
-	    case 'urlresolve':
-		db.urlResolve(request, function(r){worker.postMessage(r)});
-		break;
-	    }
-	})
-    }});
-pageMod.PageMod({
-    include : ["http://facebook.com/*","https://facebook.com/*"],
+    include : ["http://facebook.com/*","https://facebook.com/*","http://www.facebook.com/*","https://www.facebook.com/*"],
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [

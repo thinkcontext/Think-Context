@@ -80,6 +80,7 @@ String.prototype.repeat = function(count) {
     };
     return result;
 };
+
 function getReverseHost(url){
     var host;
     var ar;
@@ -99,10 +100,10 @@ function getReverseHost(url){
 		   || tld == 'org')
 		  && !(tld == 'com' 
 		       && (ar[ar.length - 2] == 'patch'
-			   || ar[ar.length - 2] == 'cbslocal'
-			   || ar[ar.length - 2] == 'curbed'
-			   || ar[ar.length - 2] == 'curbed'
-			   || ar[ar.length - 2] == 'craigslist')
+			    || ar[ar.length - 2] == 'cbslocal'
+			    || ar[ar.length - 2] == 'yahoo'
+			    || ar[ar.length - 2] == 'curbed'
+			    || ar[ar.length - 2] == 'craigslist')
 		       )){
 	    return ar.slice(ar.length - 2).join('.')
 	} else {
@@ -112,6 +113,18 @@ function getReverseHost(url){
     return null;
 }
 
-function arrayQuoteEscape(arr){
-    return arr.map(function(x){ return x.replace("'","''")})
+function bitlyDomain(domain){
+    if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
+	return 1
+}
+
+function resolveMap(url){
+    var s = url.split('/');
+    if(s.length > 3){
+	var domain = s[2];
+	if(bitlyDomain(domain))
+	    return 'https://bitly.com/' + s[3];
+	else if(domain == 'goo.gl')
+	    return url;	
+    }
 }

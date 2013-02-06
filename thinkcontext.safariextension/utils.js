@@ -89,29 +89,28 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		     greena:	1
 		    };
 
-    tc.insertPrev = function(n,iconName,title,text){
+    tc.insertPrev = function(n,iconName,r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	    var r = tc.random();
-	    var resDiv = document.createElement("div");
-	    resDiv.setAttribute("id",r);
-	    resDiv.setAttribute("subv",true);
-	    resDiv.style.display = "inline";
-	    var imgG = document.createElement("img");
-	    imgG.src = tc.icons[iconName];
-	    resDiv.appendChild(imgG);
+	    var resDiv = $('<div>'
+			   , { id: r
+			       , subv: true
+			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+		.append($('<img>', { src: tc.icons[iconName]}))[0];
 	    n.parentNode.insertBefore(resDiv,n);
 	    n.style.display = "inline";
-	    tc.iconDialog(title,text,r);
+	    tc.iconDialog(title,theDiv,r);
 	}
     };
 
-    tc.popDialog = function(title, body, autoOpen){
+    tc.popDialog = function(title, revDiv, z, autoOpen){
 	var r = tc.random();
-	var z = tc.random();
-	$('body').append('<img id="'+r+'" src="' + tc.icons.trackback32 + '" style="z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4">');
-
-	var d = $('<div id="' + z + '">'+body+'</div>').dialog(
-	    { title: 'thinkContext: ' + title
+	$('body').append($('<img>', { id: r
+				      ,src: tc.icons.trackback32 
+				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
+	
+	var d = revDiv.dialog(
+	    { zIndex: 10000000
+	      ,title: 'thinkContext: ' + title
 	      , position: [window.innerWidth - 350
 			   , window.innerHeight - 175 ]
 	      , close: function(){
@@ -120,12 +119,11 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	      }
 	      , height: 150
 	      , autoOpen: autoOpen
-	      , zIndex: 10000000
 	    }); 
 	
 	$('div#' + z + ' a[tcstat]').click(function(){
-	    tc.sendMessage({'kind': 'sendstat'
-	 		    , 'key': this.attributes['tcstat'].value});
+	    chrome.extension.sendRequest({'kind': 'sendstat'
+	 				  , 'key': this.attributes['tcstat'].value});
 	});
 	$('#'+r).click(function(){
 	    d.dialog('open');
@@ -204,10 +202,10 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?govtrack\.us\/[^"?]+/)
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?markets\.ft\.com\/[^"?]+/)
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?irinnews\.org\/[^"?]+/)
-		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?jpost\.com\/[^"?]+/)
+		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?jpost\.com\/[^"?]+/)	
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?cato\.org\/[^"?]+/)
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?wtop\.com\/[^"?]+/)
-		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?money\.msn\.com\/[^"?]+/)		  
+		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?money\.msn\.com\/[^"?]+/)
 		  || ret.match(/http(s)?:\/\/([\w\.]*\.)?npr\.org\/player\/v2\/mediaPlayer\.html[^"?]+/)	     
 		 ){
 	    ret = ret.split('#')[0];	      
@@ -227,7 +225,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     }
 
     tc.iconDialog = function(title,body,iconId){
-	var d = $('<div id="d'+iconId+'">'+body+' </div>').dialog(
+	var d = body.dialog(
 	    {autoOpen: false
 	     , title:  'thinkContext: ' + title
 	     , height: 150
@@ -239,10 +237,10 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		d.dialog('open'); 
 		$('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
 		return false;}
-	    , function(event){});
+	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
-	    tc.sendMessage({'kind': 'sendstat'
-	 		    , 'key': this.attributes['tcstat'].value});
+	    chrome.extension.sendRequest({'kind': 'sendstat'
+	 				  , 'key': this.attributes['tcstat'].value});
 	});
 	tc.dialogs.push(d);
     }
@@ -263,6 +261,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		bi++;
 	    }
 	}
+
 	return result;
     }
 
@@ -272,22 +271,31 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     }
 
     tc.sendMessage = function(request){
+	console.log(request);
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 
     tc.reverseExamine = function(){
 	var urlmap;
-	urlmap = $("a[href^='http']:visible").map(function(){
-	    if(this.innerText.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
+	urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
+	    this.setAttribute('tcRev','tcRev');
+	    if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
 		return tc.sigURL(this.href);
 	    }});
-	if(urlmap){
-	    tc.sendMessage(
-    		{'kind': 'reversehome'
-    		 , 'key': jQuery.makeArray(urlmap).slice(0,400)
-    		});
+	if(urlmap.length > 0){
+    	    var revArr = jQuery.makeArray(urlmap);
+    	    while(revArr.length > 0){
+    		tc.sendMessage(
+    		    {'kind': 'reversehome'
+    		     , 'key': revArr.slice(0,400)
+    		    });
+    		revArr.splice(0,400);
+    	    }
 	}
     }
+
+    tc.reverseResponseTwit = 0;
+    tc.reverseResponseFB = 0;
     tc.reverseResponse = function(request){
 	var data = request.data;
 	var out = {};
@@ -303,25 +311,53 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	    }
 	}
 	var tcstat = 'rrh';
-	
+	var jsearch;
 	for(var rl in out){
-	    var text = '<b>This link was mentioned in</b>';// <ul style="display:inline">';
 
-	    for(l in out[rl]){
-		text += "<br>";
-		text += "<li>";
-		if(tc.iconStatus[out[rl][l].source] == 1){
-		    text += '<img style="display:inline;" height="16" width="16" src="'+tc.iconDir + "/" + out[rl][l].source + ".ico"+'">';
-		}
-		text += ' <a tcstat="' + tcstat + out[rl][l].id + docHost + '" target="_blank" href="' + out[rl][l].link + '">'+ tc.htmlDecode(out[rl][l].title) + '</a> by <a target="_blank" href="' + out[rl][l].source_link + '">' + out[rl][l].name + '</a> links to <a href="'+ out[rl][l].reverse_link + '">this page</a>'; 
-	    }
-	    //	text += "</ul>";
-	    $('a[href^="'+rl+'"]:visible').map(function(){
+	    jsearch = 'a[href^="'+rl+'"]:visible';
+	    if(tc.reverseResponseTwit == 1)
+		jsearch = 'a[tcurl^="'+rl+'"]:visible';	
+	    else if(tc.reverseResponseFB == 1)
+		jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
+	    $(jsearch).map(function(){
 		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
-		    if(this.innerText.match(/\w/)){
+		    if(this.textContent.match(/\w/)){
+			var r = tc.random();
+			var revDiv = $('<div>',{id: "d"+r});
+			revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
+			var build = ''
+			for(l in out[rl]){
+			    if(tc.iconStatus[out[rl][l].source] == 1){
+				revDiv.append($('<li>')
+					      .append($('<img>',{ style: "display:inline;"
+								  , height:"16"
+								  , width:"16"
+			       					  ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
+						     )
+					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
+								 , target: "_blank"
+								 , href: out[rl][l].link
+								 , text: tc.htmlDecode(out[rl][l].title)}))
+					      .append(' by ')
+					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
+					      .append(' links to ')
+					      .append($('<a>', { href: out[rl][l].reverse_link
+								 , text: 'this page'})));
+			    } else {
+				revDiv.append($('<li>')
+					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
+								 , target: "_blank"
+								 , href: out[rl][l].link
+								 , text: tc.htmlDecode(out[rl][l].title)}))
+					      .append(' by ')
+					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
+					      .append(' links to ')
+					      .append($('<a>', { href: out[rl][l].reverse_link
+								 , text: 'this page'})));
+			    }
+			}
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
-			var r = tc.random();
 			resDiv.setAttribute("id",r);
 			resDiv.setAttribute("subv",true);
 			resDiv.style.display = "inline";
@@ -336,7 +372,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 			resDiv.appendChild(redih);
 			this.parentNode.insertBefore(resDiv,this);
 			this.style.display = "inline";
-			tc.iconDialog("Progressive Trackback", text, r);
+			tc.iconDialog("Progressive Trackback", revDiv, r);
 		    }
 		}
 	    });
@@ -348,6 +384,190 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	    tc.dialogs[d].dialog('close');
 	}
     }
-}
 
-tc.random = function(){return Math.floor(Math.random() * 100000);}
+    tc.googlePlaces = function(request){ 
+	//console.log(request);
+	var data = request.data;
+	var d;
+	var icon;
+	var title;
+	var blurb;
+	var tcstat = 'gsp';
+	for(var r in data){
+	    d = data[r];
+	    if(d.type == 'safe'){
+		icon = 'greenCheck';
+		title = ' Patronize This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' - Recommends patronizing this hotel');
+	    } else if(d.type == 'boycott' || d.type == 'strike'){
+		icon = 'redCirc';
+		title = ' Boycott This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' - Recommends boycotting this hotel');
+	    } else if(d.type == 'risky'){
+		icon = 'infoI';
+		title = 'Risk of Labor Dispute At This Hotel';
+		blurb = $('<div>')
+		    .append($('<b>')
+			    .append($('<a>', {tcstat:tcstat + d.id
+					      , target:"_blank"
+					      , href: "http://www.hotelworkersrising.org/"
+					      , text: "Hotel Workers Rising"
+					     })))
+		    .append(' advises that there is a risk of a labor dispute at this hotel.');
+	    }
+
+	    if(icon){
+		tc.googlePlacesHandler(d.siteid, icon ,title ,blurb);
+	    }
+	}
+    }
+
+    tc.sub = {};
+
+    tc.sub.greenResult = function(n,key,data){
+	var detail = JSON.parse(data.data);
+	var tcstat = 'bsg';
+	var r = tc.random();
+	var d = $("<div>",{id: "d"+r})
+	    .append($('<b>')
+		    .append($('<a>'
+			      ,{tcstat: tcstat+data.id
+				, target: '_blank'
+				, href: 'http://' + key + '/'
+				, text: detail.name})))
+	    .append('- ' + detail.desc); 
+	
+	tc.insertPrev(n
+		      ,'greenG'
+		      ,r
+		      ,'Member of the Green Business Network'
+		      , d
+		     );
+    }
+
+    tc.sub.rushBoycott = function(n,key,data){
+	var detail = JSON.parse(data.data);
+	var tcstat = 'grb';
+
+	var r = tc.random();
+	var d = $("<div>",{id: "d"+r})
+	    .append($('<b>', {text: detail.name}))
+	    .append(' is listed as an advertiser of Rush Limbaugh\'s by ')
+	    .append($('<a>'
+		      ,{tcstat: tcstat+data.id
+			, target: '_blank'
+			, href: 'http://stoprush.net/'
+			, text: 'The Stop Rush Project'}))
+	    .append('. Click ')
+	    .append($('<a>', {tcstat: tcstat+data.id
+			      , target: '_blank'
+			      , href: data.url
+			      , text: 'here'}))
+	    .append(' for more information on this particular advertiser\'s activity.');
+
+	tc.insertPrev(n
+		      , 'stopRush'
+		      , r
+		      , 'Rush Limbaugh Advertiser'
+		      , d
+		     )
+    }
+
+    tc.sub.place = function(n, cid, pb,data){
+	var tcstat = 'bsp';
+	var r = tc.random();
+	var d = $("<div>",{id: "d"+r})
+	    .append($('<b>')
+		    .append($('<a>'
+			      ,{tcstat: tcstat+data.id
+				, target: '_blank'
+				, href: 'http://www.hotelworkersrising.org/'
+				, text: 'Hotel Workers Rising'})));
+
+	if(pb == 'patronize'){
+	    tc.insertPrev(n
+			  ,'greenCheck'
+			  , r
+			  ,'Patronize This Hotel'
+			  , d.append('- Recommends patronizing this hotel')
+			 );
+	} else if(pb == 'boycott'){
+	    tc.insertPrev(n
+			  ,'redCirc'
+			  ,r
+			  ,'Boycott This Hotel'
+			  , d.append('- Recommends boycotting this hotel')
+			 );
+	} else if(pb == 'risky'){
+	    tc.insertPrev(n
+			  ,'infoI'
+			  ,r
+			  ,'Risk of Labor Dispute At This Hotel'
+			  , d.append(' advises that there is a risk of a labor dispute at this hotel.')
+			 );
+	}
+    }
+
+    tc.sub.placeboycott = function(n, cid, data){
+	tc.sub.place(n,cid,'boycott',data);
+    }
+
+    tc.sub.placepatronize = function(n, cid, data){
+	tc.sub.place(n,cid,'patronize',data);
+    }
+
+    tc.sub.placestrike = function(n, cid, data){
+	tc.sub.place(n,cid,'boycott',data);
+    }
+    tc.sub.placerisky = function(n, cid, data){
+	tc.sub.place(n,cid,'risky',data);
+    }
+
+    tc.sub.placesafe = function(n, cid, data){
+	tc.sub.place(n,cid,'patronize',data);
+    }
+
+    tc.sub.hotelboycott = function(n, cid, data){
+	tc.sub.place(n,cid,'boycott',data);
+    }
+
+    tc.sub.hotelstrike = function(n, cid, data){
+	tc.sub.place(n,cid,'boycott',data);
+    }
+
+    tc.sub.hotelrisky = function(n, cid, data){
+	tc.sub.place(n,cid,'risky',data);
+    }
+
+    tc.sub.hotelsafe = function(n, cid, data){
+	tc.sub.place(n,cid,'patronize',data);
+    }
+
+    // hyatt_result: function(n,key,data){
+    // 	// passed a google search result, insert a dialog
+    // 	// "n" is the header link for the result
+    
+    // 	var tcstat = 'gsh';
+    // 	tc.insertPrev(n
+    // 		      ,'infoI'
+    // 		      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
+    // 		     );
+    // }
+
+    tc.random = function(){return Math.floor(Math.random() * 100000);}
+
+}

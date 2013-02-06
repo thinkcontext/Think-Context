@@ -1,359 +1,240 @@
-if (window.top === window) {
-if(document.location.href.search('.*www.google.com/search\?.*') >= 0
-   ||document.location.href.search('.*www.google.com/webhp') >= 0
-   ||document.location.href.search('.*www.google.com/#') >= 0
-   ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
-  ){
+if(window.top === window) {
+    if(document.domain == 'www.google.com'){
+	tc.googleSearch = {
+	    doit: function(){
+		var sub = {
+		    
+		};
 
-tc.googleSearch = {
-
-    , doit: function(){
-	var sub = {
-
-	    rushBoycott: function(n,key,data){
-		console.log(data);
-		console.log(key);
-		var detail = JSON.parse(data.data);
-		var tcstat = 'grb';
-		tc.insertPrev(n
-			      , 'stopRush'
-			      , 'Rush Limbaugh Advertiser'
-			      , detail.name + ' is listed as an advertiser of Rush Limbaugh\'s by <a href="http://www.stoprush.net/" target="_blank" tcstat="'+tcstat+key + '">The Stop Rush Project</a>.  Click <a href="'+ data.url + '" target="_blank" tcstat="'+tcstat+key + '">here</a> for more information on this particular advertiser\'s activity.'
-			     )
-	    }
-
-	    , greenResult: function(n,key,data){
-		var detail = JSON.parse(data.data);
-		var tcstat = 'gsg';
-		tc.insertPrev(n
-			      ,'greenG'
-			      ,'Member of the Green Business Network','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
-			     );
-	    },
-	    
-	    hyatt_result: function(n,key,data){
-		// passed a google search result, insert a dialog
-		// "n" is the header link for the result
+		function insertSubvertisements(message){
+		    // var result= '';
+		    // var tcstat = 'gss';
+		    // if(message.data && message.data.length > 0){
+		    // 	var subvs = message.data;
+		    // 	var sel = [];
+		    // 	var x = 0;
+		    // 	if(subvs.length > 3){
+		    // 	    for(x=0;x<=2;x++){
+		    // 		var i = tc.random()% subvs.length ;
+		    // 		sel.push(subvs[i]);
+		    // 		subvs.splice(i,1);
+		    // 	    }
+		    // 	} else {
+		    // 	    sel = subvs;
+		    // 	}
+		    // 	result = sel.map(function(subv){ 
+		    // 	    var d = JSON.parse(subv.data);
+		    // 	    var link = subv.url;
+		    // 	    var id = subv.id;
+		    // 	    var name = d.name;
+		    // 	    var ds = d.desc.split(' ')
+		    // 	    var blurb = ds.slice(0,14).join(' ');
+		    // 	    if(ds.length > 14)
+		    // 		blurb += '...';
+		    // 	    var host = link.split('/')[0];
+		    // 	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
+		    // }
+		    // var c;
+		    // if($("div#rhs").length == 0){
+		    // 	// no right column so insert one for subvertisements
+		    // 	c = document.createElement("div");
+		    // 	c.id = "rhs";
+		    // 	c.innerHTML = '<div id="rhs_block"></div>';
+		    // 	c.style.position = "absolute";
+		    // 	c.style.right = "0px";
+		    // 	c.style.top = "0pt";
+		    // 	c.style.width = "254px";
+		    // 	$("div#rhscol").append(c);
+		    // } 
+		    
+		    // if($("table#mbEnd").length == 0){
+		    // 	// no right column so insert one for subvertisements
+		    // 	c = document.createElement("table");
+		    // 	c.id = "mbEnd";
+		    // 	c.innerHTML = "<tbody></tbody>";
+		    // 	$("div#rhs_block").append(c);
+		    // } 
+		    // $("table#mbEnd").map(function(){
+		    // 	if(result != ''){
+		    // 	    var subvDiv = document.createElement("tr");
+		    // 	    subvDiv.setAttribute("subv",true);
+		    // 	    subvDiv.innerHTML = "<ol>"+ result + "</ol>";
+		    // 	    if(this.firstChild.getAttribute("subv") == null){
+		    // 		this.insertBefore(subvDiv,this.firstChild);
+		    // 	    } else {
+		    // 		this.replaceChild(subvDiv,this.firstChild);
+		    // 	    }
+		    // 	}
+		    // }
+		    // 			);
+		    // $("table#mbEnd a[tcstat]").click(function(){
+		    // 	tc.sendMessage({'kind': 'sendstat'
+		    // 				      , 'key': this.attributes['tcstat'].value});
+		    // });
+		    
+		}
 		
-		var tcstat = 'gsh';
-		tc.insertPrev(n
-			      ,'infoI'
-			      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-			     );
-	    }
-
-	    , place: function(n, cid, pb,data){
-		var tcstat = 'gsp';
-		if(pb == 'patronize'){
-		    tc.insertPrev(n
-				  ,'greenCheck'
-				  ,'Patronize This Hotel'
-				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>'
-				 );
-		} else if(pb == 'boycott'){
-		    tc.insertPrev(n
-				  ,'redCirc'
-				  ,'Boycott This Hotel'
-				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>'
-				 );
-		} else if(pb == 'risky'){
-		    tc.insertPrev(n
-				  ,'infoI'
-				  ,'Risk of Labor Dispute At This Hotel'
-				  ,'<div><b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>'
-				 );
-		}
-	    },
-	    
-	    placeboycott: function(n, cid, data){
-		sub.place(n,cid,'boycott',data);
-	    },
-
-	    placestrike: function(n, cid, data){
-		sub.place(n,cid,'boycott',data);
-	    },
-
-	    placerisky: function(n, cid, data){
-		sub.place(n,cid,'risky',data);
-	    },
-
-	    placesafe: function(n, cid, data){
-		sub.place(n,cid,'patronize',data);
-	    },
-
-	    hotelboycott: function(n, cid, data){
-		sub.place(n,cid,'boycott',data);
-	    },
-
-	    hotelstrike: function(n, cid, data){
-		sub.place(n,cid,'boycott',data);
-	    },
-
-	    hotelrisky: function(n, cid, data){
-		sub.place(n,cid,'risky',data);
-	    },
-
-	    hotelsafe: function(n, cid, data){
-		sub.place(n,cid,'patronize',data);
-	    }
-
-	};
-
-	function insertSubvertisements(message){
-	    var result= '';
-	    var tcstat = 'gss';
-
-	    if(message.data && message.data.length > 0){
-		var subvs = message.data;
-		var sel = [];
-		var x = 0;
-		if(subvs.length > 3){
-		    for(x=0;x<=2;x++){
-			var i = tc.random()% subvs.length ;
-			sel.push(subvs[i]);
-			subvs.splice(i,1);
-		    }
-		} else {
-		    sel = subvs;
-		}
-		result = sel.map(function(subv){ 
-		    var d = JSON.parse(subv.data);
-		    var link = subv.url;
-		    var id = subv.id;
-		    var name = d.name;
-		    var ds = d.desc.split(' ')
-		    var blurb = ds.slice(0,14).join(' ');
-		    if(ds.length > 14)
-			blurb += '...';
-		    var host = link.split('/')[0];
-		    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
-	    }
-	    var c;
-	    if($("div#rhs").length == 0){
-		// no right column so insert one for subvertisements
-		c = document.createElement("div");
-		c.id = "rhs";
-		c.innerHTML = '<div id="rhs_block"></div>';
-		c.style.position = "absolute";
-		c.style.right = "0px";
-		c.style.top = "0pt";
-		c.style.width = "254px";
-		$("div#rhscol").append(c);
-	    } 
-	    
-	    if($("table#mbEnd").length == 0){
-		// no right column so insert one for subvertisements
-		c = document.createElement("table");
-		c.id = "mbEnd";
-		c.innerHTML = "<tbody></tbody>";
-		$("div#rhs_block").append(c);
-	    } 
-	    $("table#mbEnd").map(function(){
-		if(result != ''){
-		    var subvDiv = document.createElement("tr");
-		    subvDiv.setAttribute("subv",true);
-		    subvDiv.innerHTML = "<ol>"+ result + "</ol>";
-		    nolistenRightColumn();
-		    if(this.firstChild.getAttribute("subv") == null){
-			this.insertBefore(subvDiv,this.firstChild);
-		    } else {
-			this.replaceChild(subvDiv,this.firstChild);
-		    }
-		    listenRightColumn();
-		}
-	    }
-				);
-	    $("table#mbEnd a[tcstat]").click(function(){
-		tc.sendMessage({'kind': 'sendstat'
-	 				      , 'key': this.attributes['tcstat'].value});
-	    });
-	}
-    
-	tc.registerResponse('link', function(request){
-	    $("[sid=" + request.sid +"]").map(function(){
-		this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false);
-		sub[request.data.func](this,request.key,request.data);});
-	});
-
-	tc.registerResponse('places',function(request){ 
-	    var data = request.data;
-	    var d;
-	    var icon;
-	    var title;
-	    var blurb;
-	    var tcstat = 'gsp';
-	    for(var r in data){
-		d = data[r];
-		if(d.type == 'safe'){
-		    icon = 'greenCheck';
-		    title = '<img src="'+ tc.icons['greenCheck'] + '"> Patronize This Hotel';
-		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends patronizing this hotel</div>';
-		} else if(d.type == 'boycott' || d.type == 'strike'){
-		    icon = 'redCirc';
-		    title = '<img src="'+ tc.icons['redCirc'] + '"> Boycott This Hotel';
-		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> - Recommends boycotting this hotel</div>';
-		} else if(d.type == 'risky'){
-		    icon = 'infoI';
-		    title = 'Risk of Labor Dispute At This Hotel';
-		    blurb = '<div><b><a tcstat="' + tcstat + d.id + '" target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a></b> advises that there is a risk of a labor dispute at this hotel.</div>';
-		}
-
-		if(icon){
-		    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + d.siteid +"']) div > h4 > a").map(function(){
-			tc.insertPrev(this,icon,title,blurb);});
-		}
-	    }
-	});
-
-	tc.registerResponse('place', function(request){
-	    switch(request.subtype){
-	    case 'gs-cid':
-		$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
-		    sub['place' + request.data.type](this,request.key,request.data);});
-		break;
-	    case 'gs-ptable':
-		$("div:has([sid=" + request.sid +"]) > h3 > a").map(function(){
-		    sub['place'+request.data.type](this,request.key,request.data);
+		tc.registerResponse('link', function(request){
+		    $("[sid=" + request.sid +"]").map(function(){
+			tc.sub[request.data.func](this,request.key,request.data);});
 		});
-		break;
-	    case 'gs-lcll':
-		$("[sid=" + request.sid +"]").map(function(){
-		    this.addEventListener('DOMNodeRemoved', function(){pageExamine();},false)
-		    sub['place'+request.data.type](this,request.key,request.data);});
-		break;
-	    }
-	});
 
-	// tc.registerResponse('gs-text', function(request){
-	//     insertSubvertisements(request);
-	// });
+		tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
+		    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
+			tc.insertPrev(this,icon,title,blurb);});	    
+		}
 
-	function examineQuery(){
-	    //the query text
-	    
-	    var qt =  $("input[name=q]").val();
-	    // check if we're doing instant search
-	    var sflas = $("a#sflas");
-	    if(sflas.length > 0){
-		var nq = $("a#sflas")[0].search;
-		var nqr = new RegExp('q=([^&]+)');
-		qt = decodeURIComponent(nqr.exec(nq)[1]);
-	    }
-	    var result='';
-	    var location = $("div#lc li.tbos").text();
-	    //console.log("query text and location " + qt + " " + location);
-	    tc.sendMessage(
-		{'kind' : "gs-text"
-		 , 'key' : qt.replace('+',' ')
-		 , 'location' : location
+		tc.registerResponse('places', tc.googlePlaces);
+
+		tc.registerResponse('place', function(request){
+		    switch(request.subtype){
+		    case 'gs-cid':
+			$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
+			    tc.sub['place' + request.data.type](this,request.key,request.data);});
+			break;
+		    case 'gs-ptable':
+			$("div:has([sid=" + request.sid +"]) > h3 > a").map(function(){
+			    tc.sub['place'+request.data.type](this,request.key,request.data);
+			});
+			break;
+		    case 'gs-lcll':
+			$("[sid=" + request.sid +"]").map(function(){
+			    sub['place'+request.data.type](this,request.key,request.data);});
+			break;
+		    }
 		});
-	}
 
-	function pageExamine(){
-	    //examineQuery();
-	    tc.googleSearch.examineResults();
-	    //tc.reverseExamine();
-	}
+		// tc.registerResponse('gs-text', function(request){
+		//     insertSubvertisements(request);
+		// });
 
-	pageExamine();
-	window.setInterval(pageExamine,500);
-    }
 
-    ,  examineResults: function(){
-	// place page in an lclbox brief results
-	// eg "westin dc"
-	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
-	    function(){
-		this.setAttribute('tcPlace','tcPlace');
-    		if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
-		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    		    cid_res = cid_regex.exec(this.href);
-		    if(cid_res[1]){
-			var cid = cid_res[1];
-			//var sid = "gs" + tc.random();
-			//this.parentNode.children[0].setAttribute("sid",sid);
-			return [ {cid:cid} ];
-		    }
+		// function examineQuery(){
+		//     //the query text
+		
+		//     var qt =  $("input[name=q]").val();
+		//     // check if we're doing instant search
+		//     var sflas = $("a#sflas");
+		//     if(sflas.length > 0){
+		// 	var nq = $("a#sflas")[0].search;
+		// 	var nqr = new RegExp('q=([^&]+)');
+		// 	qt = decodeURIComponent(nqr.exec(nq)[1]);
+		//     }
+		//     var result='';
+		//     var location = $("div#lc li.tbos").text();
+		//     //console.log("query text and location " + qt + " " + location);
+		//     tc.sendMessage(
+		// 	{'kind' : "gs-text"
+		// 	 , 'key' : qt.replace('+',' ')
+		// 	 , 'location' : location
+		// 	});
+		// }
+
+		function pageExamine(){
+		    //console.log("pageExamine");
+		    //examineQuery();
+		    tc.googleSearch.examineResults();
+		    //tc.reverseExamine();
 		}
+
+		pageExamine();
+		window.setInterval(pageExamine,500);
 	    }
-	);
 
-	if(urlmap){
-	    //console.log(jQuery.makeArray(urlmap));
-	    tc.sendMessage({'kind': 'places'
-			    ,'type': 'google'
-			    ,'subtype': 'gs-cid'
-			    , 'data': jQuery.makeArray(urlmap)
-			   });
-	}
-
-	
-	// place page in an lclbox long result
-	// eg "hay adams hotel"
-	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
-	    function(){
-		this.setAttribute('tcPlace','tcPlace');
-		var target = this.parentNode.parentNode.parentNode.children[0].children[0];
-    		if(target && target.getAttribute && !target.getAttribute('subv')){
-		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    		    cid_res = cid_regex.exec(this.href);
-		    if(cid_res[1]){
-			var cid = cid_res[1];
-			var sid = "gs" + tc.random();
-			target.setAttribute("sid",sid);
-			tc.sendMessage({'kind': 'place'
-					, 'type': 'google'
-					,'subtype': 'gs-lcll'
-					, 'sid': sid
-					, 'key': cid  });
+	    ,  examineResults: function(){
+		// place page in an lclbox brief results
+		// eg "westin dc"
+		var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
+		    function(){
+			this.setAttribute('tcPlace','tcPlace');
+    			if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
+			    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    			    cid_res = cid_regex.exec(this.href);
+			    if(cid_res[1]){
+				var cid = cid_res[1];
+				//var sid = "gs" + tc.random();
+				//this.parentNode.children[0].setAttribute("sid",sid);
+				return [ {cid:cid} ];
+			    }
+			}
 		    }
+		);
+
+		if(urlmap){
+		    //console.log(jQuery.makeArray(urlmap));
+		    tc.sendMessage({'kind': 'places'
+				    ,'type': 'google'
+				    ,'subtype': 'gs-cid'
+				    , 'data': jQuery.makeArray(urlmap)
+				   });
 		}
-	    }
-	);
-	
-	// place not in an lclbox
-	// boston hotels
-	$("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
-	    function(){
-		this.setAttribute('tcPlace','tcPlace');
-		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    		cid_res = cid_regex.exec(this.href);
-		if(cid_res[1]){
-		    var cid = cid_res[1];
+
+		
+		// place page in an lclbox long result
+		// eg "hay adams hotel"
+		$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
+		    function(){
+			this.setAttribute('tcPlace','tcPlace');
+			var target = this.parentNode.parentNode.parentNode.children[0].children[0];
+    			if(target && target.getAttribute && !target.getAttribute('subv')){
+			    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    			    cid_res = cid_regex.exec(this.href);
+			    if(cid_res[1]){
+				var cid = cid_res[1];
+				var sid = "gs" + tc.random();
+				target.setAttribute("sid",sid);
+				tc.sendMessage({'kind': 'place'
+						, 'type': 'google'
+						,'subtype': 'gs-lcll'
+						, 'sid': sid
+						, 'key': cid  });
+			    }
+			}
+		    }
+		);
+		
+		// place not in an lclbox
+		// boston hotels
+		$("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
+		    function(){
+			this.setAttribute('tcPlace','tcPlace');
+			var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    			cid_res = cid_regex.exec(this.href);
+			if(cid_res[1]){
+			    var cid = cid_res[1];
+			    var sid = "gs" + tc.random();
+			    this.setAttribute("sid",sid);
+			    tc.sendMessage({ 'kind': 'place'
+					     ,'subtype': 'gs-ptable'
+					     , 'sid': sid
+					     , 'type': 'google'
+					     , 'key': cid  });
+			}
+		    }
+		);
+		
+		//	result link	
+		$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
+		    this.setAttribute('tcLink','tcLink');
 		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
-		    tc.sendMessage({ 'kind': 'place'
-				     ,'subtype': 'gs-ptable'
-				     , 'sid': sid
-				     , 'type': 'google'
-				     , 'key': cid  });
-		}
+		    tc.sendMessage({'kind': 'link'
+     				    , 'sid': sid
+     				    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+		});
 	    }
-	);
-
-	//	result link	
-	$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){
-	    this.setAttribute('tcLink','tcLink');
-	    var sid = "gs" + tc.random();
-	    this.setAttribute("sid",sid);
-	    tc.sendMessage({'kind': 'link'
-     			    , 'sid': sid
-     			    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
-	});
+	}
+	if(document.location.href.search('.*www.google.com/search\?.*') >= 0
+	   ||document.location.href.search('.*www.google.com/webhp') >= 0
+	   ||document.location.href.search('.*www.google.com/#') >= 0
+	   ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
+	  ){
+	    tc.googleSearch.doit();
+	}else{
+	    tc.registerResponse('reversehome', tc.reverseResponse);
+	    tc.reverseExamine();
+	}    
+	
+	safari.self.addEventListener("message",tc.onResponse, false);
     }
-}
-
-if(document.location.href.search('.*www.google.com/search\?.*') >= 0
-   ||document.location.href.search('.*www.google.com/webhp') >= 0
-   ||document.location.href.search('.*www.google.com/#') >= 0
-   ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
-  ){
-    tc.googleSearch.doit();
-}else{
-    tc.registerResponse('reversehome', tc.reverseResponse);
-    tc.reverseExamine();
-}
-
-safari.self.addEventListener("message",tc.onResponse, false);
-}
 }
