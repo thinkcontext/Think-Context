@@ -68,7 +68,6 @@ tc.sendMessage(
 $("link[rel='canonical']")
     .map(function(){
 	if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
-	    console.log(this);
 	    tc.sendMessage(
 		{'kind': 'reverse'
 		 , 'key': tc.sigURL(this.href)

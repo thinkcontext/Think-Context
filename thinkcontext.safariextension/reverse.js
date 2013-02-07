@@ -8,8 +8,6 @@ if (window.top === window) {
 	  || document.domain.match('twitter.com$')
 	 ) || document.domain == 'news.google.com'
       ){    
-	//console.log("reverse");
-
 	tc.reverse = {};
 	tc.reverse.revGotResponse = 0;
 
@@ -78,7 +76,6 @@ if (window.top === window) {
 	$("link[rel='canonical']")
 	    .map(function(){
 		if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
-		    console.log(this);
 		    tc.sendMessage(
 			{'kind': 'reverse'
 			 , 'key': tc.sigURL(this.href)

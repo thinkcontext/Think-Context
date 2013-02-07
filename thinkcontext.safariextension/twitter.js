@@ -1,6 +1,5 @@
 if (window.top === window) {
     if(document.domain == 'twitter.com'){
-	console.log('twitter');
 	tc.reverseResponseTwit = 1;
 	tc.registerResponse('link'
 			    ,function(request){

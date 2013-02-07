@@ -83,7 +83,6 @@
     		    ,"*://thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
-		    ,"*://ow.ly/*"
 		    ,"*://bitly.com/*"
 		    ,"*://bit.ly/*"
 		    ,"*://goo.gl/*"
@@ -109,10 +108,6 @@
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
-	 }
-	,{  "matches": ["*://maps.google.com/*"],
-	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-maps.js"]
 	 }
 	,{
 	    "css": ["jquery-ui.css"],

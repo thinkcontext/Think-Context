@@ -26,14 +26,11 @@ function save_options() {
 function restore_options() {
     var val;
     for(var i in opts){
-	console.log(opts[i]);
 	val = localStorage[opts[i]];
-	console.log(val);
 	if(val == 1 || val == null)
 	    val = true;
 	else 
 	    val = false;
-	console.log(val);
 	document.getElementById(opts[i]).checked = val;
     }
 }

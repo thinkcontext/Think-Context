@@ -271,7 +271,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     }
 
     tc.sendMessage = function(request){
-	console.log(request);
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 
@@ -386,7 +385,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     }
 
     tc.googlePlaces = function(request){ 
-	//console.log(request);
 	var data = request.data;
 	var d;
 	var icon;

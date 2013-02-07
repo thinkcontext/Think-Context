@@ -23,7 +23,6 @@ if (window.top === window) {
 		    }}});
 	    if(urlmap.length > 0){
     		var revArr = jQuery.makeArray(urlmap);
-		console.log(revArr);
     		while(revArr.length > 0){
     		    tc.sendMessage(
     			{'kind': 'reversehome'

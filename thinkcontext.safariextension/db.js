@@ -105,7 +105,6 @@ tc = {
     }
 
     , simpleSql: function(sqlTxt){
-	console.log(sqlTxt);
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(sqlTxt,[]);
@@ -173,7 +172,6 @@ tc = {
 		    tc.checkNoTable(t);
 		}
 	    } else {
-		console.log("remove " + t);
 		var delTxt = "delete from " + t;
 		tc.removeLocalTableVersion(t);
 		tc.simpleSql(delTxt);
@@ -419,14 +417,14 @@ tc = {
 	    if(bitlyDomain(domain)){
 		$.get( request.key + '+'
 		       , function(r){
-			   var h = $(r).find('#item_title a');
-			   if(h.length > 0){
-			       request.url = h[0].href;
+			   var h = r.match(/h1 id="item_title"><a href="([^"]+)"/);
+			   if(h){
+			       request.url = h[1];
 			       callback(request);
 			   }
 		       }
 		     );
-	
+		
 	    } else if(domain == 'goo.gl'){
 		$.getJSON('https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
 			  , function(data){
