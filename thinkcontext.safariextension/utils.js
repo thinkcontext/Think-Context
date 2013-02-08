@@ -122,7 +122,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	    }); 
 	
 	$('div#' + z + ' a[tcstat]').click(function(){
-	    chrome.extension.sendRequest({'kind': 'sendstat'
+	    tc.sendMessage({'kind': 'sendstat'
 	 				  , 'key': this.attributes['tcstat'].value});
 	});
 	$('#'+r).click(function(){
@@ -239,7 +239,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		return false;}
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
-	    chrome.extension.sendRequest({'kind': 'sendstat'
+	    tc.sendMessage({'kind': 'sendstat'
 	 				  , 'key': this.attributes['tcstat'].value});
 	});
 	tc.dialogs.push(d);

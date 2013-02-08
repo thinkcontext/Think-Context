@@ -91,6 +91,6 @@ if (window.top === window) {
 	}, false);
 	window.setInterval(newTweetsBar, 1000);
 	window.addEventListener("scroll", onScroll, false);
-	
+	safari.self.addEventListener("message",tc.onResponse, false);	
     }
 }

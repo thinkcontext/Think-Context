@@ -1,6 +1,5 @@
 if (window.top === window) {
     if(document.domain == 'facebook.com' || document.domain == 'www.facebook.com'){
-
 	tc.facebook = {};
 	tc.reverseResponseFB = 1;
 
@@ -44,5 +43,6 @@ if (window.top === window) {
 
 	tc.facebook.examine();
 	setInterval(tc.facebook.examine, 1000);
+	safari.self.addEventListener("message",tc.onResponse, false);
     }
 }

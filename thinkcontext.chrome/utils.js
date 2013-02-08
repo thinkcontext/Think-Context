@@ -121,7 +121,7 @@ tc.popDialog = function(title, revDiv, z, autoOpen){
 	}); 
     
     $('div#' + z + ' a[tcstat]').click(function(){
-	chrome.extension.sendRequest({'kind': 'sendstat'
+	tc.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
     });
     $('#'+r).click(function(){
@@ -238,7 +238,7 @@ tc.iconDialog = function(title,body,iconId){
 	    return false;}
     );
     $('div#d' + iconId+' a[tcstat]').click(function(){
-	chrome.extension.sendRequest({'kind': 'sendstat'
+	tc.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
     });
     tc.dialogs.push(d);
