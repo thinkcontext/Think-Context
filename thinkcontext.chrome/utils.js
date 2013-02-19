@@ -3,6 +3,46 @@ tc.dialogs = [];
 tc.responses = {};
 tc.examines = [];
 
+tc.resultDialogConfig = {
+    rushBoycott:  { 
+	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <a href="<%= url %>" target="_blank">here</a> for more information on this advertiser.'
+	, title: "Rush Limbaugh Advertiser"
+	, icon: 'stopRush'
+	, tcstat: 'grb'
+    }
+    , greenResult: {
+	title: 'Member of the Green Business Network'
+	, icon: 'greenG'
+	, tcstat: 'bsg'
+	, template: '<a target="_blank" href="http://<%= key %>">name</a> - desc'
+    }
+
+    , hotelsafe: {
+	title: 'Patronize'
+	, icon: 'greenCheck'
+	, tcstat: 'bsp'
+	, template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
+    }
+    , hotelboycott: {
+	title: 'Boycott'
+	, icon: 'redCirc'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    }
+    , hotelrisky: {
+	title: 'Risky'
+	, icon: 'infoI'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
+    }
+    , hotelstrike: {
+	title: 'Strike'
+	, icon: 'redCirc'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    }
+};
+
 tc.debug = function(txt){ 
     //console.log(txt); 
 }
@@ -224,6 +264,7 @@ tc.htmlDecode = function(value){
 }
 
 tc.iconDialog = function(title,body,iconId){
+    console.log(body);
     var d = body.dialog(
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
@@ -456,25 +497,50 @@ tc.sub.greenResult = function(n,key,data){
 		 );
 }
 
+tc.resultPrev = function(n,key,data){
+    var detail = JSON.parse(data.data);
+    var rdc = tc.resultDialogConfig[data.func];
+    r = tc.random();
+    data.id = 'd'+r;
+    data.r = r;
+    data.name = detail.name;
+
+    var d = $("<div>",{id: "d"+r}).appendTo('body');
+    new EJS({text: rdc.template}).update("d"+r,data);
+
+    tc.insertPrev(n
+		  , rdc.icon
+		  , r
+		  , rdc.title
+		  , d
+		 )
+}
+
 tc.sub.rushBoycott = function(n,key,data){
     var detail = JSON.parse(data.data);
-    var tcstat = 'grb';
+    r = tc.random();
+    data.tcstat = 'grb';
+    data.id = 'd'+r;
+    data.r = r;
+    data.name = detail.name;
 
-    var r = tc.random();
-    var d = $("<div>",{id: "d"+r})
-	.append($('<b>', {text: detail.name}))
-	.append(' is listed as an advertiser of Rush Limbaugh\'s by ')
-	.append($('<a>'
-		  ,{tcstat: tcstat+data.id
-		    , target: '_blank'
-		    , href: 'http://stoprush.net/'
-		    , text: 'The Stop Rush Project'}))
-	.append('. Click ')
-	.append($('<a>', {tcstat: tcstat+data.id
-			  , target: '_blank'
-			  , href: data.url
-			  , text: 'here'}))
-	.append(' for more information on this particular advertiser\'s activity.');
+    var d = $("<div>",{id: "d"+r}).appendTo('body');
+    new EJS({text: tc.resultTemplates[data.func]}).update("d"+r,data);
+
+    // var d = $("<div>",{id: "d"+r})
+    // 	.append($('<b>', {text: detail.name}))
+    // 	.append(' is listed as an advertiser of Rush Limbaugh\'s by ')
+    // 	.append($('<a>'
+    // 		  ,{tcstat: tcstat+data.id
+    // 		    , target: '_blank'
+    // 		    , href: 'http://stoprush.net/'
+    // 		    , text: 'The Stop Rush Project'}))
+    // 	.append('. Click ')
+    // 	.append($('<a>', {tcstat: tcstat+data.id
+    // 			  , target: '_blank'
+    // 			  , href: data.url
+    // 			  , text: 'here'}))
+    // 	.append(' for more information on this particular advertiser\'s activity.');
 
     tc.insertPrev(n
 		  , 'stopRush'

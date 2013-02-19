@@ -75,7 +75,7 @@ tc.googleSearch = {
     
 	tc.registerResponse('link', function(request){
 	    $("[sid=" + request.sid +"]").map(function(){
-		tc.sub[request.data.func](this,request.key,request.data);});
+		tc.resultPrev[request.data.func](this,request.key,request.data);});
 	});
 
 	tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
