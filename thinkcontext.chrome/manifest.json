@@ -92,17 +92,17 @@
 	{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","ejs_production.js","google-search.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","bg-utils.js","utils.js","twitter.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","twitter.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","bg-utils.js","utils.js","facebook.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
 	}
 
 	,{  "matches": ["*://plus.google.com/*"],
@@ -112,13 +112,13 @@
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bing-search.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
 	}
 	,{
 	    "all_frames": true,
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","yahoo-search.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
@@ -129,6 +129,8 @@
 			      ,"*://twitter.com/*"
 			      ,"*://facebook.com/*"
 			      ,"*://www.facebook.com/*"
+			      ,"http://*.yahoo.com/*"
+			      ,"https://*.yahoo.com/*"
 			     ] ,
 	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","reverse.js"]
 	}

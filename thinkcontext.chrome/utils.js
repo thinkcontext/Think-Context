@@ -14,7 +14,7 @@ tc.resultDialogConfig = {
 	title: 'Member of the Green Business Network'
 	, icon: 'greenG'
 	, tcstat: 'bsg'
-	, template: '<a target="_blank" href="http://<%= key %>">name</a> - desc'
+	, template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
     }
 
     , hotelsafe: {
@@ -264,7 +264,6 @@ tc.htmlDecode = function(value){
 }
 
 tc.iconDialog = function(title,body,iconId){
-    console.log(body);
     var d = body.dialog(
 	{autoOpen: false
 	 , title:  'thinkContext: ' + title
@@ -306,6 +305,8 @@ tc.intersect_safe = function(a, b)
 }
 
 tc.onResponse = function(request){
+    console.log(request);
+    console.log(tc.responses);
     tc.responses[request.kind](request);
 }
 
@@ -476,76 +477,22 @@ tc.googlePlaces = function(request){
 
 tc.sub = {};
 
-tc.sub.greenResult = function(n,key,data){
-    var detail = JSON.parse(data.data);
-    var tcstat = 'bsg';
-    var r = tc.random();
-    var d = $("<div>",{id: "d"+r})
-	.append($('<b>')
-		.append($('<a>'
-			  ,{tcstat: tcstat+data.id
-			    , target: '_blank'
-			    , href: 'http://' + key + '/'
-			    , text: detail.name})))
-	.append('- ' + detail.desc); 
-    
-    tc.insertPrev(n
-		  ,'greenG'
-		  ,r
-		  ,'Member of the Green Business Network'
-		  , d
-		 );
-}
-
 tc.resultPrev = function(n,key,data){
     var detail = JSON.parse(data.data);
     var rdc = tc.resultDialogConfig[data.func];
     r = tc.random();
-    data.id = 'd'+r;
-    data.r = r;
-    data.name = detail.name;
+    detail.did = 'd'+r;
+    detail.r = r;
+    detail.key = key;
+    detail.url = data.url;
 
     var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r,data);
+    new EJS({text: rdc.template}).update("d"+r,detail);
 
     tc.insertPrev(n
 		  , rdc.icon
 		  , r
 		  , rdc.title
-		  , d
-		 )
-}
-
-tc.sub.rushBoycott = function(n,key,data){
-    var detail = JSON.parse(data.data);
-    r = tc.random();
-    data.tcstat = 'grb';
-    data.id = 'd'+r;
-    data.r = r;
-    data.name = detail.name;
-
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: tc.resultTemplates[data.func]}).update("d"+r,data);
-
-    // var d = $("<div>",{id: "d"+r})
-    // 	.append($('<b>', {text: detail.name}))
-    // 	.append(' is listed as an advertiser of Rush Limbaugh\'s by ')
-    // 	.append($('<a>'
-    // 		  ,{tcstat: tcstat+data.id
-    // 		    , target: '_blank'
-    // 		    , href: 'http://stoprush.net/'
-    // 		    , text: 'The Stop Rush Project'}))
-    // 	.append('. Click ')
-    // 	.append($('<a>', {tcstat: tcstat+data.id
-    // 			  , target: '_blank'
-    // 			  , href: data.url
-    // 			  , text: 'here'}))
-    // 	.append(' for more information on this particular advertiser\'s activity.');
-
-    tc.insertPrev(n
-		  , 'stopRush'
-		  , r
-		  , 'Rush Limbaugh Advertiser'
 		  , d
 		 )
 }
@@ -604,21 +551,6 @@ tc.sub.placesafe = function(n, cid, data){
     tc.sub.place(n,cid,'patronize',data);
 }
 
-tc.sub.hotelboycott = function(n, cid, data){
-    tc.sub.place(n,cid,'boycott',data);
-}
-
-tc.sub.hotelstrike = function(n, cid, data){
-    tc.sub.place(n,cid,'boycott',data);
-}
-
-tc.sub.hotelrisky = function(n, cid, data){
-    tc.sub.place(n,cid,'risky',data);
-}
-
-tc.sub.hotelsafe = function(n, cid, data){
-    tc.sub.place(n,cid,'patronize',data);
-}
 
 	    // hyatt_result: function(n,key,data){
 	    // 	// passed a google search result, insert a dialog

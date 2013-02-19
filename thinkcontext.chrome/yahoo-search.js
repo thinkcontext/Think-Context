@@ -48,10 +48,10 @@ sub = {
     }
 };
 
-tc.registerResponse('yahoo-text',sub.insertSubvertisements);
+//tc.registerResponse('yahoo-text',sub.insertSubvertisements);
 tc.registerResponse('link',function(request){
     $("[sid=" + request.sid +"]").map(function(){
-	tc.sub[request.data.func](this,request.key,request.data);});
+	tc.resultPrev(this,request.key,request.data);});
 });
 tc.registerResponse('place', function(request){
     $("[sid=" + request.sid +"]").map(function(){
@@ -93,5 +93,5 @@ $('div#web > ol h3 > a').map(
 	}
     });
 
-tc.registerResponse('reversehome', tc.reverseResponse);
-tc.reverseExamine();
+//tc.registerResponse('reversehome', tc.reverseResponse);
+//tc.reverseExamine();
