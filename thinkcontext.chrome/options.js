@@ -1,6 +1,7 @@
 // Saves options to localStorage.
 
 var opts = [ 'opt_news','opt_rush','opt_green','opt_hotel' ]
+var bgPage = chrome.extension.getBackgroundPage();
 
 function save_options() {
     var val;
@@ -11,9 +12,17 @@ function save_options() {
 	    val = 0;
 	localStorage[opts[i]] = val;
     }
+    $('.bpCheck').map(
+	function(){
+	    if(this.checked == false){
+		bgPage.tc.rmBP(this.attributes.url.value);
+	    }
+	}
+    )
+    bpList();
     // 'results' is a shared table so we have to always refresh 
-    chrome.extension.getBackgroundPage().tc.removeLocalTableVersion('results');
-    chrome.extension.getBackgroundPage().tc.loadAllTables();
+    bgPage.tc.removeLocalTableVersion('results');
+    bgPage.tc.loadAllTables();
     // Update status to let user know options were saved.
     var status = document.getElementById("status");
     status.innerHTML = "Options Saved.";
@@ -22,13 +31,17 @@ function save_options() {
     }, 750);
 }
 
+function bpList(){
+    bgPage.tc.listBPs(
+	function(r){
+	    console.log(r);
+	    new EJS({url: '/bpOption.ejs'}).update('bp',{r:r});
+	});
+}
+
 // Restores select box state to saved value from localStorage.
 function restore_options() {
-    chrome.extension.getBackgroundPage().tc.listBPs(
-	function(r){
-
-	});
-
+    bpList();
     var val;
     for(var i in opts){
 	val = localStorage[opts[i]];

@@ -4,6 +4,7 @@
     "update_url": "http://www.thinkcontext.org/release/chrome/updates.xml",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_page": "options.html",
     "web_accessible_resources": ["icons/350.ico",
 				 "icons/acrj.ico",

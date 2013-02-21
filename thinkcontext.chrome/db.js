@@ -280,7 +280,7 @@ tc = {
 			var dropTxt = "DROP TABLE IF EXISTS " + table;
 			var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
 			if(table == 'results'){
-			    createBP = "CREATE TABLE bp_results ( " + tc.tableFieldsTypes(table) + " )";
+			    createBP = "CREATE TABLE if not exists bp_results ( " + tc.tableFieldsTypes(table) + " )";
 			    tx.executeSql(createBP
 					  , []
 					  , tc.onSuccess, tc.onError);
@@ -490,17 +490,33 @@ tc = {
 	    });	
     }
     , listBPs: function(callback){
+	console.log("listBPs");
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(
-		    "select distinct url,data from bp_results",[]
+		    "select url,min(data)data from bp_results group by url",[]
 		    , function(tx,r){
+			var out = [];
 			if(r.rows.length>0){
-			    callback(r);
-			}}
-		    , null);
-		
+			    for(var i=0;i<r.rows.length;i++){
+				out.push(r.rows.item(i));
+			    }
+			}
+			callback(out);			
+		    }
+		    , null);		
 	    });	
     }
-    
+
+    , rmBP: function(url){
+	console.log("rmBP " + url);
+	tc.db.transaction(
+	    function(tx){
+		tx.executeSql(
+		    "delete from bp_results where url = ?", [url]
+		    , function(tx,r){ console.log(r); console.log(tx); }
+		    , function(tx,e){ console.log(e);}
+		);
+	    });	
+    }
 };

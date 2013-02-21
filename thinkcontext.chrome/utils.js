@@ -6,7 +6,7 @@ tc.examines = [];
 
 tc.resultDialogConfig = {
     rushBoycott:  { 
-	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <a href="<%= url %>" target="_blank">here</a> for more information on this advertiser.'
+	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
 	, title: "Rush Limbaugh Advertiser"
 	, icon: 'stopRush'
 	, tcstat: 'grb'
@@ -45,7 +45,7 @@ tc.resultDialogConfig = {
     , bp: {
 	title: 'Boycott Plus Campaign'
 	, icon: 'redCirc'
-	, template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <a href="<%= url %>">here</a>'
+	, template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <%= link_to("here", url, {target: "_blank"}) %>'
     }
 };
 
