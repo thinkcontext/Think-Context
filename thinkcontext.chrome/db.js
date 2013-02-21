@@ -35,7 +35,7 @@ tc = {
 		, data: 'text'
 	    }
 	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -153,7 +153,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	//console.log("db error: " + e.message);
+	console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -276,8 +276,16 @@ tc = {
 	    if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
 		tc.db.transaction(
 		    function(tx){
+			var createBP;
 			var dropTxt = "DROP TABLE IF EXISTS " + table;
 			var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
+			if(table == 'results'){
+			    createBP = "CREATE TABLE bp_results ( " + tc.tableFieldsTypes(table) + " )";
+			    tx.executeSql(createBP
+					  , []
+					  , tc.onSuccess, tc.onError);
+			}
+
 			var insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") ";
 			tx.executeSql(dropTxt,[]
 				      , tc.onSuccess, tc.onError);
@@ -316,11 +324,11 @@ tc = {
     , lookupResult: function(key, request, callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key  LIMIT 1";
+		var selTxt = "select * from (SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key union SELECT * FROM bp_results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key) t LIMIT 1";
 		tx.executeSql(selTxt
-			      , [key,key,key,key]
+			      , [key,key,key,key,key,key,key,key]
 			      , function(tx,r){ 
-				  tc.onLookupSuccess(tx,r,request, callback)
+				  tc.onLookupSuccess(tx,r,request, callback);
 			      }
 			      , tc.onError);
 	    }
@@ -434,4 +442,65 @@ tc = {
 	    }
 	}
     }
+
+    , addBP: function(data, campUrl){
+	var name = data.name, updatedDate = data.updatedDate, company, domain, dat;
+	if(name && updatedDate && data.company.length > 0 && data.company[0].domains.length > 0){
+	    tc.db.transaction(
+		function(tx){
+		    tx.executeSql("delete from bp_results where url = ?",[campUrl],null,null);
+		    for(var c in data.company){
+			company = data.company[c];
+			for(var d in company.domains){
+			    domain = company.domains[d].toLowerCase().replace('http://','').replace('www.','');
+
+			    dat = {updatedDate:updatedDate
+				   , blurb: company.causeDetail
+				   , name: name
+				   , companyName: company.companyName}
+
+			    tx.executeSql(
+				"insert into bp_results ( key, url, func, data) values ( ?, ?, ?, ? )"
+				, [domain,campUrl,'bp', JSON.stringify(dat)]
+				, null, tc.onError);
+			    
+			}
+		    }
+		});
+	}
+    }
+    
+    , refreshBPs: function(){
+	tc.db.transaction(
+	    function(tx){
+		tx.executeSql(
+		    "select distinct url from bp_results",[]
+		    , function(tx,r){
+			if(r.rows.length>0){
+			    for(var i=0;i<r.rows.length;i++){
+				var url = r.rows.item(i).url
+				$.getJSON(url, null
+					  , function(data, textStatus){
+					      tc.addBP(data,url);
+					  }
+					 );
+			    }}}
+		    , null);
+		
+	    });	
+    }
+    , listBPs: function(callback){
+	tc.db.transaction(
+	    function(tx){
+		tx.executeSql(
+		    "select distinct url,data from bp_results",[]
+		    , function(tx,r){
+			if(r.rows.length>0){
+			    callback(r);
+			}}
+		    , null);
+		
+	    });	
+    }
+    
 };

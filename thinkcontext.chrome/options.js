@@ -24,6 +24,11 @@ function save_options() {
 
 // Restores select box state to saved value from localStorage.
 function restore_options() {
+    chrome.extension.getBackgroundPage().tc.listBPs(
+	function(r){
+
+	});
+
     var val;
     for(var i in opts){
 	val = localStorage[opts[i]];
@@ -33,6 +38,8 @@ function restore_options() {
 	    val = false;
 	document.getElementById(opts[i]).checked = val;
     }
+    
+
 }
 
 document.addEventListener('DOMContentLoaded', restore_options);

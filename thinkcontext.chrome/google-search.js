@@ -89,16 +89,16 @@ tc.googleSearch = {
 	    switch(request.subtype){
 	    case 'gs-cid':
 		$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
-		    tc.sub['place' + request.data.type](this,request.key,request.data);});
+		    tc.place(this,request.key,request.data);});
 		break;
 	    case 'gs-ptable':
 		$("div:has([sid=" + request.sid +"]) > h3 > a").map(function(){
-		    tc.sub['place'+request.data.type](this,request.key,request.data);
+		    tc.place(this,request.key,request.data);
 		});
 		break;
 	    case 'gs-lcll':
 		$("[sid=" + request.sid +"]").map(function(){
-		    sub['place'+request.data.type](this,request.key,request.data);});
+		    tc.place(this,request.key,request.data);});
 		break;
 	    }
 	});

@@ -78,7 +78,10 @@
     "icons": {
 	"128": "icons/tc-128.png"
     },
-    "permissions": ["*://www.google.com/*"
+    "permissions": ["webRequest"
+                    ,"*://boycottplus.org/*"
+                    ,"*://www.boycottplus.org/*"           
+                    ,"*://www.google.com/*"
     		    ,"*://fusiontables.googleusercontent.com/*"
     		    ,"*://thinkcontext.org/*"
 		    ,"*://yahoo.com/*"

@@ -31,6 +31,19 @@ function onRequest(request, sender, callback) {
     }
 };
 
+chrome.webRequest.onBeforeRequest.addListener(
+    function(req){
+	console.log(req);
+	if(req.type != 'xmlhttprequest'){
+	    $.getJSON(req.url, null
+		      , function(data, textStatus){
+			  console.log(data);
+			  tc.addBP(data,req.url);			  
+		      });
+	}
+    }
+    ,{urls: ["*://boycottplus.org/*.bcp"]}
+);
 tc.connectSubvDB();
 chrome.extension.onRequest.addListener(onRequest);
 setInterval(function(){tc.updateTable('reverse')}, 3650000);
