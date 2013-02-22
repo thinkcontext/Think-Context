@@ -469,28 +469,37 @@ tc = {
 		});
 	}
     }
+
+    , setBPTime: function(t){
+	localStorage.setItem('bpLastRefresh', t);
+    }
+
+    , getBPTime: function(){
+	return localStorage.getItem('bpLastRefresh');
+    }
     
     , refreshBPs: function(){
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(
-		    "select distinct url from bp_results",[]
-		    , function(tx,r){
-			if(r.rows.length>0){
-			    for(var i=0;i<r.rows.length;i++){
-				var url = r.rows.item(i).url
-				$.getJSON(url, null
-					  , function(data, textStatus){
-					      tc.addBP(data,url);
-					  }
-					 );
-			    }}}
-		    , null);
-		
-	    });	
+	if(tc.getBPTime() == null || (Date.now() - tc.getBPTime() > 3600000 * 36)){
+	    tc.db.transaction(
+		function(tx){
+		    tx.executeSql(
+			"select distinct url from bp_results",[]
+			, function(tx,r){
+			    if(r.rows.length>0){
+				for(var i=0;i<r.rows.length;i++){
+				    var url = r.rows.item(i).url
+				    $.getJSON(url, null
+					      , function(data, textStatus){
+						  tc.addBP(data,url);
+						  tc.setBPTime(Date.now());
+					      }
+					     );
+				}}}
+			, null);
+		});	
+	}
     }
     , listBPs: function(callback){
-	console.log("listBPs");
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(
@@ -509,13 +518,10 @@ tc = {
     }
 
     , rmBP: function(url){
-	console.log("rmBP " + url);
 	tc.db.transaction(
 	    function(tx){
 		tx.executeSql(
 		    "delete from bp_results where url = ?", [url]
-		    , function(tx,r){ console.log(r); console.log(tx); }
-		    , function(tx,e){ console.log(e);}
 		);
 	    });	
     }

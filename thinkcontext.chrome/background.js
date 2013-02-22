@@ -33,11 +33,9 @@ function onRequest(request, sender, callback) {
 
 chrome.webRequest.onBeforeRequest.addListener(
     function(req){
-	console.log(req);
 	if(req.type != 'xmlhttprequest'){
 	    $.getJSON(req.url, null
 		      , function(data, textStatus){
-			  console.log(data);
 			  tc.addBP(data,req.url);			  
 		      });
 	}
@@ -46,5 +44,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 tc.connectSubvDB();
 chrome.extension.onRequest.addListener(onRequest);
+setTimeout(tc.refreshBPs, 25000);
+setInterval(tc.refreshBPs, 10870000);
 setInterval(function(){tc.updateTable('reverse')}, 3650000);
 setInterval(tc.updateAllTables, 10870000);
