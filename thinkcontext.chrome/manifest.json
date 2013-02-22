@@ -6,7 +6,8 @@
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_page": "options.html",
-    "web_accessible_resources": ["icons/350.ico",
+    "web_accessible_resources": ["rev.ejs",
+    				 "icons/350.ico",
 				 "icons/acrj.ico",
 				 "icons/alter.ico",
 				 "icons/altoarizona.ico",
@@ -136,7 +137,7 @@
 			      ,"http://*.yahoo.com/*"
 			      ,"https://*.yahoo.com/*"
 			     ] ,
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
 	}
     ]
 }
