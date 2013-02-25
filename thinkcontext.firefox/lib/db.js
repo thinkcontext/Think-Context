@@ -71,7 +71,7 @@ tc = {
 		, data: 'text'
 	    }
 	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -314,12 +314,19 @@ tc = {
 	Request({
 	    url: query
 	    ,onComplete: function(response){
+		var createBP;
 		var queries = [];
 		var dataArray = CSVToArray(response.text);
 		var len = tc.tableFieldsLength(table);
 		if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
 		    var dropTxt = "DROP TABLE IF EXISTS " + table;
 		    var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
+		    if(table == 'results'){
+			createBP = "CREATE TABLE if not exists bp_results ( " + tc.tableFieldsTypes(table) + " )";
+			sql.execute(createBP);
+		    }
+
+
 		    sql.execute(dropTxt);
 		    sql.execute(createTxt);
 
@@ -381,8 +388,8 @@ tc = {
 
     , lookupResult: function(request, callback){
 	var key = request.key;
-	
-	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key  LIMIT 1";
+	console.error(key);
+	var selTxt = "select * fro (SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key union SELECT * FROM bp_results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key) t  LIMIT 1";
 
 	sql.execute(selTxt 
 		    , {key: key}
@@ -399,7 +406,7 @@ tc = {
 	    
 	    var b = bindNums(keys.length);
 	    var c = bindNums(keys.length).split(',');
-	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%'";
+	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%' union SELECT * FROM bp_results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%'";
 	    request.orig_data = request.data;
 	    sql.execute(selTxt
 			, bindArr(keys)
@@ -491,6 +498,45 @@ tc = {
     // 	    }
     // 	}
     // }
+
+    , addBP: function(campUrl){
+	console.error("addBP " + campUrl);
+	var req = Request({
+	    url: campUrl
+	    , onComplete: function(response){
+		
+		var data = response.json, name = data.name, updatedDate = data.updatedDate, sponsorUrl = data.sponsorUrl, company, domain, dat;
+		if(name && updatedDate && data.company.length > 0 && data.company[0].domains.length > 0){
+		    sql.execute(
+			"delete from bp_results where url = :url",{url: campUrl}
+			,function(){
+			    for(var c in data.company){
+				company = data.company[c];
+				for(var d in company.domains){
+				    domain = company.domains[d].toLowerCase().replace('http://','').replace('www.','');
+				    
+				    dat = {updatedDate:updatedDate
+					   , blurb: company.causeDetail
+					   , name: name
+					   , companyName: company.companyName
+					   , sponsorUrl: sponsorUrl}
+				    
+				    sql.execute(
+					"insert into bp_results ( key, url, func, data) values ( :domain, :campUrl, 'bp', :dat )"
+					, {domain:domain
+					   ,campUrl:campUrl
+					   , dat:JSON.stringify(dat)}
+					, tc.onSuccess, tc.onError);
+				    
+				}
+			    }
+			});
+		}
+	    }
+	}).get();
+    }
+
+
 };
 
 tc.connectDB();
@@ -507,6 +553,7 @@ exports.lookupReverse = tc.lookupReverse;
 exports.lookupReverseHome = tc.lookupReverseHome;
 exports.lookupSubvert = tc.lookupSubvert;
 exports.sendStat = tc.sendStat;
+exports.addBP = tc.addBP;
 //exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this

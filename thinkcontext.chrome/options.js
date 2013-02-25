@@ -34,7 +34,6 @@ function save_options() {
 function bpList(){
     bgPage.tc.listBPs(
 	function(r){
-	    console.log(r);
 	    new EJS({url: '/bpOption.ejs'}).update('bp',{r:r});
 	});
 }

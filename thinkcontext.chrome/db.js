@@ -153,7 +153,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	console.log("db error: " + e.message);
+	//console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -444,7 +444,7 @@ tc = {
     }
 
     , addBP: function(data, campUrl){
-	var name = data.name, updatedDate = data.updatedDate, company, domain, dat;
+	var name = data.name, updatedDate = data.updatedDate, sponsorUrl = data.sponsorUrl, company, domain, dat;
 	if(name && updatedDate && data.company.length > 0 && data.company[0].domains.length > 0){
 	    tc.db.transaction(
 		function(tx){
@@ -457,7 +457,8 @@ tc = {
 			    dat = {updatedDate:updatedDate
 				   , blurb: company.causeDetail
 				   , name: name
-				   , companyName: company.companyName}
+				   , companyName: company.companyName
+				   , sponsorUrl: sponsorUrl}
 
 			    tx.executeSql(
 				"insert into bp_results ( key, url, func, data) values ( ?, ?, ?, ? )"

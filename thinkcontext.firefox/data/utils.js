@@ -4,6 +4,56 @@ if (window.frameElement === null){
     tc.responses = {};
     tc.examines = [];
 
+    tc.resultDialogConfig = {
+	rushBoycott:  { 
+	    template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
+	    , title: "Rush Limbaugh Advertiser"
+	    , icon: 'stopRush'
+	    , tcstat: 'grb'
+	}
+	, greenResult: {
+	    title: 'Member of the Green Business Network'
+	    , icon: 'greenG'
+	    , tcstat: 'bsg'
+	    , template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
+	}
+
+	, hotelsafe: {
+	    title: 'Patronize'
+	    , icon: 'greenCheck'
+	    , tcstat: 'bsp'
+	    , template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
+	}
+	, hotelboycott: {
+	    title: 'Boycott'
+	    , icon: 'redCirc'
+	    , tcstat: 'bsp'
+	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+	}
+	, hotelrisky: {
+	    title: 'Risky'
+	    , icon: 'infoI'
+	    , tcstat: 'bsp'
+	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
+	}
+	, hotelstrike: {
+	    title: 'Strike'
+	    , icon: 'redCirc'
+	    , tcstat: 'bsp'
+	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+	}
+	, bp: {
+	    title: 'Boycott Plus Campaign'
+	    , icon: 'redCirc'
+	    , template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <%= link_to("here", sponsorUrl, {target: "_blank"}) %>'
+	}
+    };
+
+    tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
+    tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
+    tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
+    tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
+
     tc.debug = function(txt){ 
 	//console.log(txt); 
     }
@@ -327,7 +377,7 @@ if (window.frameElement === null){
     }
 
     tc.reverseResponseTwit = 0;
-
+    tc.reverseResponseFB = 0;
     tc.reverseResponse = function(request){
 	var data = request.data;
 	var out = {};
@@ -347,43 +397,15 @@ if (window.frameElement === null){
 	if(tc.reverseResponseTwit == 1)
 	    jsearch = 'data-expanded-url';
 	for(var rl in out){
-	    $('a[' + jsearch + '^="'+rl+'"]:visible').map(function(){
+	    jsearch = 'a[href^="'+rl+'"]:visible';
+	    if(tc.reverseResponseFB == 1)
+		jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
+	    $(jsearch).map(function(){
 		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		    if(this.textContent.match(/\w/)){
 			var r = tc.random();
-			var revDiv = $('<div>',{id: "d"+r});
-			revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
-			for(l in out[rl]){
-			    if(tc.iconStatus[out[rl][l].source] == 1){
-				revDiv.append($('<li>')
-					      .append($('<img>',{ style: "display:inline;"
-								  , height:"16"
-								  , width:"16"
-			       					  ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
-						     )
-					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-								 , target: "_blank"
-								 , href: out[rl][l].link
-								 , text: tc.htmlDecode(out[rl][l].title)}))
-					      .append(' by ')
-					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					      .append(' links to ')
-					      .append($('<a>', { href: out[rl][l].reverse_link
-								 , text: 'this page'})));
-			    } else {
-				revDiv.append($('<li>')
-					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-								 , target: "_blank"
-								 , href: out[rl][l].link
-								 , text: tc.htmlDecode(out[rl][l].title)}))
-					      .append(' by ')
-					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					      .append(' links to ')
-					      .append($('<a>', { href: out[rl][l].reverse_link
-								 , text: 'this page'})));
-			    }
-			}
-
+			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
+			new EJS({url: chrome.extension.getURL(tc.iconDir + '../rev.ejs')}).update("d"+r,{data:out[rl],ex:false});
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
 			resDiv.setAttribute("id",r);
@@ -406,8 +428,7 @@ if (window.frameElement === null){
 	    });
 	}
     }
-    
-    
+
     tc.closeAllDialogs = function(){
 	for(var d in tc.dialogs){
 	    tc.dialogs[d].dialog('close');
@@ -416,183 +437,62 @@ if (window.frameElement === null){
 
 
     tc.googlePlaces = function(request){ 
+	//console.log(request);
 	var data = request.data;
-	var d;
-	var icon;
-	var title;
-	var blurb;
-	var tcstat = 'gsp';
+	var d, icon, title, blurb, rdc, tcstat = 'gsp';
 	for(var r in data){
 	    d = data[r];
-	    if(d.type == 'safe'){
-		icon = 'greenCheck';
-		title = ' Patronize This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' - Recommends patronizing this hotel');
-	    } else if(d.type == 'boycott' || d.type == 'strike'){
-		icon = 'redCirc';
-		title = ' Boycott This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' - Recommends boycotting this hotel');
-	    } else if(d.type == 'risky'){
-		icon = 'infoI';
-		title = 'Risk of Labor Dispute At This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' advises that there is a risk of a labor dispute at this hotel.');
-	    }
-
-	    if(icon){
-		tc.googlePlacesHandler(d.siteid, icon ,title ,blurb);
-	    }
+	    blurb = $("<div>",{id: "d"+r}).appendTo('body');
+	    rdc = tc.resultDialogConfig[d.type];
+	    new EJS({text: rdc.template}).update("d"+r);
+	    tc.googlePlacesHandler(d.siteid, rdc.icon ,rdc.title ,blurb);
 	}
     }
 
     tc.sub = {};
 
-    tc.sub.greenResult = function(n,key,data){
+    tc.resultPrev = function(n,key,data){
 	var detail = JSON.parse(data.data);
-	var tcstat = 'bsg';
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://' + key + '/'
-				, text: detail.name})))
-	    .append('- ' + detail.desc); 
-	
-	tc.insertPrev(n
-		      ,'greenG'
-		      ,r
-		      ,'Member of the Green Business Network'
-		      , d
-		      //		      ,'<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://' + key + '/">'+ detail.name+ '</a></b> - ' + detail.desc 
-		      , null
-		      , null
-		     );
-    }
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = key;
+	detail.url = data.url;
 
-    tc.sub.rushBoycott = function(n,key,data){
-	var detail = JSON.parse(data.data);
-	var tcstat = 'grb';
-
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>', {text: detail.name}))
-	    .append(' is listed as an advertiser of Rush Limbaugh\'s by ')
-	    .append($('<a>'
-		      ,{tcstat: tcstat+data.id
-			, target: '_blank'
-			, href: 'http://stoprush.net/'
-			, text: 'The Stop Rush Project'}))
-	    .append('. Click ')
-	    .append($('<a>', {tcstat: tcstat+data.id
-			      , target: '_blank'
-			      , href: data.url
-			      , text: 'here'}))
-	    .append(' for more information on this particular advertiser\'s activity.');
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
 
 	tc.insertPrev(n
-		      , 'stopRush'
+		      , rdc.icon
 		      , r
-		      , 'Rush Limbaugh Advertiser'
+		      , rdc.title
 		      , d
 		     )
     }
 
-    tc.sub.place = function(n, cid, pb,data){
-	var tcstat = 'bsp';
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://www.hotelworkersrising.org/'
-				, text: 'Hotel Workers Rising'})));
-
-	if(pb == 'patronize'){
-	    tc.insertPrev(n
-			  ,'greenCheck'
-			  , r
-			  ,'Patronize This Hotel'
-			  , d.append('- Recommends patronizing this hotel')
-			 );
-	} else if(pb == 'boycott'){
-	    tc.insertPrev(n
-			  ,'redCirc'
-			  ,r
-			  ,'Boycott This Hotel'
-			  , d.append('- Recommends boycotting this hotel')
-			 );
-	} else if(pb == 'risky'){
-	    tc.insertPrev(n
-			  ,'infoI'
-			  ,r
-			  ,'Risk of Labor Dispute At This Hotel'
-			  , d.append(' advises that there is a risk of a labor dispute at this hotel.')
-			 );
-	}
-    }
-
-    tc.sub.placeboycott = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.placepatronize = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
-    }
-
-    tc.sub.placestrike = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-    tc.sub.placerisky = function(n, cid, data){
-	tc.sub.place(n,cid,'risky',data);
-    }
-
-    tc.sub.placesafe = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
-    }
-
-    tc.sub.hotelboycott = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.hotelstrike = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.hotelrisky = function(n, cid, data){
-	tc.sub.place(n,cid,'risky',data);
-    }
-
-    tc.sub.hotelsafe = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
+    tc.place = function(n, cid,data){
+	
+	var rdc = tc.resultDialogConfig[data.type];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	
+	tc.insertPrev(n
+		      , rdc.icon
+		      , r
+		      , rdc.title
+		      , d
+		     );
     }
 
     // hyatt_result: function(n,key,data){
     // 	// passed a google search result, insert a dialog
     // 	// "n" is the header link for the result
-    
+
     // 	var tcstat = 'gsh';
     // 	tc.insertPrev(n
     // 		      ,'infoI'
@@ -601,19 +501,4 @@ if (window.frameElement === null){
     // }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}
-
-function bitlyDomain(domain){
-    if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
-	return 1
-}
-    function resolveMap(url){
-	var s = url.split('/');
-	if(s.length > 3){
-	    var domain = s[2];
-	    if(bitlyDomain(domain))
-		return 'https://bitly.com/' + s[3];
-	    else if(domain == 'goo.gl')
-		return url;	
-	}
-    }
 }

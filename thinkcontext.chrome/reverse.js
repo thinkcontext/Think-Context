@@ -13,10 +13,11 @@ tc.registerResponse('reverse',
 				ex = true;
 			    }
 			    var z = tc.random();
-			    var revDiv = $('<div>',{id:z});
-			    new EJS({url: chrome.extension.getURL('rev.ejs')}).update(z,{data:data,ex:ex});
+			    var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
+			    new EJS({url: chrome.extension.getURL('rev.ejs')}).update("z"+z,{data:data,ex:ex});
 
-			    tc.popDialog('Progressive Trackback', revDiv, z,ex);
+			    
+			    tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex);
 			}
 		    });
 tc.registerResponse('reversehome', tc.reverseResponse);

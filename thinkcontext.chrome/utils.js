@@ -45,7 +45,7 @@ tc.resultDialogConfig = {
     , bp: {
 	title: 'Boycott Plus Campaign'
 	, icon: 'redCirc'
-	, template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <%= link_to("here", url, {target: "_blank"}) %>'
+	, template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <%= link_to("here", sponsorUrl, {target: "_blank"}) %>'
     }
 };
 
@@ -372,39 +372,8 @@ tc.reverseResponse = function(request){
 	    if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		if(this.textContent.match(/\w/)){
 		    var r = tc.random();
-		    var revDiv = $('<div>',{id: "d"+r});
-		    revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
-		    var build = ''
-		    for(l in out[rl]){
-			if(tc.iconStatus[out[rl][l].source] == 1){
-			    revDiv.append($('<li>')
-					  .append($('<img>',{ style: "display:inline;"
-							      , height:"16"
-							      , width:"16"
-			       				      ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
-						 )
-					  .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-							     , target: "_blank"
-							     , href: out[rl][l].link
-							     , text: tc.htmlDecode(out[rl][l].title)}))
-					  .append(' by ')
-					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					  .append(' links to ')
-					  .append($('<a>', { href: out[rl][l].reverse_link
-							     , text: 'this page'})));
-			} else {
-			    revDiv.append($('<li>')
-					  .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-							     , target: "_blank"
-							     , href: out[rl][l].link
-							     , text: tc.htmlDecode(out[rl][l].title)}))
-					  .append(' by ')
-					  .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					  .append(' links to ')
-					  .append($('<a>', { href: out[rl][l].reverse_link
-							     , text: 'this page'})));
-			}
-		    }
+		    var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
+		    new EJS({url: chrome.extension.getURL('rev.ejs')}).update("d"+r,{data:out[rl],ex:false});
 		    var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 		    var resDiv = document.createElement("div");
 		    resDiv.setAttribute("id",r);
@@ -442,7 +411,7 @@ tc.googlePlaces = function(request){
 	d = data[r];
 	blurb = $("<div>",{id: "d"+r}).appendTo('body');
 	rdc = tc.resultDialogConfig[d.type];
-	new EJS({text: rdc.template}).update("d"+r,detail);
+	new EJS({text: rdc.template}).update("d"+r);
 	tc.googlePlacesHandler(d.siteid, rdc.icon ,rdc.title ,blurb);
     }
 }

@@ -9,10 +9,11 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('google-search.js')],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('google-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -55,10 +56,11 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('google-place-page.js')],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('google-place-page.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -84,11 +86,12 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('reverse.js')
-],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('reverse.js')
+    ],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -117,10 +120,11 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('yahoo-search.js')],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('yahoo-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -152,10 +156,11 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('bing-search.js')],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('bing-search.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -189,6 +194,7 @@ pageMod.PageMod({
 //     contentScriptFile: [
 // 			data.url('jquery-1.7.1.min.js')
 // 			,data.url('jquery-ui-1.8.16.custom.min.js')
+//	,data.url('ejs_production.js') 
 // 			,data.url('utils.js')
 // 			,data.url('twitter.js')],
 //     onAttach: function(worker){
@@ -217,10 +223,11 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-			data.url('jquery-1.7.1.min.js')
-			,data.url('jquery-ui-1.8.16.custom.min.js')
-			,data.url('utils.js')
-			,data.url('facebook.js')],
+	data.url('jquery-1.7.1.min.js')
+	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('facebook.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -241,4 +248,14 @@ pageMod.PageMod({
 		break;
 	    }
 	})
+    }});
+pageMod.PageMod({
+    include : ["http://boycottplus.org/subscribe/*","https://boycottplus.org/subscribe/*","http://www.boycottplus.org/subscribe/*","https://www.boycottplus.org/subscribe/*"],
+    contentScriptWhen:  'start',
+    contentScript: 'if(document.URL.indexOf(".bcp")> 10)self.postMessage(document.URL)',
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    console.error(request);
+	    db.addBP(request);
+	});
     }});
