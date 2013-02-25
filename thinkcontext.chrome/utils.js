@@ -3,7 +3,6 @@ tc.dialogs = [];
 tc.responses = {};
 tc.examines = [];
 
-
 tc.resultDialogConfig = {
     rushBoycott:  { 
 	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
@@ -53,7 +52,6 @@ tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
 tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
 tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
 tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
-
 
 tc.debug = function(txt){ 
     //console.log(txt); 

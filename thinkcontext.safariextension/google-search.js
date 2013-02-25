@@ -2,81 +2,10 @@ if(window.top === window) {
     if(document.domain == 'www.google.com'){
 	tc.googleSearch = {
 	    doit: function(){
-		var sub = {
-		    
-		};
-
-		function insertSubvertisements(message){
-		    // var result= '';
-		    // var tcstat = 'gss';
-		    // if(message.data && message.data.length > 0){
-		    // 	var subvs = message.data;
-		    // 	var sel = [];
-		    // 	var x = 0;
-		    // 	if(subvs.length > 3){
-		    // 	    for(x=0;x<=2;x++){
-		    // 		var i = tc.random()% subvs.length ;
-		    // 		sel.push(subvs[i]);
-		    // 		subvs.splice(i,1);
-		    // 	    }
-		    // 	} else {
-		    // 	    sel = subvs;
-		    // 	}
-		    // 	result = sel.map(function(subv){ 
-		    // 	    var d = JSON.parse(subv.data);
-		    // 	    var link = subv.url;
-		    // 	    var id = subv.id;
-		    // 	    var name = d.name;
-		    // 	    var ds = d.desc.split(' ')
-		    // 	    var blurb = ds.slice(0,14).join(' ');
-		    // 	    if(ds.length > 14)
-		    // 		blurb += '...';
-		    // 	    var host = link.split('/')[0];
-		    // 	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '"  target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
-		    // }
-		    // var c;
-		    // if($("div#rhs").length == 0){
-		    // 	// no right column so insert one for subvertisements
-		    // 	c = document.createElement("div");
-		    // 	c.id = "rhs";
-		    // 	c.innerHTML = '<div id="rhs_block"></div>';
-		    // 	c.style.position = "absolute";
-		    // 	c.style.right = "0px";
-		    // 	c.style.top = "0pt";
-		    // 	c.style.width = "254px";
-		    // 	$("div#rhscol").append(c);
-		    // } 
-		    
-		    // if($("table#mbEnd").length == 0){
-		    // 	// no right column so insert one for subvertisements
-		    // 	c = document.createElement("table");
-		    // 	c.id = "mbEnd";
-		    // 	c.innerHTML = "<tbody></tbody>";
-		    // 	$("div#rhs_block").append(c);
-		    // } 
-		    // $("table#mbEnd").map(function(){
-		    // 	if(result != ''){
-		    // 	    var subvDiv = document.createElement("tr");
-		    // 	    subvDiv.setAttribute("subv",true);
-		    // 	    subvDiv.innerHTML = "<ol>"+ result + "</ol>";
-		    // 	    if(this.firstChild.getAttribute("subv") == null){
-		    // 		this.insertBefore(subvDiv,this.firstChild);
-		    // 	    } else {
-		    // 		this.replaceChild(subvDiv,this.firstChild);
-		    // 	    }
-		    // 	}
-		    // }
-		    // 			);
-		    // $("table#mbEnd a[tcstat]").click(function(){
-		    // 	tc.sendMessage({'kind': 'sendstat'
-		    // 				      , 'key': this.attributes['tcstat'].value});
-		    // });
-		    
-		}
 		
 		tc.registerResponse('link', function(request){
 		    $("[sid=" + request.sid +"]").map(function(){
-			tc.sub[request.data.func](this,request.key,request.data);});
+			tc.resultPrev(this,request.key,request.data);});
 		});
 
 		tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
@@ -90,16 +19,16 @@ if(window.top === window) {
 		    switch(request.subtype){
 		    case 'gs-cid':
 			$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
-			    tc.sub['place' + request.data.type](this,request.key,request.data);});
+			    tc.place(this,request.key,request.data);});
 			break;
 		    case 'gs-ptable':
 			$("div:has([sid=" + request.sid +"]) > h3 > a").map(function(){
-			    tc.sub['place'+request.data.type](this,request.key,request.data);
+			    tc.place(this,request.key,request.data);
 			});
 			break;
 		    case 'gs-lcll':
 			$("[sid=" + request.sid +"]").map(function(){
-			    sub['place'+request.data.type](this,request.key,request.data);});
+			    tc.place(this,request.key,request.data);});
 			break;
 		    }
 		});

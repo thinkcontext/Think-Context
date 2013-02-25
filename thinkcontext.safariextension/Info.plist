@@ -28,6 +28,7 @@
 			<key>End</key>
 			<array>
 				<string>jquery-1.7.1.min.js</string>
+				<string>ejs_production.js</string>
 				<string>utils.js</string>
 				<string>jquery-ui-1.8.16.custom.min.js</string>
 				<string>google-search.js</string>
