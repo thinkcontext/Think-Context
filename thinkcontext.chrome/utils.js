@@ -416,6 +416,23 @@ tc.googlePlaces = function(request){
 
 tc.sub = {};
 
+tc.resultPop = function(request){
+    var data = request.data;
+    var detail = JSON.parse(data.data);
+    var rdc = tc.resultDialogConfig[data.func];
+    r = tc.random();
+    detail.did = 'd'+r;
+    detail.r = r;
+    detail.key = request.key;
+    detail.url = data.url;
+
+    var d = $("<div>",{id: "d"+r}).appendTo('body');
+    new EJS({text: rdc.template}).update("d"+r,detail);
+    tc.popDialog('Progressive Trackback', d, 'd'+r,true);
+    
+}
+
+
 tc.resultPrev = function(n,key,data){
     var detail = JSON.parse(data.data);
     var rdc = tc.resultDialogConfig[data.func];
@@ -433,7 +450,7 @@ tc.resultPrev = function(n,key,data){
 		  , r
 		  , rdc.title
 		  , d
-		 )
+		 );
 }
 
 tc.place = function(n, cid,data){

@@ -92,6 +92,7 @@
 		    ,"*://bit.ly/*"
 		    ,"*://goo.gl/*"
         	   ],
+    "page_action": { "default_title": "thinkContext"  },
     "background": {"scripts": ["jquery-1.8.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
 	{

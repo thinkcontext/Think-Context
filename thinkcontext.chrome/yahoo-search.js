@@ -59,11 +59,11 @@ var qt =  $("input[name=p]").val();
 //location
 //var loc = $('ul.sw_tn > li:nth-child(3) > a').text()
 //debug("qt " + qt + " loc " + loc);
-tc.sendMessage(
-    {'kind' : "yahoo-text"
-      , 'key' : qt
-      //      , 'location' : loc
-     });
+// tc.sendMessage(
+//     {'kind' : "yahoo-text"
+//       , 'key' : qt
+//       //      , 'location' : loc
+//      });
 
 // result link - could be a place link else look up the result link
 $('div#web > ol h3 > a').map(
