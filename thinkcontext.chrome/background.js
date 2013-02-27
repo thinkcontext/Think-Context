@@ -31,6 +31,21 @@ function onRequest(request, sender, callback) {
     }
 };
 
+
+function popPageAction(tabId,key,request){
+    chrome.pageAction.show(tabId);
+};
+
+chrome.tabs.onUpdated.addListener(
+    function(tabId, changeInfo, tab){
+	tc.lookupResult(
+	    tc.sigUrl(tab.url),{key:tc.sigUrl(tab.url)}
+	    ,function(request){
+		popPageAction(tabId,request.key,request);
+	    }
+	);
+    });
+
 chrome.webRequest.onBeforeRequest.addListener(
     function(req){
 	if(req.type != 'xmlhttprequest'){
