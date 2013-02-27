@@ -135,6 +135,7 @@ if (window.frameElement === null){
 		     dcfpi:	1,
 		     feministing:	1,
 		     nationb:	1,
+		     usas:      1,
 		     greena:	1	    };
     
     self.postMessage({'kind': 'resource'});

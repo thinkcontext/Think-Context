@@ -135,6 +135,7 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 		     dcfpi:	1,
 		     feministing:	1,
 		     nationb:	1,
+		     usas:      1,
 		     greena:	1
 		    };
 
