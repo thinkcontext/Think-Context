@@ -1,7 +1,7 @@
 var tc = {};
 tc.dialogs = [];
 tc.responses = {};
-tc.examines = [];
+tc.popD = null;
 
 tc.resultDialogConfig = {
     rushBoycott:  { 
@@ -61,9 +61,6 @@ tc.registerResponse = function(kind, func){
     tc.responses[kind] = func;
 }
 
-tc.registerExamine = function(func){
-    tc.examines.push(func);
-}
 tc.iconDir = chrome.extension.getURL("icons");
 tc.icons = { infoI : tc.iconDir + "/infoI.png"
 	     ,greenG : tc.iconDir + "/greenG.png"
@@ -153,39 +150,33 @@ tc.insertPrev = function(n,iconName,r,title,theDiv){
 };
 
 tc.popDialog = function(title, revDiv, z, autoOpen){
-    var r = tc.random();
-    $('body').append($('<img>', { id: r
-				  ,src: tc.icons.trackback32 
-				  ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
-    
-    var d = revDiv.dialog(
-	{ zIndex: 10000000
-	  ,title: 'thinkContext: ' + title
-	  , position: [window.innerWidth - 350
-		       , window.innerHeight - 175 ]
-	  , close: function(){
-	      $(window).unbind('resize');
-	      $(window).unbind('scroll');
-	  }
-	  , height: 150
-	  , autoOpen: autoOpen
-	}); 
+    var d;
+
+    if(tc.popD == null){	
+	d = $('<div>',{id:'tcPopD'}).dialog(
+	    { zIndex: 10000000
+	      ,title: 'thinkContext: ' + title
+	      , position: [window.innerWidth - 350
+			   , window.innerHeight - 175 ]
+	      , close: function(){
+		  $(window).unbind('resize');
+		  $(window).unbind('scroll');
+	      }
+	      , height: 150
+	      , autoOpen: false
+	    });     
+	tc.popD = d;
+    }
+    d = tc.popD;
+    d.append(revDiv);
+    if(autoOpen){
+	d.dialog('open');
+    }
     
     $('div#' + z + ' a[tcstat]').click(function(){
 	tc.sendRequest({'kind': 'sendstat'
 	 			      , 'key': this.attributes['tcstat'].value});
     });
-    $('#'+r).click(function(){
-	d.dialog('open');
-	$(window).resize(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
-	$(window).scroll(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
-    });
-    $('#'+r).hover(function(){$(this).css('opacity','1.0')}
-		   , function(){$(this).css('opacity','0.4')});
     
     $(window).resize(function(){
 	d.dialog({position: [window.innerWidth - 350
@@ -418,6 +409,7 @@ tc.googlePlaces = function(request){
 tc.sub = {};
 
 tc.resultPop = function(request){
+    console.log(request);
     var data = request.data;
     var detail = JSON.parse(data.data);
     var rdc = tc.resultDialogConfig[data.func];
@@ -429,10 +421,8 @@ tc.resultPop = function(request){
 
     var d = $("<div>",{id: "d"+r}).appendTo('body');
     new EJS({text: rdc.template}).update("d"+r,detail);
-    tc.popDialog('Progressive Trackback', d, 'd'+r,true);
-    
+    tc.popDialog('Progressive Trackback', d, 'd'+r,true);    
 }
-
 
 tc.resultPrev = function(n,key,data){
     var detail = JSON.parse(data.data);
