@@ -141,7 +141,8 @@ if(typeof(tc) == 'undefined'){
 		     feministing:	1,
 		     nationb:	1,
 		     usas: 1,
-		     greena: 1
+		     greena: 1,
+		     laborn: 1
 		    };
 
     tc.insertPrev = function(n,iconName,r,title,theDiv){
@@ -199,12 +200,20 @@ if(typeof(tc) == 'undefined'){
 	 		    , key: this.attributes['tcstat'].value});
 	});
 	
-	// $(window).resize(function(){
-	// 	d.dialog({position: [window.innerWidth - 350
-	// 			     , window.innerHeight - 175 ]}); });
-	// $(window).scroll(function(){
-	// 	d.dialog({position: [window.innerWidth - 350
-	// 			     , window.innerHeight - 175 ]}); });
+	$(window).scroll(function(){
+	    d.dialog('close');
+	});
+	$(window).click(function(){
+	    d.dialog('close');
+	});
+	d.mouseenter(function(){
+	    $(window).off('click');
+	});
+	d.mouseleave(function(){
+	    $(window).click(function(){
+		d.dialog('close');
+	    });
+	});
     }
 
     tc.sigURL = function(url){
