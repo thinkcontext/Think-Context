@@ -28,8 +28,16 @@ function onRequest(request, sender, callback) {
     case 'urlresolve':
 	tc.urlResolve(request, callback);
 	break;
+    case 'pageA':
+	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	chrome.pageAction.show(sender.tab.id);
     }
 };
+
+chrome.pageAction.onClicked.addListener(
+    function(tab){
+	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
+    });
 
 chrome.webRequest.onBeforeRequest.addListener(
     function(req){

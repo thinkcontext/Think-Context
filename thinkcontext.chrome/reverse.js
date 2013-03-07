@@ -1,5 +1,5 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
-    
+    console.log("reverse");
     tc.reverse = {};
     tc.reverse.revGotResponse = 0;
     
@@ -19,13 +19,13 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 				new EJS({url: chrome.extension.getURL('rev.ejs')}).update("z"+z,{data:data,ex:ex});
 
 				
-				tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex);
+				tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex,'trackback16','reverse');
 			    }
 			});
     tc.registerResponse('reversehome', tc.reverseResponse);
     tc.sendMessage(
-	{'kind': 'reverse'
-	 , 'key': tc.sigURL(document.baseURI)
+	{kind: 'reverse'
+	 , key: tc.sigURL(document.baseURI)
 	});
 
     $("link[rel='canonical']")

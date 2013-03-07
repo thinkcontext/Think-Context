@@ -81,6 +81,7 @@
     "icons": {
 	"128": "icons/tc-128.png"
     },
+    "page_action": { "default_title": "thinkContext" },
     "permissions": ["webRequest"
                     ,"*://boycottplus.org/*"
                     ,"*://www.boycottplus.org/*"           

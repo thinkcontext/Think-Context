@@ -1,3 +1,4 @@
+console.log('google-search');
 tc.googleSearch = {
 
     doit: function(){
