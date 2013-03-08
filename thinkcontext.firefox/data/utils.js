@@ -2,7 +2,6 @@ if (window.frameElement === null){
     var tc = {};
     tc.dialogs = [];
     tc.responses = {};
-    tc.examines = [];
 
     tc.resultDialogConfig = {
 	rushBoycott:  { 
@@ -64,7 +63,11 @@ if (window.frameElement === null){
 
     tc.registerResponse('resource'
 			, function(request){
+			    var ar;
 			    tc.iconDir = request.data;
+			    ar = request.data.split('/');
+			    ar.pop();
+			    tc.resDir = ar.join('/');
 			    tc.icons = { infoI : tc.iconDir + "/infoI.png"
 					 ,greenG : tc.iconDir + "/greenG.png"
 					 ,greenCheck : tc.iconDir + "/greenCheck.png"
@@ -136,7 +139,9 @@ if (window.frameElement === null){
 		     feministing:	1,
 		     nationb:	1,
 		     usas:      1,
-		     greena:	1	    };
+		     greena:	1,	  
+		     laborn: 1
+		    };
     
     self.postMessage({'kind': 'resource'});
     tc.getReverseHost = function(url){
@@ -183,9 +188,6 @@ if (window.frameElement === null){
 	self.on('message',tc.onResponse);
     }
     tc.activeateResponses();
-    tc.registerExamine = function(func){
-	tc.examines.push(func);
-    };
 
     tc.insertPrev = function(n,iconName,r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
@@ -200,47 +202,62 @@ if (window.frameElement === null){
 	}
     };
 
-    tc.popDialog = function(title, revDiv,z, autoOpen){
-	var r = tc.random();
-	$('body').append($('<img>', { id: r
-				      ,src: tc.icons.trackback32 
-				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
-	
-	var d = revDiv.dialog(
-	    { zIndex: 10000000
-	      ,title: 'thinkContext: ' + title
-	      , position: [window.innerWidth - 350
-			   , window.innerHeight - 175 ]
-	      , close: function(){
-		  $(window).unbind('resize');
-		  $(window).unbind('scroll');
-	      }
-	      , height: 150
-	      , autoOpen: autoOpen
-	    }); 
-	
-	$('div#' + z + ' a[tcstat]').click(function(){
-	    self.postMessage({'kind': 'sendstat'
-	 		      , 'key': this.attributes['tcstat'].value});
-	});
-	$('#'+r).click(function(){
+    tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
+	var d;
+
+	if(tc.popD == null){	
+	    d = $('<div>',{id:'tcPopD'})
+		.append($('<div>',{id:'tcResults'}))
+		.append($('<div>',{id:'tcReverse'}))
+		.append($('<div>',{id:'tcOther'}))
+		.dialog(
+		    { zIndex: 10000000
+		      ,title: 'thinkContext: ' + title
+		      , position: [window.innerWidth - 350
+				   , 10 ]
+		      , close: function(){
+			  $(window).unbind('resize');
+			  $(window).unbind('scroll');
+		      }
+		      , height: 150
+		      , autoOpen: false
+		    });     
+	    tc.popD = d;
+	}
+	d = tc.popD;
+	switch(kind){
+	case 'result':
+	    $('#tcResults',d).append(revDiv);
+	    break;
+	case 'reverse':
+	    $('#tcReverse',d).append(revDiv);
+	    break;
+	default:
+	    $('#tcOther',d).append(revDiv);
+	}
+	if(autoOpen){
 	    d.dialog('open');
-	    $(window).resize(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
-	    $(window).scroll(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
+	}
+	tc.sendMessage({kind:'pageA',icon:tc.icons[icon]});
+	$('div#' + z + ' a[tcstat]').click(function(){
+	    tc.sendRequest({kind: 'sendstat'
+	 		    , key: this.attributes['tcstat'].value});
 	});
-	$('#'+r).hover(function(){$(this).css('opacity','1.0')}
-		       , function(){$(this).css('opacity','0.4')});
 	
-	$(window).resize(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
 	$(window).scroll(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
+	    d.dialog('close');
+	});
+	$(window).click(function(){
+	    d.dialog('close');
+	});
+	d.mouseenter(function(){
+	    $(window).off('click');
+	});
+	d.mouseleave(function(){
+	    $(window).click(function(){
+		d.dialog('close');
+	    });
+	});
     }
 
     tc.sigURL = function(url){
@@ -365,15 +382,20 @@ if (window.frameElement === null){
 
     tc.reverseExamine = function(){
 	var urlmap;
-	urlmap = $("a[href^='http']:visible").map(function(){
+	urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
+	    this.setAttribute('tcRev','tcRev');
 	    if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
 		return tc.sigURL(this.href);
 	    }});
-	if(urlmap){
-	    self.postMessage(
-    		{'kind': 'reversehome'
-    		 , 'key': jQuery.makeArray(urlmap).slice(0,400)
-    		});
+	if(urlmap.length > 0){
+    	    var revArr = jQuery.makeArray(urlmap);
+    	    while(revArr.length > 0){
+    		tc.sendMessage(
+    		    {'kind': 'reversehome'
+    		     , 'key': revArr.slice(0,400)
+    		    });
+    		revArr.splice(0,400);
+    	    }
 	}
     }
 
@@ -406,7 +428,7 @@ if (window.frameElement === null){
 		    if(this.textContent.match(/\w/)){
 			var r = tc.random();
 			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
-			new EJS({url: chrome.extension.getURL(tc.iconDir + '../rev.ejs')}).update("d"+r,{data:out[rl],ex:false});
+			new EJS({text: tc.revEjs}).update("d"+r,{data:out[rl],ex:false});
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
 			resDiv.setAttribute("id",r);
@@ -436,9 +458,7 @@ if (window.frameElement === null){
 	}
     }
 
-
     tc.googlePlaces = function(request){ 
-	//console.log(request);
 	var data = request.data;
 	var d, icon, title, blurb, rdc, tcstat = 'gsp';
 	for(var r in data){
@@ -450,7 +470,22 @@ if (window.frameElement === null){
 	}
     }
 
-    tc.sub = {};
+//    tc.sub = {};
+
+    tc.resultPop = function(request){
+	var data = request.data;
+	var detail = JSON.parse(data.data);
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = request.data.key;
+	detail.url = data.url;
+
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	tc.popDialog(rdc.title, d, 'd'+r,true,rdc.icon,'result');    
+    }
 
     tc.resultPrev = function(n,key,data){
 	var detail = JSON.parse(data.data);
@@ -502,4 +537,53 @@ if (window.frameElement === null){
     // }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}
+
+tc.revEjs = " <%  \
+var found = 0; \
+var tcstat = 'rrr'; \
+ \
+if(ex){ \
+ \
+%> \
+ \
+<b>This link was mentioned in</b><br> \
+	 \
+<%   }  \
+for(var x in data){ \
+    if(data[x]['s'] != 'exact' && found == 0){ \
+ \
+%> \
+<b>Other links to this site</b><br> \
+<% \
+	    found = 1;	 \
+    } \
+     \
+%> \
+ \
+<li> \
+ \
+<% \
+    if(tc.iconStatus[data[x].source] == 1){  \
+%> \
+<%=	img_tag(tc.iconDir + \"/\" + data[x].source + \".ico\" \
+		, null \
+		, { height: \"16\", width: \"16\", style: \"display:inline;\" }) %> \
+<%    }  %> \
+<%=    link_to(tc.htmlDecode(data[x].title) \
+	    , data[x].link \
+	    , {target: '_blank', tcstat: tcstat + data[x].id }) \
+%> \
+ \
+by \
+ \
+<%=  link_to(data[x].name, data[x].source_link) %> \
+links to \
+<%=  link_to('this page',data[x].reverse_link) %> \
+<% \
+} \
+ \
+%> \
+ \
+";
+
 }

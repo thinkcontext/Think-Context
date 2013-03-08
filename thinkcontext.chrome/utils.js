@@ -435,8 +435,6 @@ if(typeof(tc) == 'undefined'){
 	}
     }
 
-    tc.sub = {};
-
     tc.resultPop = function(request){
 	var data = request.data;
 	var detail = JSON.parse(data.data);

@@ -104,6 +104,9 @@ pageMod.PageMod({
 	    case 'sendstat':
 	    	db.sendStat(request.key);
 	    	break;
+	    case 'link':
+		db.lookupResult(request, function(r){worker.postMessage(r)});
+		break;
             case 'reverse':
 	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});
 	    	break;
@@ -255,7 +258,6 @@ pageMod.PageMod({
     contentScript: 'if(document.URL.indexOf(".bcp")> 10)self.postMessage(document.URL)',
     onAttach: function(worker){
 	worker.on('message', function(request){
-	    console.error(request);
 	    db.addBP(request);
 	});
     }});
