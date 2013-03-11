@@ -321,6 +321,38 @@ tc = {
 	}
     }
 
+    , onLookupResultSuccess: function(tx, r, request, callback){
+	var x;
+	if(r.rows.length > 0){
+	    request.data = r.rows.item(0);;
+	    switch(tc.optVal('opt_popD')){
+	    case 'never':
+		request.popD = false;
+		break;
+	    case 'every':
+		request.popD = true;
+	    case 'ever':
+		if(! localStorage.getItem('tcPopD_' + request.data.key)){
+		    request.popD = true;
+		    localStorage.setItem('tcPopD_' + request.data.key,1);
+		} else {
+		    request.popD = false;
+		}
+		break;
+	    default:
+		if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
+		    request.popD = true;
+		    sessionStorage.setItem('tcPopD_' + request.data.key,1);
+		} else {
+		    request.popD = false;
+		}
+		
+	    }
+
+	    callback(request);
+	}
+    }
+
     , lookupResult: function(key, request, callback){
 	tc.db.transaction(
 	    function(tx){
@@ -328,7 +360,7 @@ tc = {
 		tx.executeSql(selTxt
 			      , [key,key,key,key,key,key,key,key]
 			      , function(tx,r){ 
-				  tc.onLookupSuccess(tx,r,request, callback);
+				  tc.onLookupResultSuccess(tx,r,request, callback);
 			      }
 			      , tc.onError);
 	    }

@@ -3,6 +3,13 @@ var db = require("db");
 var s = require("self");
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
+var urlbarButton = require("urlbarbutton").UrlbarButton, button;
+
+// var addontab = require("sdk/addon-page");
+// var data = require("sdk/self").data; 
+// require("sdk/tabs").open(data.url("index.html"));
+
+button = urlbarButton({id: 'tcpopd'});
 
 pageMod.PageMod({
     include : ["http://www.google.com/*","https://www.google.com/*"],
@@ -97,6 +104,10 @@ pageMod.PageMod({
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){
+	    case 'pageA':
+		button.setImage(request.icon);
+		button.setVisibility(true);
+		break;
 	    case 'resource':
 	    	request.data = iconDir;
 	    	worker.postMessage(request);

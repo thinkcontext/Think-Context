@@ -6,7 +6,6 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 
     tc.registerResponse('reverse', 
 			function(request){
-			    console.log(request);
 			    if(tc.reverse.revGotResponse == 0){
 				tc.reverse.revGotResponse = 1;
 				var data = request.data;
@@ -37,8 +36,8 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 		    });
 	    }});
     tc.sendMessage(
-	{'kind': 'link'
-	 , 'key': tc.sigURL(document.baseURI)
+	{kind: 'link'
+	 , key: tc.sigURL(document.baseURI)
 	});
 
     tc.reverseExamine();

@@ -447,7 +447,7 @@ if(typeof(tc) == 'undefined'){
 
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
-	tc.popDialog(rdc.title, d, 'd'+r,true,rdc.icon,'result');    
+	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
     }
 
     tc.resultPrev = function(n,key,data){

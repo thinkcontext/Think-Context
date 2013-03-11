@@ -12,12 +12,14 @@
       As you browse the web <b>thinkContext</b> consults several progressive data sources and if it finds anything relevant to what you are looking at it will unobtrusively add that information right into the page.  Look for the icons shown next to the data sources below and hover your mouse over them to show more information.
     </p>
     <p>
-      Below you may configure which data sources <b>thinkContext</b> consults.  We recommend to begin with that you enable all data sources and only disable one if you have a specific reason.
+      Below you may configure <b>thinkContext</b>, including how it behaves and which data sources consults.  We recommend to begin with that you take the default configureation and only change things if you have a specific reason to do.
     </p>
 
     <div id="status"></div>
     <button id="save">Save</button>    
     <br>
+
+<h3>Data Sources</h3>
     <table>
       <tr>
 	<td>
@@ -66,7 +68,16 @@
       </tr>
       
     </table>
+
     <div id="bp"></div>
+<h3>Behavior</h3>
+Open a domain popup:
+  <select name="popD">
+    <option value="session">Once per session</option>
+    <option value="ever">Once ever</option>
+    <option value="every">Everytime</option>
+    <option value="never">Never</option>
+  </select>
 
     <script src="jquery-1.8.3.min.js"></script>
     <script src="ejs_production.js"></script>

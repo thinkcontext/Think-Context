@@ -1,17 +1,19 @@
 // Saves options to localStorage.
 
-var opts = [ 'opt_news','opt_rush','opt_green','opt_hotel' ]
+var checkOpts = [ 'opt_news','opt_rush','opt_green','opt_hotel' ]
 var bgPage = chrome.extension.getBackgroundPage();
 
 function save_options() {
     var val;
-    for(var i in opts){
-	if(document.getElementById(opts[i]).checked == true)
+    for(var i in checkOpts){
+	if(document.getElementById(checkOpts[i]).checked == true)
 	    val = 1;
 	else 
 	    val = 0;
-	localStorage[opts[i]] = val;
+	localStorage[checkOpts[i]] = val;
     }
+    
+    localStorage['opt_popd'] = $("[name='popD'].val();
     $('.bpCheck').map(
 	function(){
 	    if(this.checked == false){
@@ -42,16 +44,21 @@ function bpList(){
 function restore_options() {
     bpList();
     var val;
-    for(var i in opts){
-	val = localStorage[opts[i]];
+    for(var i in checkOpts){
+	val = localStorage[checkOpts[i]];
 	if(val == 1 || val == null)
 	    val = true;
 	else 
 	    val = false;
-	document.getElementById(opts[i]).checked = val;
+	document.getElementById(checkOpts[i]).checked = val;
     }
-    
-
+    val = localStorage['opt_popd'];
+    if(val != null){
+	$("[name='popD'] option[value='" + val + "'").map(
+	    function(){
+		this.selected = true;
+	    });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', restore_options);
