@@ -2,6 +2,7 @@ if (window.frameElement === null){
     var tc = {};
     tc.dialogs = [];
     tc.responses = {};
+    tc.popD = null;
 
     tc.resultDialogConfig = {
 	rushBoycott:  { 
@@ -61,6 +62,15 @@ if (window.frameElement === null){
 	tc.responses[kind] = func;
     }
 
+    tc.registerResponse('tcPopD'
+			,function(r){
+			    if(tc.popD.dialog('isOpen')){
+				tc.popD.dialog('close');
+			    } else {
+				tc.popD.dialog('open');
+			    }
+		       );
+
     tc.registerResponse('resource'
 			, function(request){
 			    var ar;
@@ -77,6 +87,7 @@ if (window.frameElement === null){
 					 ,trackback16: tc.iconDir + "/trackback-16.png"
 					 ,trackback32: tc.iconDir + "/trackback-32.png"};
 			});
+
     // ick but need to keep in sync with icons directory
     tc.iconStatus = {fair:	1,
 		     change:	1,
@@ -179,7 +190,7 @@ if (window.frameElement === null){
     tc.onResponse = function(request){
 	tc.responses[request.kind](request);
     }
-    
+
     tc.sendMessage = function(request){
 	self.postMessage(request);
     }
@@ -210,8 +221,8 @@ if (window.frameElement === null){
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcReverse'}))
 		.append($('<div>',{id:'tcOther'}))
-		.dialog(
-		    { zIndex: 10000000
+		.dialog(      
+		    { zIndex: 100000001
 		      ,title: 'thinkContext: ' + title
 		      , position: [window.innerWidth - 350
 				   , 10 ]

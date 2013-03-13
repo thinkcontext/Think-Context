@@ -9,8 +9,6 @@ var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 // var data = require("sdk/self").data; 
 // require("sdk/tabs").open(data.url("index.html"));
 
-button = urlbarButton({id: 'tcpopd'});
-
 pageMod.PageMod({
     include : ["http://www.google.com/*","https://www.google.com/*"],
     contentStyleFile: data.url("jquery-ui.css"),
@@ -100,6 +98,12 @@ pageMod.PageMod({
 	,data.url('reverse.js')
     ],
     onAttach: function(worker){
+	barClick = function(href,event){ 
+	    worker.postMessage({kind:'tcPopD'})};
+
+	button = urlbarButton({id: 'tcpopd'
+			       , onClick: barClick
+			      });
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;

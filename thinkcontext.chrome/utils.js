@@ -65,7 +65,11 @@ if(typeof(tc) == 'undefined'){
     chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse){
 	    if(request.kind == 'tcPopD')
-		tc.popD.dialog('open');
+		if(tc.popD.dialog('isOpen')){
+		    tc.popD.dialog('close');
+		} else {
+		    tc.popD.dialog('open');
+		}
 	}
     );
 
@@ -167,7 +171,7 @@ if(typeof(tc) == 'undefined'){
 		.append($('<div>',{id:'tcReverse'}))
 		.append($('<div>',{id:'tcOther'}))
 		.dialog(
-		    { zIndex: 10000000
+		    { zIndex: 100000001
 		      ,title: 'thinkContext: ' + title
 		      , position: [window.innerWidth - 350
 				   , 10 ]
