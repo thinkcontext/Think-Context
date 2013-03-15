@@ -141,6 +141,21 @@ if(window.top === window) {
 			}
 		    }
 		);
+			    
+		var linkExam = function(){
+		    this.setAttribute('tcLink','tcLink');
+		    var sid = "gs" + tc.random();
+		    this.setAttribute("sid",sid);
+		    tc.sendMessage({'kind': 'link'
+     				    , 'sid': sid
+     				    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });		
+	};
+
+//     ad links
+		
+		$('div#tvcap h3 a#vpa1, a#vpa2, a#vpa3, a#vpa4').not('[tcLink]').map(linkExam);	
+		$("div#mbEnd a#van1, a#van2, a#van3, a#van4, a#van5, a#van6").not('[tcLink]').map(linkExam);		
+		$("div#bottomads a#vpab1, a#vpab2, a#vpab3, a#vpab4").not('[tcLink]').map(linkExam);
 		
 		//	result link	
 		$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(function(){

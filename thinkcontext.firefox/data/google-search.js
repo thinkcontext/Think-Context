@@ -1,13 +1,13 @@
 if (window.frameElement === null){
     tc.googleSearch = {
-
+	
 	doit: function(){
 	    
 	    tc.registerResponse('link', function(request){
 		$("[sid=" + request.sid +"]").map(function(){
 		    tc.resultPrev(this,request.key,request.data);});
 	    });
-
+	    
 	    tc.registerResponse('links', function(request){
 		var data = request.data;
 		var orig = request.orig_data;
@@ -53,8 +53,8 @@ if (window.frameElement === null){
 		tc.googleSearch.examineResults();
 	    }
 
-	    pageExamine();
-	    window.setInterval(pageExamine,500);
+pageExamine();
+window.setInterval(pageExamine,500);
 	}
 	,  examineResults: function(){
 	    // place page in an lclbox brief results
@@ -74,7 +74,7 @@ if (window.frameElement === null){
 		    }
 		}
 	    );
-
+	    
 	    if(urlmap){
 		//console.log(jQuery.makeArray(urlmap));
 		tc.sendMessage({'kind': 'places'
@@ -129,6 +129,21 @@ if (window.frameElement === null){
 		}
 	    );
 
+	    var linkExam = function(){
+		this.setAttribute('tcLink','tcLink');
+		var sid = "gs" + tc.random();
+		this.setAttribute("sid",sid);
+		tc.sendMessage({'kind': 'link'
+     				, 'sid': sid
+     				, 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });		
+	};
+
+//     ad links
+	    
+	    $('div#tvcap h3 a#vpa1, a#vpa2, a#vpa3, a#vpa4').not('[tcLink]').map(linkExam);	
+	    $("div#mbEnd a#van1, a#van2, a#van3, a#van4, a#van5, a#van6").not('[tcLink]').map(linkExam);		
+	    $("div#bottomads a#vpab1, a#vpab2, a#vpab3, a#vpab4").not('[tcLink]').map(linkExam);
+	    
 	    //	result link	
 
 	    // performance is slow, code not in sync w/ other browsers
