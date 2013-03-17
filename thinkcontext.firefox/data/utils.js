@@ -69,7 +69,7 @@ if (window.frameElement === null){
 			    } else {
 				tc.popD.dialog('open');
 			    }
-		       );
+			});
 
     tc.registerResponse('resource'
 			, function(request){
