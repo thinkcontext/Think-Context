@@ -331,22 +331,21 @@ tc = {
 		break;
 	    case 'every':
 		request.popD = true;
-	    case 'ever':
-		if(! localStorage.getItem('tcPopD_' + request.data.key)){
-		    request.popD = true;
-		    localStorage.setItem('tcPopD_' + request.data.key,1);
-		} else {
-		    request.popD = false;
-		}
-		break;
-	    default:
+	    case 'session':
 		if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
 		    request.popD = true;
 		    sessionStorage.setItem('tcPopD_' + request.data.key,1);
 		} else {
 		    request.popD = false;
 		}
-		
+		break;
+	    default:
+		if(! localStorage.getItem('tcPopD_' + request.data.key)){
+		    request.popD = true;
+		    localStorage.setItem('tcPopD_' + request.data.key,1);
+		} else {
+		    request.popD = false;
+		}		
 	    }
 
 	    callback(request);

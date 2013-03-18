@@ -249,7 +249,11 @@ if (window.frameElement === null){
 	if(autoOpen){
 	    d.dialog('open');
 	}
-	tc.sendMessage({kind:'pageA',icon:tc.icons[icon]});
+	console.error('send pageA');
+	tc.sendMessage({kind:'pageA'
+			,icon:tc.icons[icon]
+			,href:document.URL
+		       });
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendRequest({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});

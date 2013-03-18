@@ -86,6 +86,17 @@ pageMod.PageMod({
 		 )
     }   
 });
+
+workers = {};
+
+barClick = function(href,event){ 
+    worker.postMessage({kind:'tcPopD'})};
+
+button = urlbarButton({id: 'tcpopd'
+		       , onClick: barClick
+		      });
+
+
 pageMod.PageMod({
     include : ["*"],
     contentStyleFile: data.url("jquery-ui.css"),
@@ -98,19 +109,14 @@ pageMod.PageMod({
 	,data.url('reverse.js')
     ],
     onAttach: function(worker){
-	barClick = function(href,event){ 
-	    worker.postMessage({kind:'tcPopD'})};
-
-	button = urlbarButton({id: 'tcpopd'
-			       , onClick: barClick
-			      });
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){
 	    case 'pageA':
-		button.setImage(request.icon);
-		button.setVisibility(true);
+		console.error('pageA');
+		button.setImage(request.icon,request.href);
+		button.setVisibility(true,request.href);
 		break;
 	    case 'resource':
 	    	request.data = iconDir;
