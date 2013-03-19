@@ -3,7 +3,6 @@ var db = require("db");
 var s = require("self");
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
-var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 
 // var addontab = require("sdk/addon-page");
 // var data = require("sdk/self").data; 
@@ -86,16 +85,20 @@ pageMod.PageMod({
 		 )
     }   
 });
-
-workers = {};
-
-barClick = function(href,event){ 
-    worker.postMessage({kind:'tcPopD'})};
-
-button = urlbarButton({id: 'tcpopd'
-		       , onClick: barClick
-		      });
-
+	var urlbarButton = require("urlbarbutton").UrlbarButton, button;
+	
+	// barClick = function(href,event){ 
+	//     worker.postMessage({kind:'tcPopD'})};
+	
+	button = urlbarButton({id: 'tcpopd'
+//			       , onClick: barClick
+			       // , onClick: function(href, event){
+			       // 	   console.error('urlbarbutton click');
+			       // 	   console.error(href);
+			       // 	   console.error(this.URL);
+			       // 	   var tcpopd = this.getElementById('tcPopD');
+			       // }
+			      });
 
 pageMod.PageMod({
     include : ["*"],

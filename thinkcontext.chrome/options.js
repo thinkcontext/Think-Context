@@ -13,7 +13,7 @@ function save_options() {
 	localStorage[checkOpts[i]] = val;
     }
     
-    localStorage['opt_popd'] = $("[name='popD'].val();
+    localStorage['opt_popd'] = $("[name='popD']").val();
     $('.bpCheck').map(
 	function(){
 	    if(this.checked == false){
