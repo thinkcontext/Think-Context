@@ -438,23 +438,19 @@ tc.resultPrev = function(n,key,data){
 		 )
 }
 
-tc.place = function(n, cid,data){
-    
-    var rdc = tc.resultDialogConfig[data.type];
-    r = tc.random();
-    detail.did = 'd'+r;
-    detail.r = r;
-    
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r,detail);
-    
-    tc.insertPrev(n
-		  , rdc.icon
-		  , r
-		  , rdc.title
-		  , d
-		 );
-}
+    tc.place = function(n, cid,data){
+	var rdc = tc.resultDialogConfig['hotel' + data.type];
+	r = tc.random();
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r);
+	
+	tc.insertPrev(n
+		      , rdc.icon
+		      , r
+		      , rdc.title
+		      , d
+		     );
+    }
 
     // hyatt_result: function(n,key,data){
     // 	// passed a google search result, insert a dialog

@@ -523,14 +523,10 @@ if (window.frameElement === null){
     }
 
     tc.place = function(n, cid,data){
-	
-	var rdc = tc.resultDialogConfig[data.type];
+	var rdc = tc.resultDialogConfig['hotel' + data.type];
 	r = tc.random();
-	detail.did = 'd'+r;
-	detail.r = r;
-	
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r,detail);
+	new EJS({text: rdc.template}).update("d"+r);
 	
 	tc.insertPrev(n
 		      , rdc.icon
