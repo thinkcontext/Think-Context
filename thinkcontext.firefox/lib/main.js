@@ -4,6 +4,17 @@ var s = require("self");
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
 
+var icons = { hotelrisky : iconDir + "/infoI.png"
+	      ,greenResult : iconDir + "/greenG.png"
+	      ,hotelsafe : iconDir + "/greenCheck.png"
+	      ,hotelboycott : iconDir + "/redCirc.png"
+	      ,rushBoycott : iconDir + "/sr.png"
+	      ,unitehere : iconDir + "/unitehere.ico"
+	      ,trackback16: iconDir + "/trackback-16.png"
+	      ,trackback32: iconDir + "/trackback-32.png"};
+
+
+
 // var addontab = require("sdk/addon-page");
 // var data = require("sdk/self").data; 
 // require("sdk/tabs").open(data.url("index.html"));
@@ -85,20 +96,21 @@ pageMod.PageMod({
 		 )
     }   
 });
-	var urlbarButton = require("urlbarbutton").UrlbarButton, button;
+
+var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 	
 	// barClick = function(href,event){ 
 	//     worker.postMessage({kind:'tcPopD'})};
 	
-	button = urlbarButton({id: 'tcpopd'
-//			       , onClick: barClick
-			       // , onClick: function(href, event){
-			       // 	   console.error('urlbarbutton click');
-			       // 	   console.error(href);
-			       // 	   console.error(this.URL);
-			       // 	   var tcpopd = this.getElementById('tcPopD');
-			       // }
-			      });
+button = urlbarButton({id: 'tcpopd'
+		       //			       , onClick: barClick
+		       // , onClick: function(href, event){
+		       // 	   console.error('urlbarbutton click');
+		       // 	   console.error(href);
+		       // 	   console.error(this.URL);
+		       // 	   var tcpopd = this.getElementById('tcPopD');
+		       // }
+		      });
 
 pageMod.PageMod({
     include : ["*"],
@@ -116,11 +128,11 @@ pageMod.PageMod({
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){
-	    case 'pageA':
-		console.error('pageA');
-		button.setImage(request.icon,request.href);
-		button.setVisibility(true,request.href);
-		break;
+	    // case 'pageA':
+	    // 	console.error('pageA');
+	    // 	button.setImage(request.icon,request.href);
+	    // 	button.setVisibility(true,request.href);
+	    // 	break;
 	    case 'resource':
 	    	request.data = iconDir;
 	    	worker.postMessage(request);
@@ -129,7 +141,13 @@ pageMod.PageMod({
 	    	db.sendStat(request.key);
 	    	break;
 	    case 'link':
-		db.lookupResult(request, function(r){worker.postMessage(r)});
+		db.lookupResult(request, 
+				function(r){
+				    console.error('result callback',r.data.func, r.origLink);
+				    button.setImage(icons[r.data.func],r.origLink);
+				    button.setVisibility(true,r.origLink);
+				    worker.postMessage(r);
+				});
 		break;
             case 'reverse':
 	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});

@@ -32,21 +32,22 @@ if (window.frameElement === null){
 	{kind: 'reverse'
 	 , key: tc.sigURL(document.baseURI)
 	});
-
-    $("link[rel='canonical']")
-	.map(function(){
-	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
-		tc.sendMessage(
-		    {'kind': 'reverse'
-		     , 'key': tc.sigURL(this.href)
-		    });
-	    }});
-    tc.sendMessage(
-	{'kind': 'link'
-	 , 'key': tc.sigURL(document.baseURI)
-	});
-
-    tc.reverseExamine();
-
+	
+	$("link[rel='canonical']")
+	    .map(function(){
+		if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
+		    tc.sendMessage(
+			{kind: 'reverse'
+			 , key: tc.sigURL(this.href)
+			});
+		}});
+	tc.sendMessage(
+	    {kind: 'link'
+	     , key: tc.sigURL(document.baseURI)
+	     , origLink: document.baseURI
+	    });
+	
+	tc.reverseExamine();
+	
     }
 }
