@@ -103,7 +103,9 @@ var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 	//     worker.postMessage({kind:'tcPopD'})};
 	
 button = urlbarButton({id: 'tcpopd'
-		       //			       , onClick: barClick
+		       , onClick: function(){
+			   tabs.activeTab.attach
+		       }
 		       // , onClick: function(href, event){
 		       // 	   console.error('urlbarbutton click');
 		       // 	   console.error(href);
@@ -111,6 +113,25 @@ button = urlbarButton({id: 'tcpopd'
 		       // 	   var tcpopd = this.getElementById('tcPopD');
 		       // }
 		      });
+
+var tabs = require("sdk/tabs");
+
+var buttonTab = function(tab) {
+    console.error("tab activate",tab.url);
+    button.setVisibility(false,tab.url);
+    db.lookupResult({kind: 'link'
+		     , key: tab.url
+		     , origLink: tab.url}
+		    , function(r){
+			console.error("tab active lookupres",r.origLink);
+
+			button.setImage(icons[r.data.func],r.origLink);
+			button.setVisibility(true,r.origLink);
+		    })};
+	
+var activeWorker;
+tabs.on('ready', buttonTab);
+tabs.on('activate', buttonTab);
 
 pageMod.PageMod({
     include : ["*"],
@@ -128,11 +149,6 @@ pageMod.PageMod({
 	    var key = request.key;
 	    var data;
 	    switch(request.kind){
-	    // case 'pageA':
-	    // 	console.error('pageA');
-	    // 	button.setImage(request.icon,request.href);
-	    // 	button.setVisibility(true,request.href);
-	    // 	break;
 	    case 'resource':
 	    	request.data = iconDir;
 	    	worker.postMessage(request);
@@ -141,13 +157,7 @@ pageMod.PageMod({
 	    	db.sendStat(request.key);
 	    	break;
 	    case 'link':
-		db.lookupResult(request, 
-				function(r){
-				    console.error('result callback',r.data.func, r.origLink);
-				    button.setImage(icons[r.data.func],r.origLink);
-				    button.setVisibility(true,r.origLink);
-				    worker.postMessage(r);
-				});
+		db.lookupResult(request, function(r){worker.postMessage(r);});
 		break;
             case 'reverse':
 	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});
