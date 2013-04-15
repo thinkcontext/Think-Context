@@ -157,6 +157,10 @@ tc = {
     }
     , setLocalDeleteTime: function(t){
 	var d = new Date;
+	// round down to the hour to improve cacheability
+	d.setMinutes(0);
+	d.setSeconds(0);
+	d.setMilliseconds(0);
 	ss.storage[t + 'deletetime'] = d.getTime();
     }
 
@@ -165,6 +169,10 @@ tc = {
     }
     , setLocalAddTime: function(t){
 	var d = new Date;
+	// round down to the hour to improve cacheability
+	d.setMinutes(0);
+	d.setSeconds(0);
+	d.setMilliseconds(0);
 	ss.storage[t + 'addtime'] = d.getTime();
     }
 
@@ -215,10 +223,14 @@ tc = {
 		    , tc.onSuccess
 		    , function(e,stmt){ tc.loadTable(table)});	
     }
+
     , updateAllTables: function(){
 	for(var t in tc.tables){
-	    if(! (tc.optVal(tc.tables[t].opt) == false))
-		tc.updateTable(t);
+	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
+		var secs = tc.checkLocalDeleteTime(t);
+		if( (! secs) || ((Date.now() - Number(secs)) > 1800000))
+		    tc.updateTable(t);
+	    }
 	}
     }
     
