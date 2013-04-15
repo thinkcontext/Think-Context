@@ -13,14 +13,9 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,trackback16: iconDir + "/trackback-16.png"
 	      ,trackback32: iconDir + "/trackback-32.png"};
 
-
-
-// var addontab = require("sdk/addon-page");
-// var data = require("sdk/self").data; 
-// require("sdk/tabs").open(data.url("index.html"));
-
 pageMod.PageMod({
     include : ["http://www.google.com/*","https://www.google.com/*"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
@@ -62,12 +57,9 @@ pageMod.PageMod({
     }
 });
 
-
-// maps
-//pageMod.PageMod();
-
 pageMod.PageMod({
     include : ["http://plus.google.com/*","https://plus.google.com/*"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
@@ -135,6 +127,7 @@ tabs.on('activate', buttonTab);
 
 pageMod.PageMod({
     include : ["*"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
@@ -172,6 +165,7 @@ pageMod.PageMod({
 });
 pageMod.PageMod({
     include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*","http://www.goodsearch.com/search.aspx"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
@@ -208,6 +202,7 @@ pageMod.PageMod({
     }});
 pageMod.PageMod({
     include : ["http://www.bing.com/search*","https://www.bing.com/search*"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
@@ -244,6 +239,7 @@ pageMod.PageMod({
     }});
 // pageMod.PageMod({
 //     include : ["http://twitter.com/*","https://twitter.com/*"],
+//     attachTo: "top",
 //     contentStyleFile: data.url("jquery-ui.css"),
 //     contentScriptWhen:  'ready',
 //     contentScriptFile: [
@@ -275,6 +271,7 @@ pageMod.PageMod({
 //     }});
 pageMod.PageMod({
     include : ["http://facebook.com/*","https://facebook.com/*","http://www.facebook.com/*","https://www.facebook.com/*"],
+    attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
