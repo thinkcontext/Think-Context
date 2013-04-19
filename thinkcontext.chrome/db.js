@@ -208,7 +208,10 @@ tc = {
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0)
-		resArr.push("hotel");
+		resArr.push("hotelsafe");
+		resArr.push("hotelstrike");
+		resArr.push("hotelrisky");
+		resArr.push("hotelboycott");
 	}
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
