@@ -10,8 +10,7 @@ tc = {
 		, name: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '16npeDRrzx9J6X4P4w2KplYwF9wPmSrLEZSQdiBE' //1040216'
-	    , version: '0.05'
+	    , version: '0.06'
 	    , opt : 'opt_news'
 	}
 	, reverse: {
@@ -22,9 +21,8 @@ tc = {
 		, title: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
 	    , opt: 'opt_news'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
 	, results: { 
 	    fields: {
@@ -34,8 +32,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -46,7 +43,6 @@ tc = {
 	// 	, bin_op: 'text'
 		
 	//     }
-	//     , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
 	//     , version: '0.02'
 	// }
 	, place: {
@@ -56,9 +52,8 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '1H38qhAMz280fqktszJRVyAtHuS0OBdcsC7-WZsE'
 	    , opt: 'opt_hotel'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
 	, place_data: {
 	    fields: {
@@ -66,11 +61,12 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-	    , googFTNumber: '10TYcA0TD-DdArVh5oYxq9KdwBJa0WCin6GNnV8Y'
 	    , opt: 'opt_hotel'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
     }
+
+    , dataUrl: 'http://thinkcontext.azurewebsites.net/tc.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -110,8 +106,6 @@ tc = {
 		tx.executeSql(sqlTxt,[]);
 	    });
     }
-
-    , googFT : 'https://www.googleapis.com/fusiontables/v1/query?key=AIzaSyDZ28Q_ZRg6SXUEVsR-AqRbyIJdoE0qGYg&alt=csv&sql='
 
     , checkLocalTableVersion: function(t){
 	return localStorage.getItem(t + 'version') == tc.tables[t].version;
@@ -207,22 +201,28 @@ tc = {
     
     , updateTable: function(table){
 	var resClause = '';
+	var resArr = [];
 	if(table == 'results'){
 	    if(tc.optVal('opt_green') == 0)
-		resClause += " and func not equal to 'greenResult' ";
+		resArr.push("greenResult");
 	    if(tc.optVal('opt_rush') == 0)
-		resClause += " and func not equal to 'rushBoycott' ";
+		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0)
-		resClause += " and func does not contain 'hotel' ";
+		resArr.push("hotel");
 	}
+	if(resArr.length > 0){
+	    resClause = "&ex=" + resArr.join(',');
+	}
+
 	var dateClause = '';
 	var secs;
 
 	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "and dm >= " + secs;
+	    dateClause = "&dm= " + secs;
 	}
 
-	var query  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + resClause + " limit 100000");
+	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
+
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    if(dataArray.length > 1){ // see if there's any data to insert
@@ -241,9 +241,11 @@ tc = {
 
 	dateClause = '';
 	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "and da >= " + secs;
+	    dateClause = "&da= " + secs;
 	}
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + resClause + " limit 100000");
+
+	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
+
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -269,18 +271,21 @@ tc = {
     }
     
     , loadTable: function(table){
-	var query;
 	var resClause = '';
+	var resArr = [];
 	if(table == 'results'){
-	    if(tc.opt_green == 0)
-		resClause += " and func not equal to 'greenResult' ";
-	    if(tc.opt_rush == 0)
-		resClause += " and func not equal to 'rushBoycott' ";
-	    if(tc.opt_hotel == 0)
-		resClause += " and func does not contain 'hotel' ";
+	    if(tc.optVal('opt_green') == 0)
+		resArr.push("greenResult");
+	    if(tc.optVal('opt_rush') == 0)
+		resArr.push("rushBoycott");
+	    if(tc.optVal('opt_hotel') == 0)
+		resArr.push("hotel");
+	}
+	if(resArr.length > 0){
+	    resClause = "&ex=" + resArr.join(',');
 	}
 
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + resClause + " limit 100000");
+	query = encodeURI(tc.dataUrl + "da=0&tab=" + table + resClause);
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
