@@ -341,7 +341,6 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.onResponse = function(request){
-	console.log(request);
 	tc.responses[request.kind](request);
     }
 

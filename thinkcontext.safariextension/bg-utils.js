@@ -4,6 +4,8 @@
 function CSVToArray( strData, strDelimiter ){
     // Check to see if the delimiter is defined. If not,
     // then default to comma.
+    if(strData.length == 0)
+	return [];
     strDelimiter = (strDelimiter || ",");
 
     // Create a regular expression to parse the CSV values.

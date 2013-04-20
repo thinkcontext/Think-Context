@@ -1,4 +1,3 @@
-console.log('reverse');
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
     tc.reverse = {};
     tc.reverse.revGotResponse = 0;

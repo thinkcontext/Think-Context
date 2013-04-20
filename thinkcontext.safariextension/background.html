@@ -2,7 +2,7 @@
   <head>
   </head>
   <body>
-    <script src="jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="jquery-2.0.0.min.js" type="text/javascript"></script>
     <script src="bg-utils.js" type="text/javascript"></script>
     <script src="db.js" type="text/javascript"></script>
     <script>
@@ -45,6 +45,14 @@ tc.connectSubvDB();
 safari.application.addEventListener("message",onRequest);
 setInterval(function(){tc.updateTable('reverse')}, 3650000);
 setInterval(tc.updateAllTables, 10870000);
+
+function openOptions(){
+    console.log("openOptions");
+}
+
+safari.application.addEventListener("command", openOptions, false);
+
+
     </script>
   </body>
 </html>
