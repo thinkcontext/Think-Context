@@ -47,7 +47,8 @@ setInterval(function(){tc.updateTable('reverse')}, 3650000);
 setInterval(tc.updateAllTables, 10870000);
 
 function openOptions(){
-    console.log("openOptions");
+    var t = safari.application.activeBrowserWindow.openTab('foreground');
+    t.url = safari.extension.baseURI + "options.html";
 }
 
 safari.application.addEventListener("command", openOptions, false);
