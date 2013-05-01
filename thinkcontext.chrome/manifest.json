@@ -83,12 +83,8 @@
 	"128": "icons/tc-128.png"
     },
     "page_action": { "default_title": "thinkContext" },
-    "permissions": ["webRequest"
-                    ,"*://boycottplus.org/*"
-                    ,"*://www.boycottplus.org/*"           
-                    ,"*://www.google.com/*"
-    		    ,"*://thinkcontext.azurewebsites.net/*"
-    		    ,"*://thinkcontext.org/*"
+    "permissions": ["*://www.google.com/*"
+    		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
 		    ,"*://bitly.com/*"

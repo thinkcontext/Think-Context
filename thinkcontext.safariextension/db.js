@@ -65,7 +65,7 @@ tc = {
 	    , version: '0.07'
 	}
     }
-    , dataUrl: 'http://thinkcontext.azurewebsites.net/tc.php?'
+    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -118,24 +118,23 @@ tc = {
     , checkLocalDeleteTime: function(t){
 	return localStorage.getItem(t + 'deletetime');
     }
-    , setLocalDeleteTime: function(t){
-	var d = new Date;
+    , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
+	var d = new Date;
 	d.setMinutes(0);
 	d.setSeconds(0);
 	d.setMilliseconds(0);
-	localStorage.setItem(t + 'deletetime', d.getTime());
+	return d.getTime();
+    }
+
+    , setLocalDeleteTime: function(t){
+	localStorage.setItem(t + 'deletetime', tc.roundNowDownHour());
     }
     , checkLocalAddTime: function(t){
 	return localStorage.getItem(t + 'addtime');
     }
     , setLocalAddTime: function(t){
-	var d = new Date;
-	// round down to the hour to improve cacheability
-	d.setMinutes(0);
-	d.setSeconds(0);
-	d.setMilliseconds(0);
-	localStorage.setItem(t + 'addtime', d.getTime());
+	localStorage.setItem(t + 'addtime', tc.roundNowDownHour());
     }
     , initializeLocalDB: function(){
 	if(!tc.loadAllTables()){
@@ -221,7 +220,7 @@ tc = {
 	var secs;
 
 	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "&dm= " + secs;
+	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 	}
 
 	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
@@ -244,7 +243,7 @@ tc = {
 
 	dateClause = '';
 	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "&da= " + secs;
+	    dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
 	}
 
 	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
@@ -292,7 +291,7 @@ tc = {
 	    resClause = "&ex=" + resArr.join(',');
 	}
 
-	query = encodeURI(tc.dataUrl + "da=0&tab=" + table + resClause);
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);

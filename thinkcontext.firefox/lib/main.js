@@ -301,12 +301,3 @@ pageMod.PageMod({
 	    }
 	})
     }});
-pageMod.PageMod({
-    include : ["http://boycottplus.org/subscribe/*","https://boycottplus.org/subscribe/*","http://www.boycottplus.org/subscribe/*","https://www.boycottplus.org/subscribe/*"],
-    contentScriptWhen:  'start',
-    contentScript: 'if(document.URL.indexOf(".bcp")> 10)self.postMessage(document.URL)',
-    onAttach: function(worker){
-	worker.on('message', function(request){
-	    db.addBP(request);
-	});
-    }});

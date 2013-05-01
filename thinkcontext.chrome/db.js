@@ -66,7 +66,7 @@ tc = {
 	}
     }
 
-    , dataUrl: 'http://thinkcontext.azurewebsites.net/tc.php?'
+    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -119,24 +119,23 @@ tc = {
     , checkLocalDeleteTime: function(t){
 	return localStorage.getItem(t + 'deletetime');
     }
-    , setLocalDeleteTime: function(t){
-	var d = new Date;
+    , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
+	var d = new Date;
 	d.setMinutes(0);
 	d.setSeconds(0);
 	d.setMilliseconds(0);
-	localStorage.setItem(t + 'deletetime', d.getTime());
+	return d.getTime();
+    }
+
+    , setLocalDeleteTime: function(t){
+	localStorage.setItem(t + 'deletetime', tc.roundNowDownHour());
     }
     , checkLocalAddTime: function(t){
 	return localStorage.getItem(t + 'addtime');
     }
     , setLocalAddTime: function(t){
-	var d = new Date;
-	// round down to the hour to improve cacheability
-	d.setMinutes(0);
-	d.setSeconds(0);
-	d.setMilliseconds(0);
-	localStorage.setItem(t + 'addtime', d.getTime());
+	localStorage.setItem(t + 'addtime', tc.roundNowDownHour());
     }
     , initializeLocalDB: function(){
 	if(!tc.loadAllTables()){
@@ -221,7 +220,7 @@ tc = {
 	var secs;
 
 	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "&dm= " + secs;
+	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 	}
 
 	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
@@ -244,7 +243,7 @@ tc = {
 
 	dateClause = '';
 	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "&da= " + secs;
+	    dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
 	}
 
 	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
@@ -292,22 +291,15 @@ tc = {
 	    resClause = "&ex=" + resArr.join(',');
 	}
 
-	query = encodeURI(tc.dataUrl + "da=0&tab=" + table + resClause);
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
 	    if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
 		tc.db.transaction(
 		    function(tx){
-			var createBP;
 			var dropTxt = "DROP TABLE IF EXISTS " + table;
 			var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
-			if(table == 'results'){
-			    createBP = "CREATE TABLE if not exists bp_results ( " + tc.tableFieldsTypes(table) + " )";
-			    tx.executeSql(createBP
-					  , []
-					  , tc.onSuccess, tc.onError);
-			}
 
 			var insertTxt = "INSERT OR REPLACE INTO " + table + "( " + tc.tableFields(table) + ") VALUES ( " + "?" + ",?".repeat(tc.tableFields(table).split(',').length - 1) + ") ";
 			tx.executeSql(dropTxt,[]
@@ -378,9 +370,9 @@ tc = {
     , lookupResult: function(key, request, callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "select * from (SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key union SELECT * FROM bp_results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key) t LIMIT 1";
+		var selTxt = "select * from (SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key";
 		tx.executeSql(selTxt
-			      , [key,key,key,key,key,key,key,key]
+			      , [key,key,key,key]
 			      , function(tx,r){ 
 				  tc.onLookupResultSuccess(tx,r,request, callback);
 			      }
@@ -495,89 +487,5 @@ tc = {
 			  });
 	    }
 	}
-    }
-
-    , addBP: function(data, campUrl){
-	var name = data.name, updatedDate = data.updatedDate, sponsorUrl = data.sponsorUrl, company, domain, dat;
-	if(name && updatedDate && data.company.length > 0 && data.company[0].domains.length > 0){
-	    tc.db.transaction(
-		function(tx){
-		    tx.executeSql("delete from bp_results where url = ?",[campUrl],null,null);
-		    for(var c in data.company){
-			company = data.company[c];
-			for(var d in company.domains){
-			    domain = company.domains[d].toLowerCase().replace('http://','').replace('www.','');
-
-			    dat = {updatedDate:updatedDate
-				   , blurb: company.causeDetail
-				   , name: name
-				   , companyName: company.companyName
-				   , sponsorUrl: sponsorUrl}
-
-			    tx.executeSql(
-				"insert into bp_results ( key, url, func, data) values ( ?, ?, ?, ? )"
-				, [domain,campUrl,'bp', JSON.stringify(dat)]
-				, null, tc.onError);
-			    
-			}
-		    }
-		});
-	}
-    }
-
-    , setBPTime: function(t){
-	localStorage.setItem('bpLastRefresh', t);
-    }
-
-    , getBPTime: function(){
-	return localStorage.getItem('bpLastRefresh');
-    }
-    
-    , refreshBPs: function(){
-	if(tc.getBPTime() == null || (Date.now() - tc.getBPTime() > 3600000 * 36)){
-	    tc.db.transaction(
-		function(tx){
-		    tx.executeSql(
-			"select distinct url from bp_results",[]
-			, function(tx,r){
-			    if(r.rows.length>0){
-				for(var i=0;i<r.rows.length;i++){
-				    var url = r.rows.item(i).url
-				    $.getJSON(url, null
-					      , function(data, textStatus){
-						  tc.addBP(data,url);
-						  tc.setBPTime(Date.now());
-					      }
-					     );
-				}}}
-			, null);
-		});	
-	}
-    }
-    , listBPs: function(callback){
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(
-		    "select url,min(data)data from bp_results group by url",[]
-		    , function(tx,r){
-			var out = [];
-			if(r.rows.length>0){
-			    for(var i=0;i<r.rows.length;i++){
-				out.push(r.rows.item(i));
-			    }
-			}
-			callback(out);			
-		    }
-		    , null);		
-	    });	
-    }
-
-    , rmBP: function(url){
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(
-		    "delete from bp_results where url = ?", [url]
-		);
-	    });	
     }
 };
