@@ -41,11 +41,6 @@ tc.resultDialogConfig = {
 	, tcstat: 'bsp'
 	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
     }
-    , bp: {
-	title: 'Boycott Plus Campaign'
-	, icon: 'redCirc'
-	, template: '<b><%= name %></b> <%= companyName %> (<%= key %>) is being boycotted because <%= blurb %>.  For more info on this campaign see <%= link_to("here", sponsorUrl, {target: "_blank"}) %>'
-    }
 };
 
 tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
