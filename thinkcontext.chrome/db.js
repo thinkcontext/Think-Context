@@ -370,7 +370,7 @@ tc = {
     , lookupResult: function(key, request, callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "select * from (SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key";
+		var selTxt = "SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key";
 		tx.executeSql(selTxt
 			      , [key,key,key,key]
 			      , function(tx,r){ 

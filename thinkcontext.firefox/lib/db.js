@@ -397,7 +397,7 @@ tc = {
     , lookupResult: function(request, callback){
 	var key = request.key;
 	console.error(key);
-	var selTxt = "select * from (SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key ) t  LIMIT 1";
+	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key ) t  LIMIT 1";
 
 	sql.execute(selTxt 
 		    , {key: key}
