@@ -263,6 +263,8 @@ if (window.frameElement === null){
 		d.dialog('close');
 	    });
 	});
+	// really irritating when the dialog steals focus
+	document.activeElement.blur();
     }
 
     tc.sigURL = function(url){

@@ -213,6 +213,9 @@ if(typeof(tc) == 'undefined'){
 		d.dialog('close');
 	    });
 	});
+
+	// really irritating when the dialog steals focus
+	document.activeElement.blur();
     }
 
     tc.sigURL = function(url){

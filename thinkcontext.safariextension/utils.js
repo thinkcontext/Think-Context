@@ -188,6 +188,8 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	$(window).scroll(function(){
 	    d.dialog({position: [window.innerWidth - 350
 				 , window.innerHeight - 175 ]}); });
+	// really irritating when the dialog steals focus
+	document.activeElement.blur();	
     }
 
     tc.sigURL = function(url){
