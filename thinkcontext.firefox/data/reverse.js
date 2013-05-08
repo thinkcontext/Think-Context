@@ -43,7 +43,7 @@ if (window.frameElement === null){
 		}});
 	tc.sendMessage(
 	    {kind: 'link'
-	     , key: tc.sigURL(document.baseURI)
+	     , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	     , origLink: document.baseURI
 	    });
 	

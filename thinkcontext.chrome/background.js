@@ -53,5 +53,6 @@ chrome.runtime.onInstalled.addListener(
 	}else if(details.reason == "update"){
             var thisVersion = chrome.runtime.getManifest().version;
             console.log("Updated from " + details.previousVersion + " to " + thisVersion + " + !");
+	    chrome.tabs.create({url:"update.html"});
 	}
     });

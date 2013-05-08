@@ -42,8 +42,11 @@ tc.registerResponse('reverse',
 			 , 'key': tc.sigURL(this.href)
 			});
 		}});
-
-
+	tc.sendMessage(
+	    {kind: 'link'
+	     , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
+	    });
+		
 	tc.reverseExamine();
 	safari.self.addEventListener("message",tc.onResponse, false);
 	

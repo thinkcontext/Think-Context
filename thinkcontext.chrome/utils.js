@@ -427,13 +427,15 @@ if(typeof(tc) == 'undefined'){
 
     tc.googlePlaces = function(request){ 
 	var data = request.data;
-	var d, icon, title, blurb, rdc, tcstat = 'gsp';
+	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
 	for(var r in data){
 	    d = data[r];
-	    blurb = $("<div>",{id: "d"+r}).appendTo('body');
+	    ra = tc.random();
+	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
 	    rdc = tc.resultDialogConfig[d.type];
-	    new EJS({text: rdc.template}).update("d"+r);
-	    tc.googlePlacesHandler(d.siteid, rdc.icon ,rdc.title ,blurb);
+	    h = new EJS({text: rdc.template}).render();
+	    $("#d"+ra).append(h);
+	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
 	}
     }
 

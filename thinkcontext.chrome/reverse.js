@@ -37,7 +37,7 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	    }});
     tc.sendMessage(
 	{kind: 'link'
-	 , key: tc.sigURL(document.baseURI)
+	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
 
     tc.reverseExamine();

@@ -7,9 +7,9 @@ tc.googleSearch = {
 		tc.resultPrev(this,request.key,request.data);});
 	});
 
-	tc.googlePlacesHandler = function(siteid, icon ,title ,blurb){
+	tc.googlePlacesHandler = function(siteid, icon,ra ,title ,blurb){
 	    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
-		tc.insertPrev(this,icon,title,blurb);});	    
+		tc.insertPrev(this,icon,ra,title,blurb);});	    
 	}
 
 	tc.registerResponse('places', tc.googlePlaces);
