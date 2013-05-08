@@ -400,41 +400,42 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	}
     }
 
-tc.googlePlaces = function(request){ 
-    //console.log(request);
-    var data = request.data;
-    var d, icon, title, blurb, rdc, tcstat = 'gsp';
-    for(var r in data){
-	d = data[r];
-	blurb = $("<div>",{id: "d"+r}).appendTo('body');
-	rdc = tc.resultDialogConfig[d.type];
-	new EJS({text: rdc.template}).update("d"+r);
-	tc.googlePlacesHandler(d.siteid, rdc.icon ,rdc.title ,blurb);
+    tc.googlePlaces = function(request){ 
+	var data = request.data;
+	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
+	for(var r in data){
+	    d = data[r];
+	    ra = tc.random();
+	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
+	    rdc = tc.resultDialogConfig[d.type];
+	    h = new EJS({text: rdc.template}).render();
+	    $("#d"+ra).append(h);
+	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
+	}
     }
-}
-
+    
     tc.sub = {};
-
-tc.resultPrev = function(n,key,data){
-    var detail = JSON.parse(data.data);
-    var rdc = tc.resultDialogConfig[data.func];
-    r = tc.random();
-    detail.did = 'd'+r;
-    detail.r = r;
-    detail.key = key;
-    detail.url = data.url;
-
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r,detail);
-
-    tc.insertPrev(n
-		  , rdc.icon
-		  , r
-		  , rdc.title
-		  , d
-		 )
-}
-
+    
+    tc.resultPrev = function(n,key,data){
+	var detail = JSON.parse(data.data);
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = key;
+	detail.url = data.url;
+	
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	
+	tc.insertPrev(n
+		      , rdc.icon
+		      , r
+		      , rdc.title
+		      , d
+		     )
+    }
+    
     tc.place = function(n, cid,data){
 	var rdc = tc.resultDialogConfig['hotel' + data.type];
 	r = tc.random();
