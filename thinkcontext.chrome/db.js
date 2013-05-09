@@ -32,7 +32,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.08'
+	    , version: '0.09'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -206,11 +206,12 @@ tc = {
 		resArr.push("greenResult");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
-	    if(tc.optVal('opt_hotel') == 0)
+	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
 		resArr.push("hotelrisky");
 		resArr.push("hotelboycott");
+	    }
 	}
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
