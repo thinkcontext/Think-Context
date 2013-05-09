@@ -229,32 +229,31 @@ tc = {
     }
     
     , updateTable: function(table){
+	var query;
 	var resClause = '';
 	var resArr = [];
 	if(table == 'results'){
-	    if(tc.optVal('opt_green') == 0)
+	    if(tc.opt_green == false)
 		resArr.push("greenResult");
-	    if(tc.optVal('opt_rush') == 0)
+	    if(tc.opt_rush) == false)
 		resArr.push("rushBoycott");
-	    if(tc.optVal('opt_hotel') == 0)
+	    if(tc.opt_hotel == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
 		resArr.push("hotelrisky");
 		resArr.push("hotelboycott");
+	    }
 	}
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
 	}
-
-	var dateClause = '';
-	var secs;
-
 	if(secs=tc.checkLocalDeleteTime(table)){
 	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 	}
-	var len = tc.tableFieldsLength(table);
 
 	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
+	var len = tc.tableFieldsLength(table);
+
 	var delReq = Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -276,12 +275,12 @@ tc = {
 	
 	dateClause = '';
 	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "and da >= " + secs;
+	    dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
 	}
-	
-	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + resClause + " limit 100000");
+
+	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 	var insReq = Request({
-	    url: insQuery
+	    url: query
 	    ,onComplete: function(response){
 		var dataArray = CSVToArray(response.text);
 		var insertTxt;
@@ -316,15 +315,25 @@ tc = {
     , loadTable: function(table){
 	var query;
 	var resClause = '';
+	var resArr = [];
 	if(table == 'results'){
 	    if(tc.opt_green == false)
-		resClause += " and func not equal to 'greenResult' ";
-	    if(tc.opt_rush == false)
-		resClause += " and func not equal to 'rushBoycott' ";
-	    if(tc.opt_hotel == false)
-		resClause += " and func does not contain 'hotel' ";
+		resArr.push("greenResult");
+	    if(tc.opt_rush) == false)
+		resArr.push("rushBoycott");
+	    if(tc.opt_hotel == false){
+		resArr.push("hotelsafe");
+		resArr.push("hotelstrike");
+		resArr.push("hotelrisky");
+		resArr.push("hotelboycott");
+	    }
 	}
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + resClause + " limit 100000");
+	if(resArr.length > 0){
+	    resClause = "&ex=" + resArr.join(',');
+	}
+
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
+
 	Request({
 	    url: query
 	    ,onComplete: function(response){
