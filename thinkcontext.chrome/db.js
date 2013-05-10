@@ -53,7 +53,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
 	, place_data: {
 	    fields: {
@@ -62,7 +62,7 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
     }
 
