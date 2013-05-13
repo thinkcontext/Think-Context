@@ -68,7 +68,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.08'
+	    , version: '0.09'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -98,7 +98,7 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
     }
     
@@ -160,14 +160,14 @@ tc = {
     }
 
     , setLocalDeleteTime: function(t){
-	ss.storage[t + 'deletetime'] = roundNowDownHour();
+	ss.storage[t + 'deletetime'] = tc.roundNowDownHour();
     }
 
     , checkLocalAddTime: function(t){
 	return ss.storage[t + 'addtime'];
     }
     , setLocalAddTime: function(t){
-	ss.storage[t + 'addtime'] = roundNowDownHour();
+	ss.storage[t + 'addtime'] = tc.roundNowDownHour();
     }
 
     , initializeLocalDB: function(){
@@ -235,7 +235,7 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
-	    if(tc.opt_rush) == false)
+	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
 	    if(tc.opt_hotel == false){
 		resArr.push("hotelsafe");
@@ -319,7 +319,7 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
-	    if(tc.opt_rush) == false)
+	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
 	    if(tc.opt_hotel == false){
 		resArr.push("hotelsafe");
@@ -405,8 +405,7 @@ tc = {
 
     , lookupResult: function(request, callback){
 	var key = request.key;
-	console.error(key);
-	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key ) t  LIMIT 1";
+	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key  LIMIT 1";
 
 	sql.execute(selTxt 
 		    , {key: key}

@@ -21,9 +21,7 @@ if (window.frameElement === null){
 				}
 				var z = tc.random();
 				var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-				new EJS({text: tc.revEjs}).update("z"+z,{data:data,ex:ex});
-
-				
+				new EJS({text: tc.revEjs}).update("z"+z,{data:data,ex:ex});			
 				tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex,'trackback16','reverse');
 			    }
 			});
