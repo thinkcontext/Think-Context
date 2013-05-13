@@ -5,12 +5,13 @@ if (window.frameElement === null){
 	  || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
 	 )
       ){    
-    tc.reverse = {};
-    tc.reverse.revGotResponse = 0;
-    
-    tc.registerResponse('link',tc.resultPop);
-
-    tc.registerResponse('reverse', 
+	
+	tc.reverse = {};
+	tc.reverse.revGotResponse = 0;
+	
+	tc.registerResponse('link',tc.resultPop);
+	
+	tc.registerResponse('reverse', 
 			function(request){
 			    if(tc.reverse.revGotResponse == 0){
 				tc.reverse.revGotResponse = 1;
@@ -48,4 +49,5 @@ if (window.frameElement === null){
 	tc.reverseExamine();
 	
     }
+
 }

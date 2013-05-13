@@ -19,7 +19,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -63,7 +63,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -89,40 +89,43 @@ pageMod.PageMod({
     }   
 });
 
+var revWorker;
+var tabs = require("sdk/tabs");
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 button = urlbarButton({id: 'tcpopd'
 		       , onClick: function(){
-			   tabs.activeTab.attach;
+			   revWorker.postMessage({kind:'tcPopD'});
 		       }
 		      });
-
-var tabs = require("sdk/tabs");
 
 var buttonTab = function(tab) {
     console.error("tab activate",tab.url);
     button.setVisibility(false,tab.url);
-    button.setImage(false,r.origLink);
+    button.setImage(false,tab.url);
     db.lookupResult({kind: 'link'
 		     , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
 		     , origLink: tab.url}
 		    , function(r){
-			console.error("tab active lookupres",r.origLink);
+			console.error("tab active result",r.origLink);
 			button.setImage(icons[r.data.func],r.origLink);
 			button.setVisibility(true,r.origLink);
 		    });
     db.lookupReverse(
-	{kind: 'reverse'
-	 , key: tc.sigURL(document.baseURI)
+	sigURL(tab.url)
+	,{kind: 'reverse'
+	  , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
+	  , origLink:tab.url
 	}
 	, function(r){
-
+	    console.error("tab active reverse",r.origLink);
+	    button.setImage(icons['trackback16'],r.origLink);
+	    button.setVisibility(true,r.origLink);
 	}
     );
 
 
 };
 	
-var activeWorker;
 tabs.on('ready', buttonTab);
 tabs.on('activate', buttonTab);
 
@@ -132,13 +135,14 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('reverse.js')
     ],
     onAttach: function(worker){
+	revWorker = worker;
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
@@ -170,7 +174,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -207,7 +211,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -244,7 +248,7 @@ pageMod.PageMod({
 //     contentStyleFile: data.url("jquery-ui.css"),
 //     contentScriptWhen:  'ready',
 //     contentScriptFile: [
-// 			data.url('jquery-1.7.1.min.js')
+// 			data.url('jquery-2.0.0.min.js')
 // 			,data.url('jquery-ui-1.8.16.custom.min.js')
 //	,data.url('ejs_production.js') 
 // 			,data.url('utils.js')
@@ -276,7 +280,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-1.7.1.min.js')
+	data.url('jquery-2.0.0.min.js')
 	,data.url('jquery-ui-1.8.16.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
