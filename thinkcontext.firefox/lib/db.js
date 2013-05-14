@@ -515,6 +515,37 @@ tc = {
     // }
 
 };
+function getReverseHost(url){
+    var host;
+    var ar;
+    var tld;
+    if(host = url.split('/')[2]){
+	ar = host.split('.');
+	if(ar[0] == 'www'){
+	    ar.shift();
+	}
+	tld = ar[ar.length - 1];
+	if(ar.length <= 2){
+	    return ar.join('.')
+	} else if((tld == 'com'
+		   || tld == 'net'
+		   || tld == 'gov'
+		   || tld == 'edu'
+		   || tld == 'org')
+		  && !(tld == 'com' 
+		       && (ar[ar.length - 2] == 'patch'
+			   || ar[ar.length - 2] == 'cbslocal'
+			   || ar[ar.length - 2] == 'curbed'
+			   || ar[ar.length - 2] == 'yahoo'
+			   || ar[ar.length - 2] == 'craigslist')
+		      )){
+	    return ar.slice(ar.length - 2).join('.')
+	} else {
+	    return ar.slice(ar.length - 3).join('.')
+	}
+    }
+    return null;
+}
 
 tc.connectDB();
 tc.loadAllTables();
@@ -530,6 +561,7 @@ exports.lookupReverse = tc.lookupReverse;
 exports.lookupReverseHome = tc.lookupReverseHome;
 exports.lookupSubvert = tc.lookupSubvert;
 exports.sendStat = tc.sendStat;
+exports.getReverseHost = getReverseHost;
 //exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this
@@ -605,51 +637,3 @@ function CSVToArray( strData, strDelimiter ){
     // Return the parsed data.
     return( arrData );
 }
-
-function getReverseHost(url){
-    var host;
-    var ar;
-    var tld;
-    if(host = url.split('/')[2]){
-	ar = host.split('.');
-	if(ar[0] == 'www'){
-	    ar.shift();
-	}
-	tld = ar[ar.length - 1];
-	if(ar.length <= 2){
-	    return ar.join('.')
-	} else if((tld == 'com'
-		   || tld == 'net'
-		   || tld == 'gov'
-		   || tld == 'edu'
-		   || tld == 'org')
-		  && !(tld == 'com' 
-		       && (ar[ar.length - 2] == 'patch'
-			   || ar[ar.length - 2] == 'cbslocal'
-			   || ar[ar.length - 2] == 'curbed'
-			   || ar[ar.length - 2] == 'yahoo'
-			   || ar[ar.length - 2] == 'craigslist')
-		      )){
-	    return ar.slice(ar.length - 2).join('.')
-	} else {
-	    return ar.slice(ar.length - 3).join('.')
-	}
-    }
-    return null;
-}
-
-// function bitlyDomain(domain){
-//     if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
-// 	return 1
-// }
-
-// function resolveMap(url){
-//     var s = url.split('/');
-//     if(s.length > 3){
-// 	var domain = s[2];
-// 	if(bitlyDomain(domain))
-// 	    return 'https://bitly.com/' + s[3];
-// 	else if(domain == 'goo.gl')
-// 	    return url;	
-//     }
-// }

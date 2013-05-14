@@ -89,45 +89,57 @@ pageMod.PageMod({
     }   
 });
 
-var revWorker;
+var tabWorkers = {};
 var tabs = require("sdk/tabs");
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 button = urlbarButton({id: 'tcpopd'
 		       , onClick: function(){
-			   revWorker.postMessage({kind:'tcPopD'});
+			   tabWorkers[tabs.activeTab.id].postMessage({kind:'tcPopD'});
 		       }
 		      });
 
 var buttonTab = function(tab) {
-    console.error("tab activate",tab.url);
     button.setVisibility(false,tab.url);
     button.setImage(false,tab.url);
-    db.lookupResult({kind: 'link'
-		     , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
-		     , origLink: tab.url}
-		    , function(r){
-			console.error("tab active result",r.origLink);
-			button.setImage(icons[r.data.func],r.origLink);
-			button.setVisibility(true,r.origLink);
-		    });
-    db.lookupReverse(
-	sigURL(tab.url)
-	,{kind: 'reverse'
-	  , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
-	  , origLink:tab.url
-	}
-	, function(r){
-	    console.error("tab active reverse",r.origLink);
-	    button.setImage(icons['trackback16'],r.origLink);
-	    button.setVisibility(true,r.origLink);
-	}
-    );
-
-
+    var domain = db.getReverseHost(tab.url);
+    if(domain && (!( domain.match('google.com$') 
+	  || domain.match('facebook.com$')
+	  || domain.match('twitter.com$')
+	  || domain.match('yahoo.com$')
+	  || domain.match('bing.com$')
+	)
+       || domain == 'news.google.com'
+       || domain == 'news.yahoo.com'
+		  || domain == 'news.bing.com')
+      ){    
+	db.lookupResult({kind: 'link'
+			 , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
+			 , origLink: tab.url}
+			, function(r){
+			    button.setImage(icons[r.data.func],r.origLink);
+			    button.setVisibility(true,r.origLink);
+			});
+	db.lookupReverse(
+	    sigURL(tab.url)
+	    ,{kind: 'reverse'
+	      , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
+	      , origLink:tab.url
+	     }
+	    , function(r){
+		button.setImage(icons['trackback16'],r.origLink);
+		button.setVisibility(true,r.origLink);
+	    }
+	);
+    }
 };
-	
+
+var buttonTabClose = function(tab){
+    delete tabWorkers[tab.id];
+};
+
 tabs.on('ready', buttonTab);
 tabs.on('activate', buttonTab);
+tabs.on('close',buttonTabClose);
 
 pageMod.PageMod({
     include : ["*"],
@@ -141,8 +153,8 @@ pageMod.PageMod({
 	,data.url('utils.js')
 	,data.url('reverse.js')
     ],
-    onAttach: function(worker){
-	revWorker = worker;
+    onAttach:  function(worker){
+	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
 	    var key = request.key;
 	    var data;
@@ -157,54 +169,57 @@ pageMod.PageMod({
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r);});
 		break;
-            case 'reverse':
+	    case 'reverse':
 	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});
 	    	break;
-            case 'reversehome':
+	    case 'reversehome':
 	    	db.lookupReverseHome(key,request,function(r){worker.postMessage(r)});
 	    	break;
 	    }
-	}
-		 )
-    }   
-});
-pageMod.PageMod({
-    include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*","http://www.goodsearch.com/search.aspx"],
-    attachTo: "top",
-    contentStyleFile: data.url("jquery-ui.css"),
-    contentScriptWhen:  'ready',
-    contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.9.2.custom.min.js')
-	,data.url('ejs_production.js') 
-	,data.url('utils.js')
-	,data.url('yahoo-search.js')],
-    onAttach: function(worker){
-	worker.on('message', function(request){
-	    var key = request.key;
-	    var data;
-	    switch(request.kind){
-	    case 'resource':
-		request.data = iconDir;
-		worker.postMessage(request);
-		break;
-	    case 'sendstat':
-		db.sendStat(request.key);
-		break;
-	    case 'link':
-		db.lookupResult(request, function(r){worker.postMessage(r)});
-		break;
-	    case 'place':
-		db.lookupPlace(key,request,function(r){worker.postMessage(r)});
-		break;
-            case 'yahoo-text':
-	    case 'gs-text':
-            case 'bing-text':
-		db.lookupSubvert(key,request,function(r){worker.postMessage(r)});
-		break;
+	});	
+    }});   
+
+pageMod.PageMod(
+    {
+	include : ["http://search.yahoo.com/search*","https://search.yahoo.com/search*","http://www.goodsearch.com/search.aspx"],
+	attachTo: "top",
+	contentStyleFile: data.url("jquery-ui.css"),
+	contentScriptWhen:  'ready',
+	contentScriptFile: [
+	    data.url('jquery-2.0.0.min.js')
+	    ,data.url('jquery-ui-1.9.2.custom.min.js')
+	    ,data.url('ejs_production.js') 
+	    ,data.url('utils.js')
+	    ,data.url('yahoo-search.js')],
+	onAttach: function(worker){
+	    worker.on('message', function(request){
+		var key = request.key;
+		var data;
+		switch(request.kind){
+		case 'resource':
+		    request.data = iconDir;
+		    worker.postMessage(request);
+		    break;
+		case 'sendstat':
+		    db.sendStat(request.key);
+		    break;
+		case 'link':
+		    db.lookupResult(request, function(r){worker.postMessage(r)});
+		    break;
+		case 'place':
+		    db.lookupPlace(key,request,function(r){worker.postMessage(r)});
+		    break;
+		case 'yahoo-text':
+		case 'gs-text':
+		case 'bing-text':
+		    db.lookupSubvert(key,request,function(r){worker.postMessage(r)});
+		    break;
+		}
 	    }
-	})
-    }});
+		     )
+	}
+    }
+);
 pageMod.PageMod({
     include : ["http://www.bing.com/search*","https://www.bing.com/search*"],
     attachTo: "top",
@@ -242,38 +257,7 @@ pageMod.PageMod({
 	    }
 	})
     }});
-// pageMod.PageMod({
-//     include : ["http://twitter.com/*","https://twitter.com/*"],
-//     attachTo: "top",
-//     contentStyleFile: data.url("jquery-ui.css"),
-//     contentScriptWhen:  'ready',
-//     contentScriptFile: [
-// 			data.url('jquery-2.0.0.min.js')
-// 			,data.url('jquery-ui-1.9.2.custom.min.js')
-//	,data.url('ejs_production.js') 
-// 			,data.url('utils.js')
-// 			,data.url('twitter.js')],
-//     onAttach: function(worker){
-// 	worker.on('message', function(request){
-// 	    var key = request.key;
-// 	    var data;
-// 	    switch(request.kind){
-// 	    case 'resource':
-// 		request.data = iconDir;
-// 		worker.postMessage(request);
-// 		break;
-// 	    case 'sendstat':
-// 		db.sendStat(request.key);
-// 		break;
-// 	    case 'link':
-// 		db.lookupResult(request, function(r){worker.postMessage(r)});
-// 		break;
-// 	    case 'urlresolve':
-// 		db.urlResolve(request, function(r){worker.postMessage(r)});
-// 		break;
-// 	    }
-// 	})
-//     }});
+
 pageMod.PageMod({
     include : ["http://facebook.com/*","https://facebook.com/*","http://www.facebook.com/*","https://www.facebook.com/*"],
     attachTo: "top",

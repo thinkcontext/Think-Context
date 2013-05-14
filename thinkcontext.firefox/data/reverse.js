@@ -1,9 +1,13 @@
 if (window.frameElement === null){
-    if(! (/^http(s)?:\/\/www.google.com\//.test(document.URL)
-	  || /^http(s)?:\/\/maps.google.com\/maps\/place/.test(document.URL)
-	  || /^http(s)?:\/\/bing.google.com\/search/.test(document.URL)
-	  || /^http(s)?:\/\/search.yahoo.com\/search/.test(document.URL)
-	 )
+    if(!( document.domain.match('google.com$') 
+	  || document.domain.match('facebook.com$')
+	  || document.domain.match('twitter.com$')
+	  || document.domain.match('yahoo.com$')
+	  || document.domain.match('bing.com$')
+	)
+       || document.domain == 'news.google.com'
+       || document.domain == 'news.yahoo.com'
+       || document.domain == 'news.bing.com'
       ){    
 	
 	tc.reverse = {};
