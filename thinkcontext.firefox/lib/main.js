@@ -20,7 +20,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('google-search.js')],
@@ -64,7 +64,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('google-place-page.js')],
@@ -136,7 +136,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('reverse.js')
@@ -175,7 +175,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('yahoo-search.js')],
@@ -212,7 +212,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('bing-search.js')],
@@ -249,7 +249,7 @@ pageMod.PageMod({
 //     contentScriptWhen:  'ready',
 //     contentScriptFile: [
 // 			data.url('jquery-2.0.0.min.js')
-// 			,data.url('jquery-ui-1.8.16.custom.min.js')
+// 			,data.url('jquery-ui-1.9.2.custom.min.js')
 //	,data.url('ejs_production.js') 
 // 			,data.url('utils.js')
 // 			,data.url('twitter.js')],
@@ -281,7 +281,7 @@ pageMod.PageMod({
     contentScriptWhen:  'ready',
     contentScriptFile: [
 	data.url('jquery-2.0.0.min.js')
-	,data.url('jquery-ui-1.8.16.custom.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('facebook.js')],

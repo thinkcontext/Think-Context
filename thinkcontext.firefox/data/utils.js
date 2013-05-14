@@ -220,7 +220,7 @@ if (window.frameElement === null){
 		    { zIndex: 100000001
 		      ,title: 'thinkContext: ' + title
 		      , position: [window.innerWidth - 350
-				   , 10 ]
+			  , 10 ]
 		      , close: function(){
 			  $(window).unbind('resize');
 			  $(window).unbind('scroll');
