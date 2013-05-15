@@ -113,7 +113,6 @@ window.setInterval(pageExamine,500);
 	    $("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
 		function(){
 		    this.setAttribute('tcPlace','tcPlace');
-		    this.setAttribute('tcPlace');
 		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
     		    cid_res = cid_regex.exec(this.href);
 		    if(cid_res[1]){

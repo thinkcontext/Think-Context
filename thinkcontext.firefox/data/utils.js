@@ -59,7 +59,6 @@ if (window.frameElement === null){
 
     tc.registerResponse('tcPopD'
 			,function(r){
-			    console.error('tcPopD ' + document.url);
 			    if(tc.popD.dialog('isOpen')){
 				tc.popD.dialog('close');
 			    } else {
@@ -184,7 +183,6 @@ if (window.frameElement === null){
     }
     
     tc.onResponse = function(request){
-	console.error(request.kind);
 	tc.responses[request.kind](request);
     }
 
