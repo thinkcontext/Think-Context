@@ -40,11 +40,10 @@
 	    , "title": "Behavior"
 	    , "description": "Open a domain popup:"
 	    , "value": "ever"
+	    , "type":"menulist"
 	    , "options": [
 		{"value":"ever"
 		 ,"label":"Once ever"}
-		,{"value":"session"
-		 ,"label":"Once per session"}
 		,{"value":"every"
 		  ,"label":"Everytime"}
 		,{"value":"never"

@@ -8,7 +8,7 @@ var opt_news = prefSet.prefs.opt_news;
 var opt_green = prefSet.prefs.opt_green;
 var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
-var opt_popd = prefSet.pres.opt_popd;
+var opt_popd = prefSet.prefs.opt_popd;
 
 function onPrefChange(prefName) {  
     // 'results' is a shared table so we have to always refresh 
@@ -20,6 +20,7 @@ prefSet.on('opt_news', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
+prefSet.on('opt_popd', onPrefChange);
 
 function bindNums(x){
     var ret = [];
@@ -411,24 +412,17 @@ tc = {
 	sql.execute(selTxt 
 		    , {key: key}
 		    ,function(result,status){
-			switch(tc.optVal('opt_popD')){ 
+			switch(tc.optVal('opt_popd')){ 
 			case 'never':
 			    request.popD = false;
 			    break;
 			case 'every':
 			    request.popD = true;
-			case 'session':
-			    if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
-				request.popD = true;
-				sessionStorage.setItem('tcPopD_' + request.data.key,1);
-			    } else {
-				request.popD = false;
-			    }
 			    break;
 			default:
-			    if(! localStorage.getItem('tcPopD_' + request.data.key)){
+			    if(! ss.storage['tcPopD_' + request.key]){
 				request.popD = true;
-				localStorage.setItem('tcPopD_' + request.data.key,1);
+				ss.storage['tcPopD_' + request.key]=1;
 			    } else {
 				request.popD = false;
 			    }		
