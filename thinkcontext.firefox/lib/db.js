@@ -8,6 +8,7 @@ var opt_news = prefSet.prefs.opt_news;
 var opt_green = prefSet.prefs.opt_green;
 var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
+var opt_popd = prefSet.pres.opt_popd;
 
 function onPrefChange(prefName) {  
     // 'results' is a shared table so we have to always refresh 
@@ -409,7 +410,31 @@ tc = {
 
 	sql.execute(selTxt 
 		    , {key: key}
-		    ,function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
+		    ,function(result,status){
+			switch(tc.optVal('opt_popD')){ 
+			case 'never':
+			    request.popD = false;
+			    break;
+			case 'every':
+			    request.popD = true;
+			case 'session':
+			    if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
+				request.popD = true;
+				sessionStorage.setItem('tcPopD_' + request.data.key,1);
+			    } else {
+				request.popD = false;
+			    }
+			    break;
+			default:
+			    if(! localStorage.getItem('tcPopD_' + request.data.key)){
+				request.popD = true;
+				localStorage.setItem('tcPopD_' + request.data.key,1);
+			    } else {
+				request.popD = false;
+			    }		
+			}
+			
+			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
 		    ,tc.onError);
     }
     

@@ -32,7 +32,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.08'
+	    , version: '0.09'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -53,7 +53,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
 	, place_data: {
 	    fields: {
@@ -62,9 +62,10 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
     }
+
     , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
 
     , tableFieldsLength: function(t){

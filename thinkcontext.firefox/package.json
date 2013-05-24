@@ -35,5 +35,20 @@
 	    , "type": "bool"
 	    , "value": true
 	}
-    ]  
+	, { 
+	    "name": "opt_popd"
+	    , "title": "Behavior"
+	    , "description": "Open a domain popup:"
+	    , "value": "ever"
+	    , "options": [
+		{"value":"ever"
+		 ,"label":"Once ever"}
+		,{"value":"session"
+		 ,"label":"Once per session"}
+		,{"value":"every"
+		  ,"label":"Everytime"}
+		,{"value":"never"
+		 ,"label":"Never"}
+	    ]}      
+    ]
 }
