@@ -8,6 +8,14 @@
     <p>
       Welcome to <b>thinkContext</b>, the web browser extension which adds contextually relevant, politically progressive information to your web browsing.  For more information visit our website at <a href="http://thinkcontext.org/" target="_blank">thinkcontext.org</a> or follow us on <a href="https://twitter.com/thinkcontext" target="_blank">Twitter</a>.
     </p>
+<div style="float: right; display: inline; width: 500px">
+Important for Safari users!  Make sure you set Safari to automatically update extensions.
+
+<img src="icons/safari-autoupdate.png">
+</div>
+    <p>
+      As you browse the web <b>thinkContext</b> consults several progressive data sources and if it finds anything relevant to what you are looking at it will unobtrusively add that information right into the page.  Look for the icons shown next to the data sources below and hover your mouse over them to show more information.
+    </p>
     <p>
       Below you may configure <b>thinkContext</b>, including how it behaves and which data sources it consults.  We recommend to begin with that you take the default configureation and only change things if you have a specific reason to do.
     </p>

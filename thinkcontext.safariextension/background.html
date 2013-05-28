@@ -6,6 +6,7 @@
     <script src="bg-utils.js" type="text/javascript"></script>
     <script src="db.js" type="text/javascript"></script>
     <script>
+      var tcversion = '0.92';
     function onRequest(e) {
         var request = e.message;
 	var key = request.key;
@@ -50,9 +51,21 @@ function openOptions(){
     var t = safari.application.activeBrowserWindow.openTab('foreground');
     t.url = safari.extension.baseURI + "options.html";
 }
+function openInstall(){
+    var t = safari.application.activeBrowserWindow.openTab('foreground');
+    t.url = safari.extension.baseURI + "install.html";
+}
 
-safari.application.addEventListener("command", openOptions, false);
+safari.extension.settings.addEventListener("change", openOptions, false);
 
+if(!(localStorage.getItem('tcversion') == tcversion)){
+    localStorage.setItem('tcversion',tcversion);
+    if(localStorage.getItem('resultsversion')){
+	//console.log('update');
+    } else {
+	openInstall();
+    }
+}      
 
     </script>
   </body>

@@ -11,30 +11,15 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.92</string>
+	<string>0.93</string>
 	<key>CFBundleVersion</key>
-	<string>0.92</string>
+	<string>0.93</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
 		<real>52428800</real>
 		<key>Global Page</key>
 		<string>background.html</string>
-		<key>Toolbar Items</key>
-		<array>
-			<dict>
-				<key>Command</key>
-				<string>openOptions</string>
-				<key>Identifier</key>
-				<string>tc</string>
-				<key>Image</key>
-				<string>icons/infoI.png</string>
-				<key>Label</key>
-				<string>tc</string>
-				<key>Popover</key>
-				<string>tc</string>
-			</dict>
-		</array>
 	</dict>
 	<key>Content</key>
 	<dict>

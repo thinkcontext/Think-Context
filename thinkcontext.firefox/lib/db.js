@@ -420,14 +420,15 @@ tc = {
 			    request.popD = true;
 			    break;
 			default:
-			    if(! ss.storage['tcPopD_' + request.key]){
-				request.popD = true;
-				ss.storage['tcPopD_' + request.key]=1;
-			    } else {
-				request.popD = false;
-			    }		
+			    if(request.front){
+				if(! ss.storage['tcPopD_' + request.key]){
+				    request.popD = true;
+				    ss.storage['tcPopD_' + request.key]=1;
+				} else {
+				    request.popD = false;
+				}		
+			    }
 			}
-			
 			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
 		    ,tc.onError);
     }

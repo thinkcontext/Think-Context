@@ -47,6 +47,7 @@ if (window.frameElement === null){
 	tc.sendMessage(
 	    {kind: 'link'
 	     , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
+	     , front: 1
 	     , origLink: document.baseURI
 	    });
 	
