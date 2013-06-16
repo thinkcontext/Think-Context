@@ -6,10 +6,13 @@
   <body>
     
     <p>
-      Welcome to <b>thinkContext</b>, the web browser extension which adds contextually relevant, politically progressive information to your web browsing.  For more information visit our website at <a href="http://thinkcontext.org/" target="_blank">thinkcontext.org</a> or follow us on <a href="https://twitter.com/thinkcontext" target="_blank">Twitter</a>.
+      Welcome to <b>thinkContext</b>, the web browser extension which adds contextually relevant, politically progressive information to your web browsing.  For more information visit our website at <a href="http://thinkcontext.org/" target="_blank">thinkcontext.org</a>.
     </p>
     <p>
-      Below you may configure <b>thinkContext</b>, including how it behaves and which data sources it consults.  We recommend to begin with that you take the default configureation and only change things if you have a specific reason to do.
+      As you browse the web <b>thinkContext</b> consults several progressive data sources and if it finds anything relevant to what you are looking at it will unobtrusively add that information right into the page.  Look for the icons shown next to the data sources below and hover your mouse over them to show more information.
+    </p>
+    <p>
+      Below you may configure <b>thinkContext</b>, including how it behaves and which data sources consults.  We recommend to begin with that you take the default configureation and only change things if you have a specific reason to do so.
     </p>
 
     <div id="status"></div>
@@ -66,7 +69,6 @@
       
     </table>
 
-    <div id="bp"></div>
 <h3>Behavior</h3>
 Open a domain popup:
   <select name="popD">
@@ -76,6 +78,9 @@ Open a domain popup:
     <option value="never">Never</option>
   </select>
 
+
+<h3>Privacy Policy</h3>
+<b>thinkContext</b> will not collect personal information without your express permission.  We may collect metrics on your use of the software to be compiled in aggregate.  Routine IP address information collected by your use of our website will be removed after approximately one month.
     <script src="jquery-2.0.0.min.js"></script>
     <script src="ejs_production.js"></script>
     <script src="options.js"></script>

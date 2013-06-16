@@ -2,12 +2,46 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     var tc = {};
     tc.dialogs = [];
     tc.responses = {};
-    tc.examines = [];
+
+tc.revTemplate = "<% \
+var found = 0;\
+var tcstat = 'rrr';\
+if(ex){\
+%>\
+<b>This link was mentioned in</b><br>\
+<%   } \
+for(var x in data){\
+    if(data[x]['s'] != 'exact' && found == 0){\
+%>\
+<b>Other links to this site</b><br>\
+<% \
+	    found = 1; }\
+%>\
+<li>\
+<%\
+    if(tc.iconStatus[data[x].source] == 1){ \
+%>\
+<%=	img_tag(tc.iconDir + \"/\" + data[x].source + \".ico\"\
+		, null\
+		, { height: \"16\", width: \"16\", style: \"display:inline;\" }) %>\
+<%    }  %>\
+<%=    link_to(tc.htmlDecode(data[x].title)\
+	    , data[x].link\
+	    , {target: '_blank', tcstat: tcstat + data[x].id })\
+%>\
+by\
+<%=  link_to(data[x].name, data[x].source_link) %>\
+links to \
+<%=  link_to('this page',data[x].reverse_link) %>\
+<%\
+}\
+%>";
+
 tc.resultDialogConfig = {
     rushBoycott:  { 
 	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
 	, title: "Rush Limbaugh Advertiser"
-	, icon: 'stopRush'
+	, icon: 'stopRush32'
 	, tcstat: 'grb'
     }
     , greenResult: {
@@ -56,15 +90,13 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	tc.responses[kind] = func;
     }
 
-    tc.registerExamine = function(func){
-	tc.examines.push(func);
-    }
     tc.iconDir = safari.extension.baseURI + "icons";
     tc.icons = { infoI : tc.iconDir + "/infoI.png"
 		 ,greenG : tc.iconDir + "/greenG.png"
 		 ,greenCheck : tc.iconDir + "/greenCheck.png"
 		 ,redCirc : tc.iconDir + "/redCirc.png"
 		 ,stopRush : tc.iconDir + "/sr.png"
+		 ,stopRush32 : tc.iconDir + "/sr32.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
 		 ,trackback16: tc.iconDir + "/trackback-16.png"
 		 ,trackback32: tc.iconDir + "/trackback-32.png"
@@ -147,25 +179,48 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen){
+    tc.popDialog = function(title, revDiv, z, autoOpen, icon, kind){
+	var d;
 	var r = tc.random();
+
+	if(tc.popD == null){	
 	$('body').append($('<img>', { id: r
-				      ,src: tc.icons.trackback32 
-				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
-	
-	var d = revDiv.dialog(
-	    { zIndex: 10000000
-	      ,title: 'thinkContext: ' + title
-	      , position: [window.innerWidth - 350
-			   , window.innerHeight - 175 ]
-	      , close: function(){
-		  $(window).unbind('resize');
-		  $(window).unbind('scroll');
-	      }
-	      , height: 150
-	      , autoOpen: autoOpen
-	    }); 
-	
+				      ,src: tc.icons[icon]
+				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4; height:32px; width:32px"}));
+	    
+	    d = $('<div>',{id:'tcPopD'})
+		.append($('<div>',{id:'tcResults'}))
+		.append($('<div>',{id:'tcReverse'}))
+		.append($('<div>',{id:'tcOther'}))
+		.dialog(
+		    { zIndex: 100000001
+		      ,title: 'thinkContext: ' + title
+		      , position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]
+		      , close: function(){
+			  $(window).unbind('resize');
+			  $(window).unbind('scroll');
+		      }
+		      , height: 150
+		      , autoOpen: false
+		    });     
+	    tc.popD = d;
+	}
+	d = tc.popD;
+	switch(kind){
+	case 'result':
+	    $('#tcResults',d).append(revDiv);
+	    break;
+	case 'reverse':
+	    $('#tcReverse',d).append(revDiv);
+	    break;
+	default:
+	    $('#tcOther',d).append(revDiv);
+	}
+	if(autoOpen){
+	    d.dialog('open');
+	}
+
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
 	 				  , 'key': this.attributes['tcstat'].value});
@@ -173,11 +228,11 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	$('#'+r).click(function(){
 	    d.dialog('open');
 	    $(window).resize(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
+		d.dialog({position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]}); });
 	    $(window).scroll(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
+		d.dialog({position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]}); });
 	});
 	$('#'+r).hover(function(){$(this).css('opacity','1.0')}
 		       , function(){$(this).css('opacity','0.4')});
@@ -370,7 +425,7 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 		    if(this.textContent.match(/\w/)){
 			var r = tc.random();
 			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
-			new EJS({url: chrome.extension.getURL('rev.ejs')}).update("d"+r,{data:out[rl],ex:false});
+			new EJS({text: tc.revTemplate}).update("d"+r,{data:out[rl],ex:false});
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
 			resDiv.setAttribute("id",r);
@@ -416,6 +471,21 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
     
     tc.sub = {};
     
+    tc.resultPop = function(request){
+	var data = request.data;
+	var detail = JSON.parse(data.data);
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = request.data.key;
+	detail.url = data.url;
+	
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
+    }
+
     tc.resultPrev = function(n,key,data){
 	var detail = JSON.parse(data.data);
 	var rdc = tc.resultDialogConfig[data.func];

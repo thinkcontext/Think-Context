@@ -11,6 +11,8 @@ if (window.top === window) {
 	tc.reverse = {};
 	tc.reverse.revGotResponse = 0;
 
+	tc.registerResponse('link',tc.resultPop);
+
 tc.registerResponse('reverse', 
 		    function(request){
 			if(tc.reverse.revGotResponse == 0){
@@ -22,10 +24,9 @@ tc.registerResponse('reverse',
 			    }
 			    var z = tc.random();
 			    var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-			    new EJS({url: chrome.extension.getURL('rev.ejs')}).update("z"+z,{data:data,ex:ex});
-
+			    new EJS({text: tc.revTemplate}).update("z"+z,{data:data,ex:ex});
 			    
-			    tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex);
+			    tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex, 'trackback32', 'reverse');
 			}
 		    });
 	tc.registerResponse('reversehome', tc.reverseResponse);
