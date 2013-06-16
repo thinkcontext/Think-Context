@@ -8,6 +8,7 @@ var opt_news = prefSet.prefs.opt_news;
 var opt_green = prefSet.prefs.opt_green;
 var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
+var opt_popd = prefSet.prefs.opt_popd;
 
 function onPrefChange(prefName) {  
     // 'results' is a shared table so we have to always refresh 
@@ -19,6 +20,7 @@ prefSet.on('opt_news', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
+prefSet.on('opt_popd', onPrefChange);
 
 function bindNums(x){
     var ret = [];
@@ -46,9 +48,8 @@ tc = {
 		, name: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '16npeDRrzx9J6X4P4w2KplYwF9wPmSrLEZSQdiBE' //1040216'
+	    , version: '0.06'
 	    , opt : 'opt_news'
-	    , version: '0.05'
 	}
 	, reverse: {
 	    fields: {
@@ -58,9 +59,8 @@ tc = {
 		, title: 'text'
 		, link: 'text'
 	    }
-	    , googFTNumber: '1yQubKSeSyz2VJHmDLxIdnuuR8zRgQbcE6gtJRkE' //1049740'
-	    , opt : 'opt_news'
-	    , version: '0.06'
+	    , opt: 'opt_news'
+	    , version: '0.07'
 	}
 	, results: { 
 	    fields: {
@@ -70,8 +70,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , googFTNumber: '1C2ITzdKi1ZPTRuOLsFZzzNMEN9IwDrGdsUxXYsc'
-	    , version: '0.06'
+	    , version: '0.09'
 	}
 	// , subverts: { 
 	//     fields: {
@@ -82,7 +81,6 @@ tc = {
 	// 	, bin_op: 'text'
 		
 	//     }
-	//     , googFTNumber: '1nUKzssNvuZobPqb7fglzfLHI4GObMY1f3dyHs6g' //2038549' 
 	//     , version: '0.02'
 	// }
 	, place: {
@@ -92,9 +90,8 @@ tc = {
 		, type: 'text'
 		, siteid: 'text'
 	    }
-	    , googFTNumber: '1H38qhAMz280fqktszJRVyAtHuS0OBdcsC7-WZsE'
 	    , opt: 'opt_hotel'
-	    , version: '0.06'
+	    , version: '0.07'
 	}
 	, place_data: {
 	    fields: {
@@ -102,11 +99,13 @@ tc = {
 		, data: 'text'
 		, type: 'text'
 	    }
-	    , googFTNumber: '10TYcA0TD-DdArVh5oYxq9KdwBJa0WCin6GNnV8Y'
 	    , opt: 'opt_hotel'
-	    , version: '0.06'
+	    , version: '0.08'
 	}
     }
+    
+    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
+
     , optVal: function(o){ return prefSet.prefs[o]; }
 
     , tableFieldsLength: function(t){
@@ -141,8 +140,6 @@ tc = {
 	return r;
     }
 
-    , googFT : 'https://www.googleapis.com/fusiontables/v1/query?key=AIzaSyDZ28Q_ZRg6SXUEVsR-AqRbyIJdoE0qGYg&alt=csv&sql='
-
     , checkLocalTableVersion: function(t){
 	return ss.storage[t + 'version'] == tc.tables[t].version;
     }
@@ -155,17 +152,24 @@ tc = {
     , checkLocalDeleteTime: function(t){
 	return ss.storage[t + 'deletetime'];
     }
-    , setLocalDeleteTime: function(t){
+    , roundNowDownHour: function(){
+	// round down to the hour to improve cacheability
 	var d = new Date;
-	ss.storage[t + 'deletetime'] = d.getTime();
+	d.setMinutes(0);
+	d.setSeconds(0);
+	d.setMilliseconds(0);
+	return d.getTime();
+    }
+
+    , setLocalDeleteTime: function(t){
+	ss.storage[t + 'deletetime'] = tc.roundNowDownHour();
     }
 
     , checkLocalAddTime: function(t){
 	return ss.storage[t + 'addtime'];
     }
     , setLocalAddTime: function(t){
-	var d = new Date;
-	ss.storage[t + 'addtime'] = d.getTime();
+	ss.storage[t + 'addtime'] = tc.roundNowDownHour();
     }
 
     , initializeLocalDB: function(){
@@ -215,34 +219,45 @@ tc = {
 		    , tc.onSuccess
 		    , function(e,stmt){ tc.loadTable(table)});	
     }
+
     , updateAllTables: function(){
 	for(var t in tc.tables){
-	    if(! (tc.optVal(tc.tables[t].opt) == false))
-		tc.updateTable(t);
+	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
+		var secs = tc.checkLocalDeleteTime(t);
+		if( (! secs) || ((Date.now() - Number(secs)) > 1800000))
+		    tc.updateTable(t);
+	    }
 	}
     }
     
     , updateTable: function(table){
+	var query;
 	var resClause = '';
+	var resArr = [];
 	if(table == 'results'){
-	    if(tc.optVal('opt_green') == false)
-		resClause += " and func not equal to 'greenResult' ";
-	    if(tc.optVal('opt_rush') == false)
-		resClause += " and func not equal to 'rushBoycott' ";
-	    if(tc.optVal('opt_hotel') == false)
-		resClause += " and func does not contain 'hotel' ";
+	    if(tc.opt_green == false)
+		resArr.push("greenResult");
+	    if(tc.opt_rush == false)
+		resArr.push("rushBoycott");
+	    if(tc.opt_hotel == false){
+		resArr.push("hotelsafe");
+		resArr.push("hotelstrike");
+		resArr.push("hotelrisky");
+		resArr.push("hotelboycott");
+	    }
 	}
-
-	var len = tc.tableFieldsLength(table);
-	var dateClause = '';
-	var secs;
+	if(resArr.length > 0){
+	    resClause = "&ex=" + resArr.join(',');
+	}
 	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "and dm >= " + secs;
+	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 	}
 
-	var delQuery  = encodeURI(tc.googFT + "SELECT id FROM " + tc.tables[table].googFTNumber + " WHERE status not equal to 'A' " + dateClause + resClause + " limit 100000");
+	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
+	var len = tc.tableFieldsLength(table);
+
 	var delReq = Request({
-	    url: delQuery
+	    url: query
 	    ,onComplete: function(response){
 		var dataArray = CSVToArray(response.text);
 		var params = [];
@@ -262,12 +277,12 @@ tc = {
 	
 	dateClause = '';
 	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "and da >= " + secs;
+	    dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
 	}
-	
-	var insQuery = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A' " + dateClause + resClause + " limit 100000");
+
+	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 	var insReq = Request({
-	    url: insQuery
+	    url: query
 	    ,onComplete: function(response){
 		var dataArray = CSVToArray(response.text);
 		var insertTxt;
@@ -302,15 +317,25 @@ tc = {
     , loadTable: function(table){
 	var query;
 	var resClause = '';
+	var resArr = [];
 	if(table == 'results'){
 	    if(tc.opt_green == false)
-		resClause += " and func not equal to 'greenResult' ";
+		resArr.push("greenResult");
 	    if(tc.opt_rush == false)
-		resClause += " and func not equal to 'rushBoycott' ";
-	    if(tc.opt_hotel == false)
-		resClause += " and func does not contain 'hotel' ";
+		resArr.push("rushBoycott");
+	    if(tc.opt_hotel == false){
+		resArr.push("hotelsafe");
+		resArr.push("hotelstrike");
+		resArr.push("hotelrisky");
+		resArr.push("hotelboycott");
+	    }
 	}
-	query = encodeURI(tc.googFT + "SELECT " + tc.tableFields(table) + " FROM " + tc.tables[table].googFTNumber + " WHERE status = 'A'" + resClause + " limit 100000");
+	if(resArr.length > 0){
+	    resClause = "&ex=" + resArr.join(',');
+	}
+
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
+
 	Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -320,6 +345,7 @@ tc = {
 		if(dataArray.length > 1 && dataArray[0].length == len){ // see if there's any data to insert and the number of fields is right
 		    var dropTxt = "DROP TABLE IF EXISTS " + table;
 		    var createTxt = "CREATE TABLE " + table +"( " + tc.tableFieldsTypes(table) + " )";
+
 		    sql.execute(dropTxt);
 		    sql.execute(createTxt);
 
@@ -381,12 +407,29 @@ tc = {
 
     , lookupResult: function(request, callback){
 	var key = request.key;
-	
 	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key  LIMIT 1";
 
 	sql.execute(selTxt 
 		    , {key: key}
-		    ,function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
+		    ,function(result,status){
+			switch(tc.optVal('opt_popd')){ 
+			case 'never':
+			    request.popD = false;
+			    break;
+			case 'every':
+			    request.popD = true;
+			    break;
+			default:
+			    if(request.front){
+				if(! ss.storage['tcPopD_' + request.key]){
+				    request.popD = true;
+				    ss.storage['tcPopD_' + request.key]=1;
+				} else {
+				    request.popD = false;
+				}		
+			    }
+			}
+			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
 		    ,tc.onError);
     }
     
@@ -399,7 +442,7 @@ tc = {
 	    
 	    var b = bindNums(keys.length);
 	    var c = bindNums(keys.length).split(',');
-	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%'";
+	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%' ";
 	    request.orig_data = request.data;
 	    sql.execute(selTxt
 			, bindArr(keys)
@@ -431,7 +474,6 @@ tc = {
 
     , lookupReverse: function(key,request,callback){
 	// find reverse links and some other links to the same site
-
 	var host = getReverseHost(key);
 
 	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = :key union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = :key ) o on o.link = r.link WHERE ( r.reverse_link like :host2 or r.reverse_link like :host1 ) and r.reverse_link <> :key and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
@@ -491,7 +533,39 @@ tc = {
     // 	    }
     // 	}
     // }
+
 };
+function getReverseHost(url){
+    var host;
+    var ar;
+    var tld;
+    if(host = url.split('/')[2]){
+	ar = host.split('.');
+	if(ar[0] == 'www'){
+	    ar.shift();
+	}
+	tld = ar[ar.length - 1];
+	if(ar.length <= 2){
+	    return ar.join('.')
+	} else if((tld == 'com'
+		   || tld == 'net'
+		   || tld == 'gov'
+		   || tld == 'edu'
+		   || tld == 'org')
+		  && !(tld == 'com' 
+		       && (ar[ar.length - 2] == 'patch'
+			   || ar[ar.length - 2] == 'cbslocal'
+			   || ar[ar.length - 2] == 'curbed'
+			   || ar[ar.length - 2] == 'yahoo'
+			   || ar[ar.length - 2] == 'craigslist')
+		      )){
+	    return ar.slice(ar.length - 2).join('.')
+	} else {
+	    return ar.slice(ar.length - 3).join('.')
+	}
+    }
+    return null;
+}
 
 tc.connectDB();
 tc.loadAllTables();
@@ -507,6 +581,7 @@ exports.lookupReverse = tc.lookupReverse;
 exports.lookupReverseHome = tc.lookupReverseHome;
 exports.lookupSubvert = tc.lookupSubvert;
 exports.sendStat = tc.sendStat;
+exports.getReverseHost = getReverseHost;
 //exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this
@@ -582,51 +657,3 @@ function CSVToArray( strData, strDelimiter ){
     // Return the parsed data.
     return( arrData );
 }
-
-function getReverseHost(url){
-    var host;
-    var ar;
-    var tld;
-    if(host = url.split('/')[2]){
-	ar = host.split('.');
-	if(ar[0] == 'www'){
-	    ar.shift();
-	}
-	tld = ar[ar.length - 1];
-	if(ar.length <= 2){
-	    return ar.join('.')
-	} else if((tld == 'com'
-		   || tld == 'net'
-		   || tld == 'gov'
-		   || tld == 'edu'
-		   || tld == 'org')
-		  && !(tld == 'com' 
-		       && (ar[ar.length - 2] == 'patch'
-			   || ar[ar.length - 2] == 'cbslocal'
-			   || ar[ar.length - 2] == 'curbed'
-			   || ar[ar.length - 2] == 'yahoo'
-			   || ar[ar.length - 2] == 'craigslist')
-		      )){
-	    return ar.slice(ar.length - 2).join('.')
-	} else {
-	    return ar.slice(ar.length - 3).join('.')
-	}
-    }
-    return null;
-}
-
-// function bitlyDomain(domain){
-//     if(domain == 'bitly.com' || domain == 'bit.ly' || domain == 'nyti.ms' || domain == 'wapo.st' || domain == 'n.pr' || domain == 'on.wsj.com' || domain == 'bbc.in'|| domain == 'gaw.kr'|| domain == 'huff.to'|| domain == 'bloom.bg'|| domain == 'nyp.st'|| domain == 'politi.co'|| domain == 'usat.ly'|| domain == 'j.mp'|| domain == 'cbsn.ws'|| domain == 'fxn.ws'|| domain == 'theatln.tc'|| domain == 'on.msnbc.com'|| domain == 'slate.me'|| domain == 'buswk.co'|| domain == 'thebea.st'|| domain == 'ti.me'|| domain == 'bo.st'|| domain == 'econ.st'|| domain == 'cnet.co'|| domain == 'chroni.cl'|| domain == 'on.cc.com'|| domain == 'yhoo.it'|| domain == 'trib.in'|| domain == 'wny.cc'|| domain == 'rol.st'|| domain == 'hrld.us')
-// 	return 1
-// }
-
-// function resolveMap(url){
-//     var s = url.split('/');
-//     if(s.length > 3){
-// 	var domain = s[2];
-// 	if(bitlyDomain(domain))
-// 	    return 'https://bitly.com/' + s[3];
-// 	else if(domain == 'goo.gl')
-// 	    return url;	
-//     }
-// }

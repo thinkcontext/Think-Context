@@ -50,14 +50,8 @@ function insertSubvertisements(message){
 //tc.registerResponse('yahoo-text',insertSubvertisements);
 tc.registerResponse('link',function(request){
     $("[sid=" + request.sid +"]").map(function(){
-	tc.sub[request.data.func](this,request.key,request.data);});
+	tc.resultPrev(this,request.key,request.data);});
 });
-tc.registerResponse('place', function(request){
-    $("[sid=" + request.sid +"]").map(function(){
-	tc.sub[request.data.func](this,request.key,request.data);});
-}
-			     );
-
 
 // // query text
 // var qt =  $("input[name=p]").val();

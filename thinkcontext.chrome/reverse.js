@@ -1,80 +1,45 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
+    tc.reverse = {};
+    tc.reverse.revGotResponse = 0;
+    
+    tc.registerResponse('link',tc.resultPop);
 
-tc.reverse = {};
-tc.reverse.revGotResponse = 0;
-
-tc.registerResponse('reverse', 
-		    function(request){
-			if(tc.reverse.revGotResponse == 0){
-			    tc.reverse.revGotResponse = 1;
-			    var data = request.data;
-			    var x;
-			    var found = 0;
-			    var ex = false;
-			    var z = tc.random();
-			    var revDiv = $('<div>',{id:z} )
-			    var tcstat = 'rrr';
-			    if(data[0]['s'] == 'exact'){
-				ex = true;
-				revDiv.append($('<b>', {text:"This link was mentioned in"})).append($('<br>'));
-			    } 
-			    for(x in data){
-				if(data[x]['s'] != 'exact' && found == 0){
-				    revDiv.append($('<b>', {text:"Other links to this site"})).append($('<br>'));
-				    found = 1;	
+    tc.registerResponse('reverse', 
+			function(request){
+			    if(tc.reverse.revGotResponse == 0){
+				tc.reverse.revGotResponse = 1;
+				var data = request.data;
+				var ex = false;
+				if(data[0]['s'] == 'exact'){
+				    ex = true;
 				}
+				var z = tc.random();
+				var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
+				new EJS({url: chrome.extension.getURL('rev.ejs')}).update("z"+z,{data:data,ex:ex});
+
 				
-				if(tc.iconStatus[data[x].source] == 1){
-
-				    revDiv.append($('<li>')
-						  .append($('<img>',{ style: "display:inline;"
-								      , height:"16"
-								      , width:"16"
-			       					      ,src: tc.iconDir + "/" + data[x].source + ".ico"})
-							 )
-						  .append($('<a>', { tcstat: tcstat + data[x].id 
-								     , target: "_blank"
-								     , href: data[x].link
-								     , text: tc.htmlDecode(data[x].title)}))
-						  .append(' by ')
-						  .append($('<a>', {href: data[x].source_link, text: data[x].name}))
-						  .append(' links to ')
-						  .append($('<a>', { href: data[x].reverse_link
-								     , text: 'this page'})));
-				    
-				} else {
-				    revDiv.append($('<li>')
-						  .append($('<a>', { tcstat: tcstat + data[x].id 
-								     , target: "_blank"
-								     , href: data[x].link
-								     , text: tc.htmlDecode(data[x].title)}))
-						  .append(' by ')
-						  .append($('<a>', {href: data[x].source_link, text: data[x].name}))
-						  .append(' links to ')
-						  .append($('<a>', { href: data[x].reverse_link
-								     , text: 'this page'})));
-				    
-				}
+				tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex,'trackback16','reverse');
 			    }
-			    tc.popDialog('Progressive Trackback', revDiv, z,ex);
-			}
+			});
+    tc.registerResponse('reversehome', tc.reverseResponse);
+    tc.sendMessage(
+	{kind: 'reverse'
+	 , key: tc.sigURL(document.baseURI)
+	});
+
+    $("link[rel='canonical']")
+	.map(function(){
+	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
+		tc.sendMessage(
+		    {'kind': 'reverse'
+		     , 'key': tc.sigURL(this.href)
 		    });
-tc.registerResponse('reversehome', tc.reverseResponse);
-tc.sendMessage(
-    {'kind': 'reverse'
-     , 'key': tc.sigURL(document.baseURI)
-    });
+	    }});
+    tc.sendMessage(
+	{kind: 'link'
+	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
+	});
 
-$("link[rel='canonical']")
-    .map(function(){
-	if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
-	    tc.sendMessage(
-		{'kind': 'reverse'
-		 , 'key': tc.sigURL(this.href)
-		});
-	}});
-
-
-tc.reverseExamine();
+    tc.reverseExamine();
 
 }

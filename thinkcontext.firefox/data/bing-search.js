@@ -1,51 +1,4 @@
 if (window.frameElement === null){
-sub = {
-
-};
-
-function insertSubvertisements(message){
-    // var result= '';
-    // var tcstat = 'bss';
-    // if(message.data && message.data.length > 0){
-    // 	var subvs = message.data;
-    // 	var sel = [];
-    // 	var x = 0;
-    // 	if(subvs.length > 3){
-    // 	    for(x=0;x<=2;x++){
-    // 		var i = tc.random()% subvs.length ;
-    // 		sel.push(subvs[i]);
-    // 		subvs.splice(i,1);
-    // 	    }
-    // 	} else {
-    // 	    sel = subvs;
-    // 	}
-    // 	result = sel.map(function(subv){ 
-    // 	    var d = JSON.parse(subv.data);
-    // 	    var link = subv.url;
-    // 	    var name = d.name;
-    // 	    var blurb = d.desc.split(' ').slice(0,14).join(' ');
-    // 	    if(d.desc.split(' ').length > 14)
-    // 		blurb = blurb + '...'
-    // 	    var id = subv.id;
-    // 	    var host = link.split('/')[0];
-    // 	    return '<li class="knavi"><h3><a tcstat="' + tcstat + id + '" target="_blank" href="http://' + link + '">'+ name + '</a></h3>' + blurb + '<br><div><cite>'+ host + '</cite></div></li>'; }).join(' ');
-    // } 
-    // $("div#sidebar").map(function(){
-    // 	if(result != ''){
-    // 	    var subvDiv = document.createElement("div");
-    // 	    subvDiv.setAttribute("subv",true);
-    // 	    subvDiv.innerHTML = result;
-    // 	    if(this.firstChild.getAttribute("subv") == null){
-    // 		this.insertBefore(subvDiv,this.firstChild);
-    // 	    } else {
-    // 		this.replaceChild(subvDiv,this.firstChild);
-    // 	    }
-    // 	}});
-    // $("div#sidebar a[tcstat]").click(function(){
-    // 	self.postMessage({'kind': 'sendstat'
-    // 	 		  , 'key': this.attributes['tcstat'].value});
-    // });
-}
 
 // tc.registerResponse('bing-text'
 // 		    ,function(request){
@@ -54,13 +7,13 @@ function insertSubvertisements(message){
 tc.registerResponse('link',
 		    function(request){
 			$("[sid=" + request.sid +"]").map(function(){
-			    tc.sub[request.data.func](this,request.key,request.data);});
+			    tc.resultPrev(this,request.key,request.data);});
 		    });
 
 tc.registerResponse('place'
 		    , function(request){
 			$("[sid=" + request.sid +"]").map(function(){
-			    tc.sub[request.data.func](this,request.key,request.data);});
+			    tc.place(this,request.key,request.data);});
 		    });
 
     // // query text

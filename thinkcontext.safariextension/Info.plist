@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.85</string>
+	<string>0.93</string>
 	<key>CFBundleVersion</key>
-	<string>0.85</string>
+	<string>0.93</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
@@ -27,9 +27,10 @@
 		<dict>
 			<key>End</key>
 			<array>
-				<string>jquery-1.7.1.min.js</string>
+				<string>jquery-2.0.0.min.js</string>
+				<string>ejs_production.js</string>
 				<string>utils.js</string>
-				<string>jquery-ui-1.8.16.custom.min.js</string>
+				<string>jquery-ui-1.9.2.custom.min.js</string>
 				<string>google-search.js</string>
 				<string>reverse.js</string>
 				<string>bing-search.js</string>
