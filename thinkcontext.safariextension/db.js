@@ -1,6 +1,5 @@
 tc = {
     optVal: function(o){ return localStorage[o];}
-    
     , dbName: 'thinkcontext'
     , tables: {
 	source: {
