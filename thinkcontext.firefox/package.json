@@ -3,7 +3,7 @@
     "fullName": "Think Context",
     "description": "Inserts contextual, politically progressive information into your web browsing", 
     "author": "", 
-    "version": "0.85", 
+    "version": "0.93", 
     "id": "jid0-TgUunRgcCYuVnWCzbw3bV96wGAI", 
     "homepage": "http://www.thinkcontext.org/",
     "preferences": [
@@ -35,5 +35,19 @@
 	    , "type": "bool"
 	    , "value": true
 	}
-    ]  
+	, { 
+	    "name": "opt_popd"
+	    , "title": "Behavior"
+	    , "description": "Open a domain popup:"
+	    , "value": "ever"
+	    , "type":"menulist"
+	    , "options": [
+		{"value":"ever"
+		 ,"label":"Once ever"}
+		,{"value":"every"
+		  ,"label":"Everytime"}
+		,{"value":"never"
+		 ,"label":"Never"}
+	    ]}      
+    ]
 }

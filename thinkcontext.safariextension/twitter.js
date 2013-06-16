@@ -4,7 +4,7 @@ if (window.top === window) {
 	tc.registerResponse('link'
 			    ,function(request){
 				$("[sid=" + request.sid +"]").map(function(){
-				    tc.sub[request.data.func](this,request.key,request.data);});
+				    tc.resultPrev(this,request.key,request.data);});
 			    });
 
 	tc.registerResponse('reversehome', tc.reverseResponse);

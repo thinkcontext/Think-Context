@@ -50,6 +50,7 @@ let connection = null;
 /*Local function that make the query async*/
 function queryAsync(statement, parameters, success) {
     /*sqrObject have the information about the result of query*/
+    try {
     let sqrObject = new Object();
     sqrObject.data = new Array();
     sqrObject.cols = 0;
@@ -78,6 +79,10 @@ function queryAsync(statement, parameters, success) {
             success(sqrObject, reason);
         }
     });
+    } catch(e){
+        console.error('executeAsync: ' + statement);
+        console.error(e.name+' - '+e.message);
+    }
 }
 
 // execute a statement against a batch of parameters
@@ -103,6 +108,7 @@ exports.executeMany = function executeMany(txt, params, success, fail){
 				, handleError: function(error){            console.error(error.name+' - '+error.message); 	    console.error(connection.lastErrorString); fail(); }
 			    , handleResult: function(resultSet){} });   
     }    catch(e){
+        console.error('executeMany: ' + txt);
         console.error(e.name+' - '+e.message);
 	console.error(connection.lastErrorString);
  	

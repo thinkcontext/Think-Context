@@ -1,68 +1,15 @@
 if (window.top === window) {
-    if(document.baseURI.search("http://maps.google.com/maps/place.*") >= 0){
-	tc.googlePlaceResponse = function(request){
-	    var sub = {
-		place: function(d,type){
-		    var title;
-		    var r = tc.random();    
-		    var tcstat = 'gpp' + d.id;
-		    var blurb;
-		    var icon;
-		    if(d.type == 'safe'){
-			icon = 'greenCheck';
-			title = ' Patronize This Hotel';
-			blurb = $('<div>')
-			    .append($('<b>')
-				    .append($('<a>', {tcstat:tcstat + d.id
-						      , target:"_blank"
-						      , href: "http://www.hotelworkersrising.org/"
-						      , text: "Hotel Workers Rising"
-						     })))
-			    .append(' - Recommends patronizing this hotel');
-		    } else if(d.type == 'boycott' || d.type == 'strike'){
-			icon = 'redCirc';
-			title = ' Boycott This Hotel';
-			blurb = $('<div>')
-			    .append($('<b>')
-				    .append($('<a>', {tcstat:tcstat + d.id
-						      , target:"_blank"
-						      , href: "http://www.hotelworkersrising.org/"
-						      , text: "Hotel Workers Rising"
-						     })))
-			    .append(' - Recommends boycotting this hotel');
-		    } else if(d.type == 'risky'){
-			icon = 'infoI';
-			title = 'Risk of Labor Dispute At This Hotel';
-			blurb = $('<div>')
-			    .append($('<b>')
-				    .append($('<a>', {tcstat:tcstat + d.id
-						      , target:"_blank"
-						      , href: "http://www.hotelworkersrising.org/"
-						      , text: "Hotel Workers Rising"
-						     })))
-			    .append(' advises that there is a risk of a labor dispute at this hotel.');
-		    }
-		    
-		    tc.popDialog(title,blurb,r,true);
-		}
-		, placeboycott: function(data){
-		    sub.place(data,'boycott');
-		}
-		, placestrike: function(data){
-		    sub.place(data,'boycott');
-		}
-		, placesafe: function(data){
-		    sub.place(data,'patronize');
-		}
-		, placerisky: function(data){
-		    sub.place(data,'risky');
-		}
-	    };
-
-	    sub['place'+request.data.type](request.data);
-	};
-
-	tc.registerResponse('place', tc.googlePlaceResponse);
+    if(document.baseURI.search("^http(s)?://plus.google.com/") >= 0){
+	tc.registerResponse('place', 
+			    function(request){
+				var data = request.data;
+				var icon, title, blurb, rdc, tcstat = 'gsp';
+				var z = tc.random();
+				var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
+				rdc = tc.resultDialogConfig["hotel"+data.type];
+				new EJS({text:rdc.template}).update("z"+z,data);
+				tc.popDialog(rdc.title, revDiv, 'z'+z,true,rdc.icon,'other');
+			    });
 
 	tc.googlePlaceExamine = function(){
 

@@ -2,7 +2,85 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     var tc = {};
     tc.dialogs = [];
     tc.responses = {};
-    tc.examines = [];
+
+tc.revTemplate = "<% \
+var found = 0;\
+var tcstat = 'rrr';\
+if(ex){\
+%>\
+<b>This link was mentioned in</b><br>\
+<%   } \
+for(var x in data){\
+    if(data[x]['s'] != 'exact' && found == 0){\
+%>\
+<b>Other links to this site</b><br>\
+<% \
+	    found = 1; }\
+%>\
+<li>\
+<%\
+    if(tc.iconStatus[data[x].source] == 1){ \
+%>\
+<%=	img_tag(tc.iconDir + \"/\" + data[x].source + \".ico\"\
+		, null\
+		, { height: \"16\", width: \"16\", style: \"display:inline;\" }) %>\
+<%    }  %>\
+<%=    link_to(tc.htmlDecode(data[x].title)\
+	    , data[x].link\
+	    , {target: '_blank', tcstat: tcstat + data[x].id })\
+%>\
+by\
+<%=  link_to(data[x].name, data[x].source_link) %>\
+links to \
+<%=  link_to('this page',data[x].reverse_link) %>\
+<%\
+}\
+%>";
+
+tc.resultDialogConfig = {
+    rushBoycott:  { 
+	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
+	, title: "Rush Limbaugh Advertiser"
+	, icon: 'stopRush32'
+	, tcstat: 'grb'
+    }
+    , greenResult: {
+	title: 'Member of the Green Business Network'
+	, icon: 'greenG'
+	, tcstat: 'bsg'
+	, template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
+    }
+
+    , hotelsafe: {
+	title: 'Patronize'
+	, icon: 'greenCheck'
+	, tcstat: 'bsp'
+	, template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
+    }
+    , hotelboycott: {
+	title: 'Boycott'
+	, icon: 'redCirc'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    }
+    , hotelrisky: {
+	title: 'Risky'
+	, icon: 'infoI'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
+    }
+    , hotelstrike: {
+	title: 'Strike'
+	, icon: 'redCirc'
+	, tcstat: 'bsp'
+	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    }
+};
+
+tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
+tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
+tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
+tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 
     tc.debug = function(txt){ 
 	//console.log(txt); 
@@ -12,15 +90,13 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	tc.responses[kind] = func;
     }
 
-    tc.registerExamine = function(func){
-	tc.examines.push(func);
-    }
     tc.iconDir = safari.extension.baseURI + "icons";
     tc.icons = { infoI : tc.iconDir + "/infoI.png"
 		 ,greenG : tc.iconDir + "/greenG.png"
 		 ,greenCheck : tc.iconDir + "/greenCheck.png"
 		 ,redCirc : tc.iconDir + "/redCirc.png"
 		 ,stopRush : tc.iconDir + "/sr.png"
+		 ,stopRush32 : tc.iconDir + "/sr32.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
 		 ,trackback16: tc.iconDir + "/trackback-16.png"
 		 ,trackback32: tc.iconDir + "/trackback-32.png"
@@ -86,6 +162,7 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		     dcfpi:	1,
 		     feministing:	1,
 		     nationb:	1,
+		     usas:      1,
 		     greena:	1
 		    };
 
@@ -102,25 +179,48 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen){
+    tc.popDialog = function(title, revDiv, z, autoOpen, icon, kind){
+	var d;
 	var r = tc.random();
+
+	if(tc.popD == null){	
 	$('body').append($('<img>', { id: r
-				      ,src: tc.icons.trackback32 
-				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4"}));
-	
-	var d = revDiv.dialog(
-	    { zIndex: 10000000
-	      ,title: 'thinkContext: ' + title
-	      , position: [window.innerWidth - 350
-			   , window.innerHeight - 175 ]
-	      , close: function(){
-		  $(window).unbind('resize');
-		  $(window).unbind('scroll');
-	      }
-	      , height: 150
-	      , autoOpen: autoOpen
-	    }); 
-	
+				      ,src: tc.icons[icon]
+				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4; height:32px; width:32px"}));
+	    
+	    d = $('<div>',{id:'tcPopD'})
+		.append($('<div>',{id:'tcResults'}))
+		.append($('<div>',{id:'tcReverse'}))
+		.append($('<div>',{id:'tcOther'}))
+		.dialog(
+		    { zIndex: 100000001
+		      ,title: 'thinkContext: ' + title
+		      , position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]
+		      , close: function(){
+			  $(window).unbind('resize');
+			  $(window).unbind('scroll');
+		      }
+		      , height: 150
+		      , autoOpen: false
+		    });     
+	    tc.popD = d;
+	}
+	d = tc.popD;
+	switch(kind){
+	case 'result':
+	    $('#tcResults',d).append(revDiv);
+	    break;
+	case 'reverse':
+	    $('#tcReverse',d).append(revDiv);
+	    break;
+	default:
+	    $('#tcOther',d).append(revDiv);
+	}
+	if(autoOpen){
+	    d.dialog('open');
+	}
+
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
 	 				  , 'key': this.attributes['tcstat'].value});
@@ -128,11 +228,11 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	$('#'+r).click(function(){
 	    d.dialog('open');
 	    $(window).resize(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
+		d.dialog({position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]}); });
 	    $(window).scroll(function(){
-		d.dialog({position: [window.innerWidth - 350
-				     , window.innerHeight - 175 ]}); });
+		d.dialog({position:  [window.innerWidth - 350
+                           , window.innerHeight - 175 ]}); });
 	});
 	$('#'+r).hover(function(){$(this).css('opacity','1.0')}
 		       , function(){$(this).css('opacity','0.4')});
@@ -143,6 +243,8 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	$(window).scroll(function(){
 	    d.dialog({position: [window.innerWidth - 350
 				 , window.innerHeight - 175 ]}); });
+	// really irritating when the dialog steals focus
+	document.activeElement.blur();	
     }
 
     tc.sigURL = function(url){
@@ -322,39 +424,8 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
 		    if(this.textContent.match(/\w/)){
 			var r = tc.random();
-			var revDiv = $('<div>',{id: "d"+r});
-			revDiv.append($('<b>',{text: 'This link was mentioned in'}).append($('<br>')));
-			var build = ''
-			for(l in out[rl]){
-			    if(tc.iconStatus[out[rl][l].source] == 1){
-				revDiv.append($('<li>')
-					      .append($('<img>',{ style: "display:inline;"
-								  , height:"16"
-								  , width:"16"
-			       					  ,src: tc.iconDir + "/" + out[rl][l].source + ".ico"})
-						     )
-					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-								 , target: "_blank"
-								 , href: out[rl][l].link
-								 , text: tc.htmlDecode(out[rl][l].title)}))
-					      .append(' by ')
-					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					      .append(' links to ')
-					      .append($('<a>', { href: out[rl][l].reverse_link
-								 , text: 'this page'})));
-			    } else {
-				revDiv.append($('<li>')
-					      .append($('<a>', { tcstat: tcstat + out[rl][l].id + docHost
-								 , target: "_blank"
-								 , href: out[rl][l].link
-								 , text: tc.htmlDecode(out[rl][l].title)}))
-					      .append(' by ')
-					      .append($('<a>', {href: out[rl][l].source_link, text: out[rl][l].name}))
-					      .append(' links to ')
-					      .append($('<a>', { href: out[rl][l].reverse_link
-								 , text: 'this page'})));
-			    }
-			}
+			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
+			new EJS({text: tc.revTemplate}).update("d"+r,{data:out[rl],ex:false});
 			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
 			var resDiv = document.createElement("div");
 			resDiv.setAttribute("id",r);
@@ -386,173 +457,67 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 
     tc.googlePlaces = function(request){ 
 	var data = request.data;
-	var d;
-	var icon;
-	var title;
-	var blurb;
-	var tcstat = 'gsp';
+	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
 	for(var r in data){
 	    d = data[r];
-	    if(d.type == 'safe'){
-		icon = 'greenCheck';
-		title = ' Patronize This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' - Recommends patronizing this hotel');
-	    } else if(d.type == 'boycott' || d.type == 'strike'){
-		icon = 'redCirc';
-		title = ' Boycott This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' - Recommends boycotting this hotel');
-	    } else if(d.type == 'risky'){
-		icon = 'infoI';
-		title = 'Risk of Labor Dispute At This Hotel';
-		blurb = $('<div>')
-		    .append($('<b>')
-			    .append($('<a>', {tcstat:tcstat + d.id
-					      , target:"_blank"
-					      , href: "http://www.hotelworkersrising.org/"
-					      , text: "Hotel Workers Rising"
-					     })))
-		    .append(' advises that there is a risk of a labor dispute at this hotel.');
-	    }
-
-	    if(icon){
-		tc.googlePlacesHandler(d.siteid, icon ,title ,blurb);
-	    }
+	    ra = tc.random();
+	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
+	    rdc = tc.resultDialogConfig[d.type];
+	    h = new EJS({text: rdc.template}).render();
+	    $("#d"+ra).append(h);
+	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
 	}
     }
-
+    
     tc.sub = {};
-
-    tc.sub.greenResult = function(n,key,data){
+    
+    tc.resultPop = function(request){
+	var data = request.data;
 	var detail = JSON.parse(data.data);
-	var tcstat = 'bsg';
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://' + key + '/'
-				, text: detail.name})))
-	    .append('- ' + detail.desc); 
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = request.data.key;
+	detail.url = data.url;
 	
-	tc.insertPrev(n
-		      ,'greenG'
-		      ,r
-		      ,'Member of the Green Business Network'
-		      , d
-		     );
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
     }
 
-    tc.sub.rushBoycott = function(n,key,data){
+    tc.resultPrev = function(n,key,data){
 	var detail = JSON.parse(data.data);
-	var tcstat = 'grb';
-
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>', {text: detail.name}))
-	    .append(' is listed as an advertiser of Rush Limbaugh\'s by ')
-	    .append($('<a>'
-		      ,{tcstat: tcstat+data.id
-			, target: '_blank'
-			, href: 'http://stoprush.net/'
-			, text: 'The Stop Rush Project'}))
-	    .append('. Click ')
-	    .append($('<a>', {tcstat: tcstat+data.id
-			      , target: '_blank'
-			      , href: data.url
-			      , text: 'here'}))
-	    .append(' for more information on this particular advertiser\'s activity.');
-
+	var rdc = tc.resultDialogConfig[data.func];
+	r = tc.random();
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = key;
+	detail.url = data.url;
+	
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	
 	tc.insertPrev(n
-		      , 'stopRush'
+		      , rdc.icon
 		      , r
-		      , 'Rush Limbaugh Advertiser'
+		      , rdc.title
 		      , d
 		     )
     }
-
-    tc.sub.place = function(n, cid, pb,data){
-	var tcstat = 'bsp';
-	var r = tc.random();
-	var d = $("<div>",{id: "d"+r})
-	    .append($('<b>')
-		    .append($('<a>'
-			      ,{tcstat: tcstat+data.id
-				, target: '_blank'
-				, href: 'http://www.hotelworkersrising.org/'
-				, text: 'Hotel Workers Rising'})));
-
-	if(pb == 'patronize'){
-	    tc.insertPrev(n
-			  ,'greenCheck'
-			  , r
-			  ,'Patronize This Hotel'
-			  , d.append('- Recommends patronizing this hotel')
-			 );
-	} else if(pb == 'boycott'){
-	    tc.insertPrev(n
-			  ,'redCirc'
-			  ,r
-			  ,'Boycott This Hotel'
-			  , d.append('- Recommends boycotting this hotel')
-			 );
-	} else if(pb == 'risky'){
-	    tc.insertPrev(n
-			  ,'infoI'
-			  ,r
-			  ,'Risk of Labor Dispute At This Hotel'
-			  , d.append(' advises that there is a risk of a labor dispute at this hotel.')
-			 );
-	}
-    }
-
-    tc.sub.placeboycott = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.placepatronize = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
-    }
-
-    tc.sub.placestrike = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-    tc.sub.placerisky = function(n, cid, data){
-	tc.sub.place(n,cid,'risky',data);
-    }
-
-    tc.sub.placesafe = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
-    }
-
-    tc.sub.hotelboycott = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.hotelstrike = function(n, cid, data){
-	tc.sub.place(n,cid,'boycott',data);
-    }
-
-    tc.sub.hotelrisky = function(n, cid, data){
-	tc.sub.place(n,cid,'risky',data);
-    }
-
-    tc.sub.hotelsafe = function(n, cid, data){
-	tc.sub.place(n,cid,'patronize',data);
+    
+    tc.place = function(n, cid,data){
+	var rdc = tc.resultDialogConfig['hotel' + data.type];
+	r = tc.random();
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r);
+	
+	tc.insertPrev(n
+		      , rdc.icon
+		      , r
+		      , rdc.title
+		      , d
+		     );
     }
 
     // hyatt_result: function(n,key,data){

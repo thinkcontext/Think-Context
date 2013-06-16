@@ -1,11 +1,13 @@
 {
     "name": "Think Context",
-    "version": "0.85",
+    "version": "0.88",
     "update_url": "http://www.thinkcontext.org/release/chrome/updates.xml",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_page": "options.html",
-    "web_accessible_resources": ["icons/350.ico",
+    "web_accessible_resources": ["rev.ejs",
+    				 "icons/350.ico",
 				 "icons/acrj.ico",
 				 "icons/alter.ico",
 				 "icons/altoarizona.ico",
@@ -42,6 +44,7 @@
 				 "icons/ips.ico",
 				 "icons/itt.ico",
 				 "icons/jwj.ico",
+				 "icons/laborn.ico",
 				 "icons/ledc.ico",
 				 "icons/mj.ico",
 				 "icons/narco.ico",
@@ -73,52 +76,53 @@
 				 "icons/truthdig.ico",
 				 "icons/truthout.ico",
 				 "icons/ucs.ico",
-				 "icons/unitehere.ico"
+				 "icons/unitehere.ico",
+				 "icons/usas.ico"
 				],	    
     "icons": {
 	"128": "icons/tc-128.png"
     },
+    "page_action": { "default_title": "thinkContext" },
     "permissions": ["*://www.google.com/*"
-    		    ,"*://fusiontables.googleusercontent.com/*"
-    		    ,"*://thinkcontext.org/*"
+    		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
 		    ,"*://bitly.com/*"
 		    ,"*://bit.ly/*"
 		    ,"*://goo.gl/*"
         	   ],
-    "background": {"scripts": ["jquery-1.8.3.min.js","bg-utils.js","db.js","background.js"]},
+    "background": {"scripts": ["jquery-2.0.0.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
 	{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","google-search.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","bg-utils.js","utils.js","twitter.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","twitter.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","bg-utils.js","utils.js","facebook.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
 	}
 
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
 	 }
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bing-search.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
 	}
 	,{
 	    "all_frames": true,
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","yahoo-search.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
@@ -126,11 +130,14 @@
 	    "exclude_globs": ["*://mail.google.com/*"
 			      ,"*://www.google.com/*"
 			      ,"*://www.bing.com/search*"
+			      ,"*://www.bing.com/"
 			      ,"*://twitter.com/*"
 			      ,"*://facebook.com/*"
 			      ,"*://www.facebook.com/*"
+			      ,"http://*.yahoo.com/*"
+			      ,"https://*.yahoo.com/*"
 			     ] ,
-	    "js": ["jquery-1.8.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
 	}
     ]
 }
