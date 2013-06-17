@@ -64,9 +64,19 @@ tc = {
 	    , opt: 'opt_hotel'
 	    , version: '0.08'
 	}
+	, result_template: {
+	    fields: {
+		id: 'integer primary key'
+		, template: text
+		, title: text
+		, icon: text
+		, tcstat: text
+	    }
+	    , version: '0.01'
+	}
     }
 
-    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
+    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
