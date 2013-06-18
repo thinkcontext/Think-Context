@@ -1,8 +1,3 @@
-
-// tc.registerResponse('bing-text'
-// 		    ,function(request){
-// 			sub.insertSubvertisements(request);
-// 		    });
 tc.registerResponse('link',
 		    function(request){
 			$("[sid=" + request.sid +"]").map(function(){
@@ -14,16 +9,6 @@ tc.registerResponse('place'
 			$("[sid=" + request.sid +"]").map(function(){
 			    tc.place(this,request.key,request.data);});
 		    });
-
-// // query text
-// var qt =  $("input[name=q]").val();
-// //location
-// var loc = $('ul.sw_tn > li:nth-child(3) > a').text()
-// tc.sendMessage(
-//      {'kind' : "bing-text"
-//       , 'key' : qt
-//       , 'location' : loc
-//      });
 
 // result link
 $('div#results  li  div  div  h3  a').map(

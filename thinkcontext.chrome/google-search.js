@@ -32,35 +32,8 @@ tc.googleSearch = {
 	    }
 	});
 
-	// tc.registerResponse('gs-text', function(request){
-	//     insertSubvertisements(request);
-	// });
-
-
-	// function examineQuery(){
-	//     //the query text
-	    
-	//     var qt =  $("input[name=q]").val();
-	//     // check if we're doing instant search
-	//     var sflas = $("a#sflas");
-	//     if(sflas.length > 0){
-	// 	var nq = $("a#sflas")[0].search;
-	// 	var nqr = new RegExp('q=([^&]+)');
-	// 	qt = decodeURIComponent(nqr.exec(nq)[1]);
-	//     }
-	//     var result='';
-	//     var location = $("div#lc li.tbos").text();
-	//     //console.log("query text and location " + qt + " " + location);
-	//     tc.sendMessage(
-	// 	{'kind' : "gs-text"
-	// 	 , 'key' : qt.replace('+',' ')
-	// 	 , 'location' : location
-	// 	});
-	// }
-
 	function pageExamine(){
 	    //console.log("pageExamine");
-	    //examineQuery();
 	    tc.googleSearch.examineResults();
 	    //tc.reverseExamine();
 	}

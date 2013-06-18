@@ -12,11 +12,6 @@ function onRequest(request, sender, callback) {
     case 'places':
         tc.lookupPlaces(request,callback);
 	break;
-    // case 'yahoo-text':
-    // case 'gs-text':
-    // case 'bing-text':
-    // 	tc.lookupSubvert(request.key, request, callback);
-    // 	break;
     case 'reverse':
         tc.lookupReverse(request.key,request,callback);
         break;

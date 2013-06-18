@@ -4,50 +4,50 @@ if(typeof(tc) == 'undefined'){
     tc.responses = {};
     tc.popD = null;
 
-    tc.resultDialogConfig = {
-	rushBoycott:  { 
-	    template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
-	    , title: "Rush Limbaugh Advertiser"
-	    , icon: 'stopRush'
-	    , tcstat: 'grb'
-	}
-	, greenResult: {
-	    title: 'Member of the Green Business Network'
-	    , icon: 'greenG'
-	    , tcstat: 'bsg'
-	    , template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
-	}
+    // tc.resultDialogConfig = {
+    // 	rushBoycott:  { 
+    // 	    template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
+    // 	    , title: "Rush Limbaugh Advertiser"
+    // 	    , icon: 'stopRush'
+    // 	    , tcstat: 'grb'
+    // 	}
+    // 	, greenResult: {
+    // 	    title: 'Member of the Green Business Network'
+    // 	    , icon: 'greenG'
+    // 	    , tcstat: 'bsg'
+    // 	    , template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
+    // 	}
 
-	, hotelsafe: {
-	    title: 'Patronize'
-	    , icon: 'greenCheck'
-	    , tcstat: 'bsp'
-	    , template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
-	}
-	, hotelboycott: {
-	    title: 'Boycott'
-	    , icon: 'redCirc'
-	    , tcstat: 'bsp'
-	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-	}
-	, hotelrisky: {
-	    title: 'Risky'
-	    , icon: 'infoI'
-	    , tcstat: 'bsp'
-	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
-	}
-	, hotelstrike: {
-	    title: 'Strike'
-	    , icon: 'redCirc'
-	    , tcstat: 'bsp'
-	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-	}
-    };
+    // 	, hotelsafe: {
+    // 	    title: 'Patronize'
+    // 	    , icon: 'greenCheck'
+    // 	    , tcstat: 'bsp'
+    // 	    , template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
+    // 	}
+    // 	, hotelboycott: {
+    // 	    title: 'Boycott'
+    // 	    , icon: 'redCirc'
+    // 	    , tcstat: 'bsp'
+    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    // 	}
+    // 	, hotelrisky: {
+    // 	    title: 'Risky'
+    // 	    , icon: 'infoI'
+    // 	    , tcstat: 'bsp'
+    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
+    // 	}
+    // 	, hotelstrike: {
+    // 	    title: 'Strike'
+    // 	    , icon: 'redCirc'
+    // 	    , tcstat: 'bsp'
+    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+    // 	}
+    // };
 
-    tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
-    tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
-    tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
-    tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
+    // tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
+    // tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
+    // tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
+    // tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 
     tc.debug = function(txt){ 
 	//console.log(txt); 
@@ -455,6 +455,7 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.resultPrev = function(n,key,data){
+	console.log(data);
 	var detail = JSON.parse(data.data);
 	var rdc = tc.resultDialogConfig[data.func];
 	r = tc.random();
@@ -487,17 +488,6 @@ if(typeof(tc) == 'undefined'){
 		      , d
 		     );
     }
-
-    // hyatt_result: function(n,key,data){
-    // 	// passed a google search result, insert a dialog
-    // 	// "n" is the header link for the result
-    
-    // 	var tcstat = 'gsh';
-    // 	tc.insertPrev(n
-    // 		      ,'infoI'
-    // 		      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-    // 		     );
-    // }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}
 }

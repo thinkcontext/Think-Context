@@ -34,17 +34,6 @@ tc = {
 	    }
 	    , version: '0.09'
 	}
-	// , subverts: { 
-	//     fields: {
-	// 	id: 'integer'
-	// 	, sdid: 'integer'
-	// 	, txt: 'text'
-	// 	, location: 'text'
-	// 	, bin_op: 'text'
-		
-	//     }
-	//     , version: '0.02'
-	// }
 	, place: {
 	    fields: {
 		id: 'integer'
@@ -67,10 +56,10 @@ tc = {
 	, result_template: {
 	    fields: {
 		id: 'integer primary key'
-		, template: text
-		, title: text
-		, icon: text
-		, tcstat: text
+		, template: 'text'
+		, title: 'text'
+		, icon: 'text'
+		, tcstat: 'text'
 	    }
 	    , version: '0.01'
 	}
@@ -382,7 +371,14 @@ tc = {
     , lookupResult: function(key, request, callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key";
+		var selTxt = "\
+SELECT * FROM results r \
+inner join result_template rt on rt.func = r.func \
+WHERE ? = key \
+or ? like key || '/%' \
+or ? like '%.' || key || '/%' \
+or ? like '%.' || key";
+
 		tx.executeSql(selTxt
 			      , [key,key,key,key]
 			      , function(tx,r){ 
@@ -457,20 +453,6 @@ tc = {
 			      , tc.onError);
 	    });
     }
-
-
-    // , lookupSubvert: function(key, request, callback){
-    // 	tc.db.transaction(
-    // 	    function(tx){
-    // 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
-    // 		tx.executeSql(selTxt
-    // 			      , [key]
-    // 			      , function(tx,r){ 
-    // 				  tc.onLookupSuccessMany(tx,r,request, callback)
-    // 			      }
-    // 			      , tc.onError);
-    // 	    });
-    // }
 
     , sendStat: function(key){
 	$.get('http://thinkcontext.org/s/?' + key);
