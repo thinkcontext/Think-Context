@@ -56,6 +56,7 @@ tc = {
 	, result_template: {
 	    fields: {
 		id: 'integer primary key'
+		, func: 'text'
 		, template: 'text'
 		, title: 'text'
 		, icon: 'text'
