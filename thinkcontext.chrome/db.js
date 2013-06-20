@@ -57,12 +57,9 @@ tc = {
 	    fields: {
 		id: 'integer primary key'
 		, func: 'text'
-		, template: 'text'
-		, title: 'text'
-		, icon: 'text'
-		, tcstat: 'text'
+		, data: 'text'
 	    }
-	    , version: '0.01'
+	    , version: '0.02'
 	}
     }
 
@@ -364,7 +361,6 @@ tc = {
 		    request.popD = false;
 		}		
 	    }
-
 	    callback(request);
 	}
     }
@@ -373,7 +369,7 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "\
-SELECT * FROM results r \
+SELECT r.*, rt.data template_data FROM results r \
 inner join result_template rt on rt.func = r.func \
 WHERE ? = key \
 or ? like key || '/%' \

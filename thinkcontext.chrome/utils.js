@@ -442,7 +442,7 @@ if(typeof(tc) == 'undefined'){
     tc.resultPop = function(request){
 	var data = request.data;
 	var detail = JSON.parse(data.data);
-	var rdc = tc.resultDialogConfig[data.func];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	detail.did = 'd'+r;
 	detail.r = r;
@@ -457,7 +457,7 @@ if(typeof(tc) == 'undefined'){
     tc.resultPrev = function(n,key,data){
 	console.log(data);
 	var detail = JSON.parse(data.data);
-	var rdc = tc.resultDialogConfig[data.func];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	detail.did = 'd'+r;
 	detail.r = r;
@@ -476,7 +476,7 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.place = function(n, cid,data){
-	var rdc = tc.resultDialogConfig['hotel' + data.type];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r);
