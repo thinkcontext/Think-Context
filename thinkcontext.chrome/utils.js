@@ -339,6 +339,8 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.onResponse = function(request){
+	console.log(request);
+	console.log(tc.responses);
 	tc.responses[request.kind](request);
     }
 
@@ -432,7 +434,7 @@ if(typeof(tc) == 'undefined'){
 	    d = data[r];
 	    ra = tc.random();
 	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
-	    rdc = tc.resultDialogConfig[d.type];
+	    rdc = JSON.parse(data.template_data);
 	    h = new EJS({text: rdc.template}).render();
 	    $("#d"+ra).append(h);
 	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);

@@ -4,7 +4,7 @@ tc.registerResponse('place',
 			var icon, title, blurb, rdc, tcstat = 'gsp';
 			var z = tc.random();
 			var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-			rdc = tc.resultDialogConfig["hotel"+data.type];
+			rdc = JSON.parse(data.template_data);
 			new EJS({text:rdc.template}).update("z"+z,data);
 			tc.popDialog(rdc.title, revDiv, 'z'+z,true,rdc.icon,'other');
 		    });

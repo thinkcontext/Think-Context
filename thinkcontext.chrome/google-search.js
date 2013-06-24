@@ -60,9 +60,8 @@ tc.googleSearch = {
 		}
 	    }
 	);
-
-	if(urlmap){
-	    //console.log(jQuery.makeArray(urlmap));
+	
+	if(urlmap.length > 0){
 	    tc.sendMessage({'kind': 'places'
 			    ,'type': 'google'
 			    ,'subtype': 'gs-cid'
@@ -118,7 +117,6 @@ tc.googleSearch = {
 	    this.setAttribute('tcLink','tcLink');
 	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
-	    //console.log(this);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid
      			    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });		

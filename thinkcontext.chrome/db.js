@@ -51,15 +51,15 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.08'
+	    , version: '0.09'
 	}
-	, result_template: {
+	, template: {
 	    fields: {
 		id: 'integer primary key'
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.02'
+	    , version: '0.03'
 	}
     }
 
@@ -151,7 +151,7 @@ tc = {
     }
     
     , onError: function(tx,e){
-	//console.log("db error: " + e.message);
+	console.log("db error: " + e.message);
     }
     
     , loadAllTables: function(){
@@ -289,8 +289,9 @@ tc = {
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
 	}
-
-	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
+// fix me for release
+//	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + new Date().getTime()  +"&tab=" + table + resClause);
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -369,8 +370,8 @@ tc = {
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "\
-SELECT r.*, rt.data template_data FROM results r \
-inner join result_template rt on rt.func = r.func \
+SELECT r.*, t.data template_data FROM results r \
+inner join template t on t.func = r.func \
 WHERE ? = key \
 or ? like key || '/%' \
 or ? like '%.' || key || '/%' \
@@ -388,7 +389,8 @@ or ? like '%.' || key";
     , lookupPlace: function(key,request,callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = ? and p.type = ? LIMIT 1";
+		var selTxt = "SELECT pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
+		console.log(selTxt);
 		tx.executeSql(selTxt
 			      , [key,request.type]
 			      , function(tx,r){ 
@@ -400,12 +402,15 @@ or ? like '%.' || key";
     }
     , lookupPlaces: function(request,callback){
 	var data = request.data;
+	console.log(data);
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 	
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = ?";
+		var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
+		console.log(selTxt);
+		console.log(data);
 		tx.executeSql(selTxt
 			      , [request.type]
 			      , function(tx,r){tc.onLookupSuccessMany(tx,r,request,callback)}
