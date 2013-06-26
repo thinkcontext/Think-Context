@@ -215,7 +215,9 @@ if(typeof(tc) == 'undefined'){
 	});
 
 	// really irritating when the dialog steals focus
-	document.activeElement.blur();
+	if(autoOpen){
+	    document.activeElement.blur();
+	}
     }
 
     tc.sigURL = function(url){

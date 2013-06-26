@@ -244,7 +244,9 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	    d.dialog({position: [window.innerWidth - 350
 				 , window.innerHeight - 175 ]}); });
 	// really irritating when the dialog steals focus
-	document.activeElement.blur();	
+	if(autoOpen){
+	    document.activeElement.blur();	
+	}
     }
 
     tc.sigURL = function(url){
