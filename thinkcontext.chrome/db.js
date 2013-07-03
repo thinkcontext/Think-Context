@@ -59,7 +59,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.03'
+	    , version: '0.04'
 	}
     }
 

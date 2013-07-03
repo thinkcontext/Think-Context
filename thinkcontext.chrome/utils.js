@@ -4,51 +4,6 @@ if(typeof(tc) == 'undefined'){
     tc.responses = {};
     tc.popD = null;
 
-    // tc.resultDialogConfig = {
-    // 	rushBoycott:  { 
-    // 	    template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
-    // 	    , title: "Rush Limbaugh Advertiser"
-    // 	    , icon: 'stopRush'
-    // 	    , tcstat: 'grb'
-    // 	}
-    // 	, greenResult: {
-    // 	    title: 'Member of the Green Business Network'
-    // 	    , icon: 'greenG'
-    // 	    , tcstat: 'bsg'
-    // 	    , template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
-    // 	}
-
-    // 	, hotelsafe: {
-    // 	    title: 'Patronize'
-    // 	    , icon: 'greenCheck'
-    // 	    , tcstat: 'bsp'
-    // 	    , template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
-    // 	}
-    // 	, hotelboycott: {
-    // 	    title: 'Boycott'
-    // 	    , icon: 'redCirc'
-    // 	    , tcstat: 'bsp'
-    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-    // 	}
-    // 	, hotelrisky: {
-    // 	    title: 'Risky'
-    // 	    , icon: 'infoI'
-    // 	    , tcstat: 'bsp'
-    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
-    // 	}
-    // 	, hotelstrike: {
-    // 	    title: 'Strike'
-    // 	    , icon: 'redCirc'
-    // 	    , tcstat: 'bsp'
-    // 	    , template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-    // 	}
-    // };
-
-    // tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
-    // tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
-    // tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
-    // tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
-
     tc.debug = function(txt){ 
 	//console.log(txt); 
     }
@@ -75,6 +30,7 @@ if(typeof(tc) == 'undefined'){
 		 ,redCirc : tc.iconDir + "/redCirc.png"
 		 ,stopRush : tc.iconDir + "/sr.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
+		 ,bcorp: tc.iconDir + "/bcorp.ico"
 		 ,trackback16: tc.iconDir + "/trackback-16.png"
 		 ,trackback32: tc.iconDir + "/trackback-32.png"
 	       };
@@ -139,13 +95,13 @@ if(typeof(tc) == 'undefined'){
 		     laborn: 1
 		    };
 
-    tc.insertPrev = function(n,iconName,r,title,theDiv){
+    tc.insertPrev = function(n,icon, r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	    var resDiv = $('<div>'
 			   , { id: r
 			       , subv: true
 			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-		.append($('<img>', { src: tc.icons[iconName]}))[0];
+		.append($('<img>', { src: icon}))[0];
 	    n.parentNode.insertBefore(resDiv,n);
 	    n.style.display = "inline";
 	    tc.iconDialog(title,theDiv,r);
@@ -188,7 +144,7 @@ if(typeof(tc) == 'undefined'){
 	if(autoOpen){
 	    d.dialog('open');
 	}
-	tc.sendMessage({kind:'pageA',icon:tc.icons[icon]});
+	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendRequest({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
@@ -336,8 +292,6 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.onResponse = function(request){
-	console.log(request);
-	console.log(tc.responses);
 	tc.responses[request.kind](request);
     }
 
@@ -454,7 +408,6 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.resultPrev = function(n,key,data){
-	console.log(data);
 	var detail = JSON.parse(data.data);
 	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
