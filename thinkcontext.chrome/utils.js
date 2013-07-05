@@ -24,14 +24,7 @@ if(typeof(tc) == 'undefined'){
     );
 
     tc.iconDir = chrome.extension.getURL("icons");
-    tc.icons = { infoI : tc.iconDir + "/infoI.png"
-		 ,greenG : tc.iconDir + "/greenG.png"
-		 ,greenCheck : tc.iconDir + "/greenCheck.png"
-		 ,redCirc : tc.iconDir + "/redCirc.png"
-		 ,stopRush : tc.iconDir + "/sr.png"
-		 ,unitehere : tc.iconDir + "/unitehere.ico"
-		 ,bcorp: tc.iconDir + "/bcorp.ico"
-		 ,trackback16: tc.iconDir + "/trackback-16.png"
+    tc.icons = { trackback16: tc.iconDir + "/trackback-16.png"
 		 ,trackback32: tc.iconDir + "/trackback-32.png"
 	       };
     // ick but need to keep in sync with icons directory
