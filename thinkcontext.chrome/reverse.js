@@ -1,45 +1,45 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
     tc.reverse = {};
-    tc.reverse.revGotResponse = 0;
     
-    tc.registerResponse('link',tc.resultPop);
-
-    tc.registerResponse('reverse', 
+    tc.registerResponse('link',
 			function(request){
-			    if(tc.reverse.revGotResponse == 0){
-				tc.reverse.revGotResponse = 1;
-				var data = request.data;
-				var ex = false;
-				if(data[0]['s'] == 'exact'){
-				    ex = true;
-				}
-				var z = tc.random();
-				var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-				new EJS({url: chrome.extension.getURL('rev.ejs')}).update("z"+z,{data:data,ex:ex});
-
-				
-				tc.popDialog('Progressive Trackback', revDiv, 'z'+z,ex,'trackback16','reverse');
+			    if(request.pop == 1){
+				tc.resultPop(request);
+			    } else {
+				$("[sid=" + request.sid +"]").map(function(){
+				    tc.resultPrev(this,request.key,request.data);});
 			    }
-			});
-    tc.registerResponse('reversehome', tc.reverseResponse);
-    tc.sendMessage(
-	{kind: 'reverse'
-	 , key: tc.sigURL(document.baseURI)
-	});
-
-    $("link[rel='canonical']")
-	.map(function(){
-	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
-		tc.sendMessage(
-		    {'kind': 'reverse'
-		     , 'key': tc.sigURL(this.href)
-		    });
-	    }});
+			}
+		       );
     tc.sendMessage(
 	{kind: 'link'
+	 , pop: 1
 	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
+    $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
+	function(){
+	    if(!this.textContent.match(' ')){
+		console.log(this.textContent);
+		var sid = "gs" + tc.random();
+		this.setAttribute("sid",sid);
+		tc.sendMessage({'kind': 'link'
+     				, 'sid': sid
+     				, 'key': tc.sigURL(this.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
+	    }
+	});
 
-    tc.reverseExamine();
+    $("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").map(
+	function(){
+	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
+	    if(m && m.length == 3)
+		console.log('doubleclick param ' + m[2])
+	});
+
+    $("object[flashvars*='click=http%3A%2F%2Fad.doubleclick.net']").map(
+	function(){
+	    var m = this.attributes.flashvars.textContent.match(/exitEvents=[^\&]*url%253Ahttp%25253A%2F%2F([^\%]+)/);
+	    if(m && m.length == 2)
+		console.log('doubleclick object ' + m[1]);
+	});
 
 }

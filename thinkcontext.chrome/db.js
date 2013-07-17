@@ -13,17 +13,6 @@ tc = {
 	    , version: '0.06'
 	    , opt : 'opt_news'
 	}
-	, reverse: {
-	    fields: {
-		id: 'integer primary key'
-		, source: 'text'
-		, reverse_link: 'text'
-		, title: 'text'
-		, link: 'text'
-	    }
-	    , opt: 'opt_news'
-	    , version: '0.07'
-	}
 	, results: { 
 	    fields: {
 		id:'integer primary key'
@@ -417,43 +406,6 @@ or ? like '%.' || key";
 			      , tc.onError);
 	    }
 	);
-    }
-
-    , lookupReverse: function(key,request,callback){
-	// find reverse links and some other links to the same site
-	var host = getReverseHost(key);
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = ? union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = ? ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||?||'/%' or r.reverse_link like 'http://'||?||'/%' ) and r.reverse_link <> ? and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(selTxt
-			      , [key,key,host,host,key]
-			      , function(tx,r){ 
-				  tc.onLookupSuccessMany(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    });
-    }
-
-    , lookupReverseHome: function(key,request,callback){
-	var parSt;
-	for(var i in key){
-	    if(i == 0)
-		parSt = "?";
-	    else 
-		parSt += ",?";
-	}
-	
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + parSt + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
-	request.key = '';
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(selTxt
-			      , key
-			      , function(tx,r){ 
-				  tc.onLookupSuccessMany(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    });
     }
 
     , sendStat: function(key){

@@ -1,0 +1,21 @@
+{
+  "kango_version": "1.2.4 744e69cf4136", 
+  "content_scripts": [
+    "reverse.js"
+  ], 
+  "description": "Extension description", 
+  "creator": "Kango", 
+  "background_scripts": [
+    "jquery-1.10.2.min.js", 
+    "main.js"
+  ], 
+  "homepage_url": "http://kangoextensions.com/", 
+  "version": "1.0.0", 
+  "browser_button": {
+    "caption": "thinkContext", 
+    "tooltipText": "thinkContext", 
+    "icon": "icons/button.png"
+  }, 
+  "id": "cglodkghghopjokabbeaelnejimbhiac", 
+  "name": "thinkContext"
+}

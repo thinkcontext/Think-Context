@@ -24,8 +24,7 @@ if(typeof(tc) == 'undefined'){
     );
 
     tc.iconDir = chrome.extension.getURL("icons");
-    tc.icons = { trackback16: tc.iconDir + "/trackback-16.png"
-		 ,trackback32: tc.iconDir + "/trackback-32.png"
+    tc.icons = { trackback32: tc.iconDir + "/trackback-32.png"
 	       };
     // ick but need to keep in sync with icons directory
     tc.iconStatus = {fair:	1,
@@ -107,7 +106,6 @@ if(typeof(tc) == 'undefined'){
 	if(tc.popD == null){	
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
-		.append($('<div>',{id:'tcReverse'}))
 		.append($('<div>',{id:'tcOther'}))
 		.dialog(
 		    { zIndex: 100000001
@@ -127,9 +125,6 @@ if(typeof(tc) == 'undefined'){
 	switch(kind){
 	case 'result':
 	    $('#tcResults',d).append(revDiv);
-	    break;
-	case 'reverse':
-	    $('#tcReverse',d).append(revDiv);
 	    break;
 	default:
 	    $('#tcOther',d).append(revDiv);
@@ -290,79 +285,6 @@ if(typeof(tc) == 'undefined'){
 
     tc.sendMessage = function(request){
 	chrome.extension.sendRequest(request, tc.onResponse);
-    }
-
-    tc.reverseExamine = function(){
-	var urlmap;
-	urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
-	    this.setAttribute('tcRev','tcRev');
-	    if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
-		return tc.sigURL(this.href);
-	    }});
-	if(urlmap.length > 0){
-    	    var revArr = jQuery.makeArray(urlmap);
-    	    while(revArr.length > 0){
-    		tc.sendMessage(
-    		    {'kind': 'reversehome'
-    		     , 'key': revArr.slice(0,400)
-    		    });
-    		revArr.splice(0,400);
-    	    }
-	}
-    }
-
-    tc.reverseResponseTwit = 0;
-    tc.reverseResponseFB = 0;
-    tc.reverseResponse = function(request){
-	var data = request.data;
-	var out = {};
-	var t;
-	var docHost = getReverseHost(document.baseURI);
-	for(var i in data){
-	    t = data[i].reverse_link;
-	    if(docHost != getReverseHost(data[i].link)){
-		if(!out[t]){
-		    out[t] = { }
-		}
-		out[t][data[i].link] = data[i];
-	    }
-	}
-	var tcstat = 'rrh';
-	var jsearch;
-	for(var rl in out){
-
-	    jsearch = 'a[href^="'+rl+'"]:visible';
-	    if(tc.reverseResponseTwit == 1)
-		jsearch = 'a[tcurl^="'+rl+'"]:visible';	
-	    else if(tc.reverseResponseFB == 1)
-		jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
-	    $(jsearch).map(function(){
-		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
-		    if(this.textContent.match(/\w/)){
-			var r = tc.random();
-			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
-			new EJS({url: chrome.extension.getURL('rev.ejs')}).update("d"+r,{data:out[rl],ex:false});
-			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
-			var resDiv = document.createElement("div");
-			resDiv.setAttribute("id",r);
-			resDiv.setAttribute("subv",true);
-			resDiv.style.display = "inline";
-			resDiv.style.height = height + "px";
-			resDiv.style.width = height + "px";;
-			var redih = document.createElement("img");
-			redih.src = tc.icons['trackback16'];
-			redih.style.height = height;// + "px";
-			redih.style.width = height;// + "px";
-			redih.style.margin = "1px";
-			redih.style.display = "inline";
-			resDiv.appendChild(redih);
-			this.parentNode.insertBefore(resDiv,this);
-			this.style.display = "inline";
-			tc.iconDialog("Progressive Trackback", revDiv, r);
-		    }
-		}
-	    });
-	}
     }
 
     tc.closeAllDialogs = function(){

@@ -62,7 +62,6 @@
 				 "icons/splc.ico",
 				 "icons/tc-128.png",
 				 "icons/thinkprogress.ico",
-				 "icons/trackback-16.png",
 				 "icons/trackback-32.png",
 				 "icons/truthdig.ico",
 				 "icons/ucs.ico",
@@ -127,6 +126,17 @@
 			      ,"https://*.yahoo.com/*"
 			     ] ,
 	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
+	}
+	,{
+	    "all_frames": true,
+	    "css": ["jquery-ui.css"],
+	    "matches": ["http://*.adsonar.com/*"
+			,"http://*.msn.com/*"
+			,"http://*.doubleclick.net/pagead/*"
+			,"http://*.overture.com/*"
+			,"http://ad.doubleclick.net/adi/*"
+		       ],
+	    "js": ["jquery-2.0.0.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
     ]
 }

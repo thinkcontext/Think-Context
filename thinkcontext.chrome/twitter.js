@@ -1,19 +1,14 @@
-tc.reverseResponseTwit = 1;
 tc.registerResponse('link'
 		    ,function(request){
 			$("[sid=" + request.sid +"]").map(function(){
 			    tc.resultPrev(this,request.key,request.data);});
 		    });
 
-tc.registerResponse('reversehome', tc.reverseResponse);
 tc.registerResponse('urlresolve', 
 		    function(response){
 			$("a[tcurl='" + response.key + "']").map(
 			    function(){
 				this.setAttribute("tcurl",response.url);
-				tc.sendMessage({ kind: 'reversehome'
-						 , type: 'twitter'
-						 , key: [ tc.sigURL(response.url)]});
 				var sid = "gs" + tc.random();
 				this.setAttribute("sid",sid);
 				tc.sendMessage({'kind': 'link'
@@ -34,10 +29,6 @@ function expandURL() {
 		    tc.sendMessage({key:newUrl, kind:'urlresolve'});
 		} else {
 		    element.setAttribute('tcurl',url); // don't check an element more than once
-		    tc.sendMessage({'kind':'reversehome'
-    				    , 'type':'twitter'
-    				    , 'key': [tc.sigURL(url)]}
-    				  );
 		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({'kind': 'link'

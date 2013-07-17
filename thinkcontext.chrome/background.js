@@ -12,12 +12,6 @@ function onRequest(request, sender, callback) {
     case 'places':
         tc.lookupPlaces(request,callback);
 	break;
-    case 'reverse':
-        tc.lookupReverse(request.key,request,callback);
-        break;
-    case 'reversehome':
-        tc.lookupReverseHome(request.key,request,callback);
-        break;
     case 'sendstat':
         tc.sendStat(request.key);
         break;
@@ -37,7 +31,6 @@ chrome.pageAction.onClicked.addListener(
 
 tc.connectSubvDB();
 chrome.extension.onRequest.addListener(onRequest);
-setInterval(function(){tc.updateTable('reverse')}, 3650000);
 setInterval(tc.updateAllTables, 10870000);
 
 // Check whether new version is installed
