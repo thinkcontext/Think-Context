@@ -25,7 +25,7 @@
   "background": {
     "page": "background.html"
   }, 
-  "homepage_url": "http://kangoextensions.com/", 
+  "homepage_url": "http://thinkcontext.org/", 
   "version": "1.0.0", 
   "manifest_version": 2, 
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", 
@@ -34,6 +34,7 @@
     "default_title": "thinkContext"
   }, 
   "permissions": [
+      "storage", 
     "tabs", 
     "http://*/*", 
     "https://*/*", 

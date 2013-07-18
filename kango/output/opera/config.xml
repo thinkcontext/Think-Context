@@ -1,7 +1,7 @@
 <?xml version="1.0" ?><widget id="http://kangoextensions.com/extensions/thinkcontext/" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
 	<name>thinkContext</name>
 	<description>Extension description</description>
-	<author href="http://kangoextensions.com/">Kango</author>
+	<author href="http://thinkcontext.org/">thinkcontext</author>
 	<update-description href=""/>
 	<icon src="icons/icon100.png"/>
 	<content src="background.html"/>

@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Author</key>
-	<string>Kango</string>
+	<string>thinkcontext</string>
+	<key>Builder Version</key>
+	<string>534.57.2</string>
 	<key>CFBundleDisplayName</key>
 	<string>thinkContext</string>
 	<key>CFBundleIdentifier</key>
@@ -17,7 +19,7 @@
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
-		<real>10485760.0</real>
+		<real>10485760</real>
 		<key>Global Page</key>
 		<string>background.html</string>
 		<key>Popovers</key>
@@ -85,6 +87,6 @@
 	<key>Update Manifest URL</key>
 	<string></string>
 	<key>Website</key>
-	<string>http://kangoextensions.com/</string>
+	<string>http://thinkcontext.org/</string>
 </dict>
 </plist>

@@ -16,6 +16,7 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	 , pop: 1
 	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
+
     $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	function(){
 	    if(!this.textContent.match(' ')){
@@ -27,6 +28,19 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
      				, 'key': tc.sigURL(this.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
 	    }
 	});
+
+    $("a[href*='shlinks.industrybrains.com']").not('a[sid]').map(
+	function(){
+	    if(!this.textContent.match(' ')){
+		console.log('industrybrains: ' + this.textContent);
+		var sid = "gs" + tc.random();
+		this.setAttribute("sid",sid);
+		tc.sendMessage({'kind': 'link'
+     				, 'sid': sid
+     				, 'key': tc.sigURL(this.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
+		}
+	});
+
 
     $("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").map(
 	function(){
@@ -41,5 +55,5 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	    if(m && m.length == 2)
 		console.log('doubleclick object ' + m[1]);
 	});
-
+    
 }

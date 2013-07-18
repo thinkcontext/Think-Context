@@ -12,8 +12,8 @@
         </em:targetApplication>
         <em:bootstrap>true</em:bootstrap>
 		<em:description>Extension description</em:description>
-        <em:creator>Kango</em:creator>
-		<em:homepageURL>http://kangoextensions.com/</em:homepageURL>
+        <em:creator>thinkcontext</em:creator>
+		<em:homepageURL>http://thinkcontext.org/</em:homepageURL>
 		<em:iconURL>chrome://kango-7ca0cc50-2940-4e88-944d-a883edd1eabe/content/icons/icon32.png</em:iconURL>
 		
 		
