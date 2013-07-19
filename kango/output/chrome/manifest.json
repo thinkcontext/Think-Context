@@ -34,7 +34,6 @@
     "default_title": "thinkContext"
   }, 
   "permissions": [
-      "storage", 
     "tabs", 
     "http://*/*", 
     "https://*/*", 

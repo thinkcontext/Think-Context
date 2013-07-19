@@ -7,7 +7,7 @@
   "creator": "thinkcontext", 
   "developer_id": "YOUR_SAFARI_DEVELOPER_ID", 
   "background_scripts": [
-    "pouchdb.min.js", 
+    "jquery-1.10.2.min.js", 
     "main.js"
   ], 
   "homepage_url": "http://thinkcontext.org/", 
