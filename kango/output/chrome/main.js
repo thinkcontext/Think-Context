@@ -9,37 +9,32 @@ Store.prototype = {
 
     setItem: function(key,val){
 	kango.storage.setItem(this.name + '-' + key,val);
-    }
-    , getItem: function(key){
+    },
+
+    getItem: function(key){
 	return kango.storage.getItem(this.name + '-' + key);
-    }
-    , deleteKeys: function(){
+    },
+
+    deleteKeys: function(){
 	var r = RegExp('^' + this.name + '-')
 	for(var k in kango.storage.getKeys){
 	    if(r.test(k)){
 		kango.storage.removeItem(k);
 	    }
 	}
-    }
-    , load: function(){
-	$.getJSON(this.urlPrefix
-		  ,function(data){
-		      console.log(data.total_rows);
-		  });	
-    }
-    , update: function(){
-
-    }
+    },
 }
 
 
 function MyExtension() {
     var self = this;
+    // check first run, update, outdated
+    self.campaigns = ['stoprush','bcorp']; // make this a setting
+    self.templates = {}; // preload templates, store as single document
+
     self.domain = new Store('domain');
 
-    console.log(self.domain);
-
-    // listen for requests
+    // open for business, listen for requests
     kango.addMessageListener('domain'
 			     , function(event){
 				 console.log(event);
@@ -60,6 +55,15 @@ MyExtension.prototype = {
     
     _onCommand: function() {
 	kango.browser.tabs.create({url: 'http://kangoextensions.com/'});
+    },
+    load: function(){
+	$.getJSON(this.urlPrefix
+		  ,function(data){
+		      console.log(data.total_rows);
+		  });	
+    },
+    update: function(){
+
     }
 
 };
