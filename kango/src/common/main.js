@@ -15,26 +15,17 @@ Store.prototype = {
     },
     removeItem: function(key){
 	return kango.storage.removeItem(this.name + '-' + key);
-    },
-
-    deleteKeys: function(){
-	var r = RegExp('^' + this.name + '-')
-	for(var k in kango.storage.getKeys){
-	    if(r.test(k)){
-		kango.storage.removeItem(k);
-	    }
-	}
-    },
+    }
 }
-
 
 function MyExtension() {
     var self = this; // why is this here?
-    // check first run, update, outdated
+    // TODO check first run, update, outdated
     this.urlPrefix = 'http://localhost:5984/domain/_design/think/_view';
 
-    this.campaigns = ['stoprush','bcorp']; // make this a setting
-    this.templates = {}; // preload templates, store as single document
+    this.campaigns = ['rushBoycott','bcorp']; // make this a setting
+    this.verbs = {}; // preload templates, store as single document
+    this.loadVerbs();
 
     this.domain = new Store('domain');
 
@@ -56,46 +47,47 @@ function MyExtension() {
 	self._onCommand();
     });
     
-    
 }
 
 MyExtension.prototype = {
     _onCommand: function(){ console.log('foo');},
+    loadVerbs: function(){
+	this.verbs = kango.storage.getItem('verbs').verbs;
+    },
 
     load: function(){
-	var domain = this.domain;
+	var self = this;
 	console.log('load');
 	$.getJSON(this.urlPrefix + '/load'
 		  ,function(data){
-		      console.log(domain);		      
 		      var k, rows = data.rows;
 		      if(rows.length > 0){
 			  kango.storage.clear(); // only clear if there's data
 			  var maxTime = '2000-01-01 01:01:01 -0400';
 			  for(var k in rows){
-			      domain.setItem(rows[k].key,rows[k].value);
+			      kango.storage.setItem(rows[k].id,rows[k].value);
 			      if(rows[k].value.date_added > maxTime)
 				  maxTime = rows[k].value.date_added;
 			  }
 			  kango.storage.setItem('metaTime',maxTime);
+			  self.loadVerbs();
 		      }
-		  });	
+		  });
     },
     update: function(){
-	var d = new Date;
-	var domain = this.domain;
+	var d = new Date, self = this;
 	$.getJSON(this.urlPrefix + '/update?startkey="' + kango.storage.getItem('metaTime') + '"&endkey="'+ d.toJSON()+'"'
 		  ,function(data){
 		      var k, rows = data.rows, key;
 		      var maxTime = kango.storage.getItem('metaTime');
 		      for(var k in rows){
-			  key = rows[k].key.split('-')[0]
+			  key = rows[k].id
 			  switch(rows[k].value.status = 'D'){
 			  case 'D':
-			      domain.removeItem(key);
+			      kango.storage.removeItem(key);
 			      break;
 			  case 'A':
-			      domain.setItem(key,rows[k].value);
+			      kango.storage.setItem(key,rows[k].value);
 			      break;
 			  default:
 			      continue;
@@ -104,6 +96,7 @@ MyExtension.prototype = {
 			      maxTime = rows[k].value.date_modified;
 		      }
 		      kango.storage.setItem('metaTime',maxTime);
+		      self.loadVerbs();		      
 		  });
     },
     lookupDomain: function(rdata){
