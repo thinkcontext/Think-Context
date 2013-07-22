@@ -1,6 +1,5 @@
 ﻿function Store(name){
     this.name = name;
-    this.urlPrefix = 'http://localhost:5984/domain/_design/think/_view/bydomain';
     // check if already exists, if not create
     // and version is correct, if not, delete all old keys, re-init
     // check last update time, update if necessary
@@ -13,6 +12,9 @@ Store.prototype = {
 
     getItem: function(key){
 	return kango.storage.getItem(this.name + '-' + key);
+    },
+    removeItem: function(key){
+	return kango.storage.removeItem(this.name + '-' + key);
     },
 
     deleteKeys: function(){
@@ -27,23 +29,29 @@ Store.prototype = {
 
 
 function MyExtension() {
-    var self = this;
+    var self = this; // why is this here?
     // check first run, update, outdated
-    self.campaigns = ['stoprush','bcorp']; // make this a setting
-    self.templates = {}; // preload templates, store as single document
+    this.urlPrefix = 'http://localhost:5984/domain/_design/think/_view';
 
-    self.domain = new Store('domain');
+    this.campaigns = ['stoprush','bcorp']; // make this a setting
+    this.templates = {}; // preload templates, store as single document
+
+    this.domain = new Store('domain');
+
+    this.load();
 
     // open for business, listen for requests
-    kango.addMessageListener('domain'
+    kango.addMessageListener('content2background'
 			     , function(event){
-				 console.log(event);
+				 var data = event.data;
+				 console.log(data);
+				 switch(data.kind){
+				 case 'domain':
+				     console.log(self.lookupDomain(data));
+				     break;
+				 }
 			     });
-    
-
-    // open local meta Store
-    // iterate through metastore for other Stores
-
+ 
     kango.ui.browserButton.addEventListener(kango.ui.browserButton.event.COMMAND, function() {
 	self._onCommand();
     });
@@ -52,20 +60,66 @@ function MyExtension() {
 }
 
 MyExtension.prototype = {
-    
-    _onCommand: function() {
-	kango.browser.tabs.create({url: 'http://kangoextensions.com/'});
-    },
+    _onCommand: function(){ console.log('foo');},
+
     load: function(){
-	$.getJSON(this.urlPrefix
+	var domain = this.domain;
+	console.log('load');
+	$.getJSON(this.urlPrefix + '/load'
 		  ,function(data){
-		      console.log(data.total_rows);
+		      console.log(domain);		      
+		      var k, rows = data.rows;
+		      if(rows.length > 0){
+			  kango.storage.clear(); // only clear if there's data
+			  var maxTime = '2000-01-01 01:01:01 -0400';
+			  for(var k in rows){
+			      domain.setItem(rows[k].key,rows[k].value);
+			      if(rows[k].value.date_added > maxTime)
+				  maxTime = rows[k].value.date_added;
+			  }
+			  kango.storage.setItem('metaTime',maxTime);
+		      }
 		  });	
     },
     update: function(){
-
+	var d = new Date;
+	var domain = this.domain;
+	$.getJSON(this.urlPrefix + '/update?startkey="' + kango.storage.getItem('metaTime') + '"&endkey="'+ d.toJSON()+'"'
+		  ,function(data){
+		      var k, rows = data.rows, key;
+		      var maxTime = kango.storage.getItem('metaTime');
+		      for(var k in rows){
+			  key = rows[k].key.split('-')[0]
+			  switch(rows[k].value.status = 'D'){
+			  case 'D':
+			      domain.removeItem(key);
+			      break;
+			  case 'A':
+			      domain.setItem(key,rows[k].value);
+			      break;
+			  default:
+			      continue;
+			  }
+			  if(rows[k].value.date_modified > maxTime)
+			      maxTime = rows[k].value.date_modified;
+		      }
+		      kango.storage.setItem('metaTime',maxTime);
+		  });
+    },
+    lookupDomain: function(rdata){
+	console.log(rdata);
+	var d = this.getDomain(rdata.key);
+	if(d){
+	    return this.domain.getItem(d);
+	}
+    },
+    getDomain: function(d){
+	var m;
+	if(m = d.match(/^[^\/]+\.[^\/]+/)){
+	   return m[0];
+	}
     }
-
+    
 };
 
 var extension = new MyExtension();
