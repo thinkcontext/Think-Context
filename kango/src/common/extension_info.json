@@ -1,5 +1,5 @@
 {
-    "content_scripts": ["reverse.js"], 
+    "content_scripts": ["reverse.js","iframe.js"], 
     "description": "Extension description", 
     "creator": "thinkcontext", 
     "background_scripts": [

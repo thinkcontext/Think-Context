@@ -52,13 +52,13 @@ function MyExtension() {
 MyExtension.prototype = {
     _onCommand: function(){ console.log('foo');},
     loadVerbs: function(){
-	this.verbs = kango.storage.getItem('verbs').verbs;
+//	this.verbs = kango.storage.getItem('verbs').verbs;
     },
 
     load: function(){
 	var self = this;
 	console.log('load');
-	$.getJSON(this.urlPrefix + '/load'
+	$.getJSON(this.urlPrefix + '/loadByCampaign'
 		  ,function(data){
 		      var k, rows = data.rows;
 		      if(rows.length > 0){
@@ -76,7 +76,7 @@ MyExtension.prototype = {
     },
     update: function(){
 	var d = new Date, self = this;
-	$.getJSON(this.urlPrefix + '/update?startkey="' + kango.storage.getItem('metaTime') + '"&endkey="'+ d.toJSON()+'"'
+	$.getJSON(this.urlPrefix + '/updatebycampaign?startkey="' + kango.storage.getItem('metaTime') + '"&endkey="'+ d.toJSON()+'"'
 		  ,function(data){
 		      var k, rows = data.rows, key;
 		      var maxTime = kango.storage.getItem('metaTime');
@@ -102,14 +102,16 @@ MyExtension.prototype = {
     lookupDomain: function(rdata){
 	console.log(rdata);
 	var d = this.getDomain(rdata.key);
+	console.log(d);
 	if(d){
 	    return this.domain.getItem(d);
 	}
     },
     getDomain: function(d){
-	var m;
-	if(m = d.match(/^[^\/]+\.[^\/]+/)){
-	   return m[0];
+	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)/);
+	console.log(d,m);
+	if(m.length == 3){
+	   return m[2];
 	}
     }
     

@@ -1,7 +1,8 @@
 {
   "kango_version": "1.2.4 744e69cf4136", 
   "content_scripts": [
-    "reverse.js"
+    "reverse.js", 
+    "iframe.js"
   ], 
   "description": "Extension description", 
   "creator": "thinkcontext", 

@@ -6,9 +6,22 @@
 // @require utils.js
 // ==/UserScript==
 console.log('reverse');
-//kango.dispatchMessage('content2background','foo');
+
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
     console.log('here');
+    kango.addMessageListener('background2content', function(event) {
+        // event.data - the data sent with message
+        console.log('Background script says: ');
+	console.log(event.data);
+    });
+
+    tc.sendMessage(
+	{kind: 'domain'
+	 , pop: 1
+	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
+	});
+
+
     $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	function(){
 	    console.log(this);
