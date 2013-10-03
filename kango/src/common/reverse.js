@@ -8,7 +8,8 @@
 console.log('reverse');
 
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
-    console.log('here');
+    tc.reverse = {};
+    tc.reverse.revGotResponse = 0;
     kango.addMessageListener('background2content', function(event) {
         // event.data - the data sent with message
         console.log('Background script says: ');
@@ -20,6 +21,15 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	 , pop: 1
 	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
+	
+    $("link[rel='canonical']")
+	.map(function(){
+	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
+		tc.sendMessage(
+		    {kind: 'reverse'
+		     , key: tc.sigURL(this.href)
+		    });
+	    }});
 
 
     $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(

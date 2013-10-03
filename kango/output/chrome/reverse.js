@@ -20,6 +20,15 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	 , pop: 1
 	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
+	
+    $("link[rel='canonical']")
+	.map(function(){
+	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
+		tc.sendMessage(
+		    {kind: 'reverse'
+		     , key: tc.sigURL(this.href)
+		    });
+	    }});
 
 
     $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(

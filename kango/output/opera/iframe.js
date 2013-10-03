@@ -9,6 +9,7 @@
 // @require jquery-1.10.2.min.js
 // @require utils.js
 // ==/UserScript==
+if (window.frameElement !== null){
 console.log("iframe");
 console.log(document.domain);
 tc.iframe = {};
@@ -59,4 +60,5 @@ if(document.domain.match('adsonar.com')){
 	    console.log("overture: " + this.textContent);
 	    tc.iframe.sendReq(this);
 	});
+}
 }
