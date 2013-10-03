@@ -9,6 +9,7 @@
   "developer_id": "YOUR_SAFARI_DEVELOPER_ID", 
   "background_scripts": [
     "jquery-1.10.2.min.js", 
+    "utils.js", 
     "main.js"
   ], 
   "homepage_url": "http://thinkcontext.org/", 

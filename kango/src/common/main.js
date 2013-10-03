@@ -34,11 +34,14 @@ function MyExtension() {
     // open for business, listen for requests
     kango.addMessageListener('content2background'
 			     , function(event){
-				 var data = event.data;
+				 var data = event.data, reply;
+				 console.log(event);
 				 console.log(data);
 				 switch(data.kind){
 				 case 'domain':
-				     console.log(self.lookupDomain(data));
+				     reply = self.lookupDomain(data);
+				     console.log(reply);
+				     event.target.dispatchMessage('background2content',reply);
 				     break;
 				 }
 			     });
@@ -46,7 +49,6 @@ function MyExtension() {
     kango.ui.browserButton.addEventListener(kango.ui.browserButton.event.COMMAND, function() {
 	self._onCommand();
     });
-    
 }
 
 MyExtension.prototype = {
