@@ -8,11 +8,18 @@
 console.log('reverse');
 
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
-    console.log('here');
+    tc.reverse = {};
+    tc.reverse.revGotResponse = 0;
     kango.addMessageListener('background2content', function(event) {
         // event.data - the data sent with message
         console.log('Background script says: ');
-	console.log(event.data);
+	console.log(event);
+	if(event.data.request.pop == 1){
+	    tc.resultPop(event.data);
+	} else {
+	    $("[sid=" + event.data.sid +"]").map(function(){
+		tc.resultPrev(this,event.data.key,event.data.data);});
+	}
     });
 
     tc.sendMessage(
@@ -25,8 +32,9 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	.map(function(){
 	    if(tc.sigURL(document.baseURI) != tc.sigURL(this.href)){
 		tc.sendMessage(
-		    {kind: 'reverse'
-		     , key: tc.sigURL(this.href)
+		    {kind: 'domain'
+		     , key: tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'')
+		     , pop: 1
 		    });
 	    }});
 

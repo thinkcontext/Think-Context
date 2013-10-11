@@ -41,8 +41,10 @@ function MyExtension() {
 				 case 'domain':
 				     reply = self.lookupDomain(data);
 				     console.log(reply);
-				     if(reply)
+				     if(reply){
+					 reply.request = data;
 					 event.target.dispatchMessage('background2content',reply);
+				     }
 				     break;
 				 }
 			     });
