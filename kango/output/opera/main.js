@@ -24,9 +24,47 @@ function MyExtension() {
     this.urlPrefix = 'http://localhost:5984/domain/_design/think/_view';
 
     this.campaigns = ['rushBoycott','bcorp']; // make this a setting
-    this.verbs = {}; // preload templates, store as single document
-    this.loadVerbs();
+    this.templates = 	this.templates = {
+	    rushBoycott:  { 
+		template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
+		, title: "Rush Limbaugh Advertiser"
+		, icon: 'stopRush'
+		, tcstat: 'grb'
+	    }
+	    , greenResult: {
+		title: 'Member of the Green Business Network'
+		, icon: 'greenG'
+		, tcstat: 'bsg'
+		, template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
+	    }
 
+	    , hotelsafe: {
+		title: 'Patronize'
+		, icon: 'greenCheck'
+		, tcstat: 'bsp'
+		, template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
+	    }
+	    , hotelboycott: {
+		title: 'Boycott'
+		, icon: 'redCirc'
+		, tcstat: 'bsp'
+		, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+	    }
+	    , hotelrisky: {
+		title: 'Risky'
+		, icon: 'infoI'
+		, tcstat: 'bsp'
+		, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
+	    }
+	    , hotelstrike: {
+		title: 'Strike'
+		, icon: 'redCirc'
+		, tcstat: 'bsp'
+		, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
+	    }
+	}; // preload templates, store as single document
+
+    var templates = this.templates;
     this.domain = new Store('domain');
 
     this.load();
@@ -36,13 +74,19 @@ function MyExtension() {
 			     , function(event){
 				 var data = event.data, reply;
 				 console.log(event);
-				 console.log(data);
+				 console.log(this);
 				 switch(data.kind){
 				 case 'domain':
 				     reply = self.lookupDomain(data);
 				     console.log(reply);
+				     
 				     if(reply){
 					 reply.request = data;
+					 reply.templates = {};
+					 for(var c in reply.campaigns){
+					     console.log(c);
+					     reply.templates[c] = templates[c];
+					 }
 					 event.target.dispatchMessage('background2content',reply);
 				     }
 				     break;
@@ -56,8 +100,8 @@ function MyExtension() {
 
 MyExtension.prototype = {
     _onCommand: function(){ console.log('foo');},
-    loadVerbs: function(){
-//	this.verbs = kango.storage.getItem('verbs').verbs;
+    loadTemplates: function(){
+//	this.templates = kango.storage.getItem('templates').templates;
     },
 
     load: function(){
@@ -75,7 +119,7 @@ MyExtension.prototype = {
 				  maxTime = rows[k].value.date_added;
 			  }
 			  kango.storage.setItem('metaTime',maxTime);
-			  self.loadVerbs();
+			  self.loadTemplates();
 		      }
 		  });
     },
@@ -101,7 +145,7 @@ MyExtension.prototype = {
 			      maxTime = rows[k].value.date_modified;
 		      }
 		      kango.storage.setItem('metaTime',maxTime);
-		      self.loadVerbs();		      
+		      self.loadTemplates();		      
 		  });
     },
     lookupDomain: function(rdata){
@@ -123,3 +167,4 @@ MyExtension.prototype = {
 };
 
 var extension = new MyExtension();
+

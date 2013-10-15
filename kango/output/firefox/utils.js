@@ -245,19 +245,21 @@ tc.googlePlaces = function(request){
     }
 }
 
-tc.resultPop = function(request){
-    var data = request.data;
-    var detail = JSON.parse(data.data);
-    var rdc = JSON.parse(data.template_data);
-    r = tc.random();
-    detail.did = 'd'+r;
-    detail.r = r;
-    detail.key = request.data.key;
-    detail.url = data.url;
+tc.resultPop = function(reply){
+    console.log(reply);
+    var campaigns = reply.campaigns;
+    var html='';
+    var e;
+    for(var c in campaigns){
+	e = new EJS({string: reply['templates'][c]});
+	console.log(e);
+	html += e.render(campaigns[c]);
+	console.log(c,html);
+    }
 
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r,detail);
-    tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
+    r = tc.random();
+    var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
+    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,'changeme','result');    
 }
 
 tc.resultPrev = function(n,key,data){
