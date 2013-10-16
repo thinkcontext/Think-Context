@@ -20,6 +20,12 @@ tc.iframe.sendReq = function(j){
      		    , 'key': tc.sigURL(j.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
     
 };
+tc.registerResponse('link',
+		    function(request){
+			$("[sid=" + request.sid +"]").map(function(){
+			    tc.resultPrev(this,request.key,request.data);});
+		    }
+		   );
 
 if(document.domain.match('adsonar.com')){
     $("p.lnk a").not('a[sid]').map(

@@ -73,8 +73,6 @@ function MyExtension() {
     kango.addMessageListener('content2background'
 			     , function(event){
 				 var data = event.data, reply;
-				 console.log(event);
-				 console.log(this);
 				 switch(data.kind){
 				 case 'domain':
 				     reply = self.lookupDomain(data);
@@ -160,7 +158,7 @@ MyExtension.prototype = {
 	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)/);
 	console.log(d,m);
 	if(m.length == 3){
-	   return m[2];
+	   return m[2].toLowerCase();
 	}
     }
     

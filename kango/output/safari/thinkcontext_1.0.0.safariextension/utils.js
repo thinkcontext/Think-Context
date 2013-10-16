@@ -1,6 +1,5 @@
 tc = {};
 
-tc.dialogs = [];
 tc.responses = {};
 tc.popD = null;
 
@@ -198,7 +197,6 @@ tc.iconDialog = function(title,body,iconId){
 	tc.sendRequest({'kind': 'sendstat'
 	 		, 'key': this.attributes['tcstat'].value});
     });
-    tc.dialogs.push(d);
 }
 
 tc.intersect_safe = function(a, b)
@@ -225,12 +223,6 @@ tc.onResponse = function(request){
     tc.responses[request.kind](request);
 }
 
-tc.closeAllDialogs = function(){
-    for(var d in tc.dialogs){
-	tc.dialogs[d].dialog('close');
-    }
-}
-
 tc.googlePlaces = function(request){ 
     var data = request.data;
     var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
@@ -247,14 +239,10 @@ tc.googlePlaces = function(request){
 
 tc.resultPop = function(reply){
     console.log(reply);
-    var campaigns = reply.campaigns;
-    var html='';
-    var e;
+    var campaigns = reply.campaigns,html,e,template;
     for(var c in campaigns){
-	e = new EJS({string: reply['templates'][c]});
-	console.log(e);
-	html += e.render(campaigns[c]);
-	console.log(c,html);
+	template = reply['templates'][c]['template'];
+	html += new EJS({text: template}).render(campaigns[c]);
     }
 
     r = tc.random();
