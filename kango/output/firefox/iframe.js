@@ -15,11 +15,20 @@ tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
     j.setAttribute("sid",sid);
-    tc.sendMessage({'kind': 'domain'
-     		    , 'sid': sid
-     		    , 'key': tc.sigURL(j.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
+    tc.sendMessage({kind: 'domain'
+		    , source: 'iframe'
+     		    , sid: sid
+     		    , key: tc.sigURL(j.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
     
 };
+tc.registerResponse('iframe',
+		    function(request){
+			console.log("iframe got reply");
+			console.log(request);
+			$("[sid=" + request.sid +"]").map(function(){
+			    tc.resultPrev(this,request.key,request.data);});
+		    }
+		   );
 
 if(document.domain.match('adsonar.com')){
     $("p.lnk a").not('a[sid]').map(

@@ -247,25 +247,23 @@ tc.resultPop = function(reply){
 
     r = tc.random();
     var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
-    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,'changeme','result');    
+    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,'changeme','result');   
 }
 
-tc.resultPrev = function(n,key,data){
-    var detail = JSON.parse(data.data);
-    var rdc = JSON.parse(data.template_data);
+tc.resultPrev = function(n,reply){
+    console.log(reply);
+    var campaigns = reply.campaigns,html,e,template;
+    for(var c in campaigns){
+	template = reply['templates'][c]['template'];
+	html += new EJS({text: template}).render(campaigns[c]);
+    }
+
     r = tc.random();
-    detail.did = 'd'+r;
-    detail.r = r;
-    detail.key = key;
-    detail.url = data.url;
-
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r,detail);
-
+    var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
     tc.insertPrev(n
-		  , rdc.icon
+		  , 'changeme'
 		  , r
-		  , rdc.title
+		  , 'changeme'
 		  , d
 		 );
 }

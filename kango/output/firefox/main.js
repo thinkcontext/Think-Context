@@ -67,14 +67,12 @@ function MyExtension() {
     var templates = this.templates;
     this.domain = new Store('domain');
 
-    this.load();
+//    this.load();
 
     // open for business, listen for requests
     kango.addMessageListener('content2background'
 			     , function(event){
 				 var data = event.data, reply;
-				 console.log(event);
-				 console.log(this);
 				 switch(data.kind){
 				 case 'domain':
 				     reply = self.lookupDomain(data);
@@ -87,7 +85,7 @@ function MyExtension() {
 					     console.log(c);
 					     reply.templates[c] = templates[c];
 					 }
-					 event.target.dispatchMessage('background2content',reply);
+					 event.target.dispatchMessage(data.source,reply);
 				     }
 				     break;
 				 }
@@ -160,7 +158,7 @@ MyExtension.prototype = {
 	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)/);
 	console.log(d,m);
 	if(m.length == 3){
-	   return m[2];
+	   return m[2].toLowerCase();
 	}
     }
     
