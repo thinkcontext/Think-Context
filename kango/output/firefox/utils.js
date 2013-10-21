@@ -239,29 +239,33 @@ tc.googlePlaces = function(request){
 
 tc.resultPop = function(reply){
     console.log(reply);
-    var campaigns = reply.campaigns,html,e,template;
+    var campaigns = reply.campaigns,html,e,template,icon;
     for(var c in campaigns){
 	template = reply['templates'][c]['template'];
+	if(!icon)
+	    icon = reply['templates'][c]['icon'];
 	html += new EJS({text: template}).render(campaigns[c]);
     }
 
     r = tc.random();
     var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
-    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,'changeme','result');   
+    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,icon,'result');   
 }
 
 tc.resultPrev = function(n,reply){
     console.log(reply);
-    var campaigns = reply.campaigns,html,e,template;
+    var campaigns = reply.campaigns,html,e,template,icon;
     for(var c in campaigns){
 	template = reply['templates'][c]['template'];
+	if(!icon)
+	    icon = reply['templates'][c]['icon'];
 	html += new EJS({text: template}).render(campaigns[c]);
     }
 
     r = tc.random();
     var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
     tc.insertPrev(n
-		  , 'changeme'
+		  , icon
 		  , r
 		  , 'changeme'
 		  , d
