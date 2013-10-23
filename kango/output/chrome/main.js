@@ -97,8 +97,11 @@ function MyExtension() {
 }
 
 MyExtension.prototype = {
-    _onCommand: function(){ console.log('foo');},
-    loadTemplates: function(){
+    _onCommand: function(){ 
+	console.log('button push');
+	kango.dispatchMessage('buttonPush','foo');
+    }
+    , loadTemplates: function(){
 //	this.templates = kango.storage.getItem('templates').templates;
     },
 

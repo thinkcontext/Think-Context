@@ -12,8 +12,10 @@ tc.registerResponse = function(kind, func){
 }
 
 kango.addMessageListener(
-    'background2content'
+    'buttonPush'
     ,function(event){
+	console.log('buttonPush');
+	console.log(event);
 	var request = event.data;
 	if(request.kind == 'tcPopD')
 	    if(tc.popD.dialog('isOpen')){
