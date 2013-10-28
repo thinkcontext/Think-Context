@@ -2,6 +2,7 @@ tc = {};
 
 tc.responses = {};
 tc.popD = null;
+tc.jqCSS = false;
 
 tc.debug = function(txt){ 
     //console.log(txt); 
@@ -31,12 +32,18 @@ tc.icons = { trackback32: tc.iconDir + "/trackback-32.png"
 	       };
 
 tc.insertPrev = function(n,icon, r,title,theDiv){
+
+    if(!tc.jqCSS){
+	injectJQCSS();
+	tc.jqCSS = true;
+    }
+
     if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	var resDiv = $('<div>'
-		       , { id: r
-			   , subv: true
-			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-	    .append($('<img>', { src: icon}))[0];
+		      , { id: r
+			  , subv: true
+			  , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+		    .append($('<img>', { src: icon}))[0];
 	n.parentNode.insertBefore(resDiv,n);
 	n.style.display = "inline";
 	tc.iconDialog(title,theDiv,r);
@@ -45,7 +52,11 @@ tc.insertPrev = function(n,icon, r,title,theDiv){
 
 tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
     var d;
-    
+    if(!tc.jqCSS){
+	injectJQCSS();
+	tc.jqCSS = true;
+    }
+
     if(tc.popD == null){	
 	d = $('<div>',{id:'tcPopD'})
 	    .append($('<div>',{id:'tcResults'}))
