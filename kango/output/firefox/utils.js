@@ -8,9 +8,14 @@ tc.debug = function(txt){
     //console.log(txt); 
 }
 
-tc.registerResponse = function(kind, func){
-    tc.responses[kind] = func;
-}
+tc.registerResponse = function(type,callback){ tc.responses[type] = callback };
+tc.onResponse = function(event){ 
+    var request = event.data.request;
+    var kind = request.kind;
+    console.log('onResponse',event,kind,request,tc.responses);
+    tc.responses[kind](event.data);
+};
+kango.addMessageListener('content',tc.onResponse);
 
 kango.addMessageListener(
     'buttonPush'
@@ -232,11 +237,9 @@ tc.intersect_safe = function(a, b)
     return result;
 }
 
-tc.onResponse = function(request){
-    tc.responses[request.kind](request);
-}
-
 tc.googlePlaces = function(request){ 
+    console.log('googlePlaces');
+
     var data = request.data;
     var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
     for(var r in data){
@@ -252,7 +255,7 @@ tc.googlePlaces = function(request){
 
 tc.resultPop = function(reply){
     console.log(reply);
-    var campaigns = reply.campaigns,html,e,template,icon;
+    var campaigns = reply.campaigns,html = '',e,template,icon;
     for(var c in campaigns){
 	template = reply['templates'][c]['template'];
 	if(!icon)
@@ -266,8 +269,9 @@ tc.resultPop = function(reply){
 }
 
 tc.resultPrev = function(n,reply){
+    console.log('resultPrev');
     console.log(reply);
-    var campaigns = reply.campaigns,html,e,template,icon;
+    var campaigns = reply.campaigns,html='',e,template,icon;
     for(var c in campaigns){
 	template = reply['templates'][c]['template'];
 	if(!icon)

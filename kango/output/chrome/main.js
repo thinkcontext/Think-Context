@@ -73,6 +73,7 @@ function MyExtension() {
     kango.addMessageListener('content2background'
 			     , function(event){
 				 var data = event.data, reply;
+				 console.log(data.kind);
 				 switch(data.kind){
 				 case 'domain':
 				     reply = self.lookupDomain(data);
@@ -85,7 +86,7 @@ function MyExtension() {
 					     console.log(c);
 					     reply.templates[c] = templates[c];
 					 }
-					 event.target.dispatchMessage(data.source,reply);
+					 event.target.dispatchMessage('content',reply);
 				     }
 				     break;
 				 }

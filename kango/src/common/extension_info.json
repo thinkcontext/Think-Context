@@ -1,5 +1,10 @@
 {
-    "content_scripts": ["reverse.js","iframe.js"], 
+    "content_scripts": ["reverse.js"
+			,"iframe.js"
+			,"google-search.js"
+			,"bing-search.js"
+			,"yahoo-search.js"
+		       ], 
     "description": "Extension description", 
     "creator": "thinkcontext", 
     "background_scripts": [

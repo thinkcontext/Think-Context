@@ -7,6 +7,8 @@
 // @include *.overture.com/*
 // @all-frames true
 // @require jquery-1.10.2.min.js
+// @require jquery-ui-1.9.2.custom.min.js
+// @require jquery-ui.css.js
 // @require utils.js
 // ==/UserScript==
 console.log("iframe");

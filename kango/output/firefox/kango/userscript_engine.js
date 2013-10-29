@@ -13,4 +13,4 @@ if(null!=e)switch(c=e[1],e=e[2].replace(/\n|\r/g,""),c){case "include":case "exc
 
 
 
-kango.addEventListener(kango.event.READY,function(){kango.browser.addEventListener("DOMContentLoaded",function(a){var b=new kango.UserscriptEngineClient,c=a.window==a.window.top;b.run(a.window,"document-start",c);b.run(a.window,"document-end",c)})});
+kango.addEventListener(kango.event.READY,function(){var b=new kango.UserscriptEngineClient;kango.browser.addEventListener("DocumentLoaded",function(a){a=a.window;b.run(a,"document-end",a==a.top)});kango.browser.addEventListener("DocumentInserted",function(a){a=a.window;b.run(a,"document-start",a==a.top)})});
