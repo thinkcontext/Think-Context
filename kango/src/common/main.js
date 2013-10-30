@@ -66,7 +66,7 @@ function MyExtension() {
 
     var templates = this.templates;
     this.domain = new Store('domain');
-
+    this.googleplus = new Store('googleplus');
 //    this.load();
 
     // open for business, listen for requests
@@ -76,6 +76,7 @@ function MyExtension() {
 				 console.log(data.kind);
 				 switch(data.kind){
 				 case 'domain':
+
 				     reply = self.lookupDomain(data);
 				     console.log(reply);
 				     
@@ -84,9 +85,24 @@ function MyExtension() {
 					 reply.templates = {};
 					 for(var c in reply.campaigns){
 					     console.log(c);
+					     
 					     reply.templates[c] = templates[c];
 					 }
 					 event.target.dispatchMessage('content',reply);
+				     }
+				     break;
+				 case 'googleplus':
+				     reply = self.lookupGooglePlus(data);
+				     console.log(reply);
+				     if(reply){
+					 reply.request = data;
+					 reply.templates = {};
+					 for(var c in reply.campaigns){
+					     console.log(c);
+					     reply.templates[c] = templates[c];
+					 }
+					 event.target.dispatchMessage('content',reply);
+
 				     }
 				     break;
 				 }
@@ -150,19 +166,22 @@ MyExtension.prototype = {
 		      self.loadTemplates();		      
 		  });
     },
-    lookupDomain: function(rdata){
+    lookupDomain: function(d){
+	    return this.domain.getItem(d);
+    },
+    lookupGooglePlus: function(rdata){
 	console.log(rdata);
-	var d = this.getDomain(rdata.key);
+	var d = this.getGooglePlus(rdata.key);
 	console.log(d);
 	if(d){
-	    return this.domain.getItem(d);
+	    return this.GooglePlus.getItem(d);
 	}
     },
-    getDomain: function(d){
-	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)/);
+    getDP: function(d){
+	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)(\/.*$)?/);
 	console.log(d,m);
-	if(m.length == 3){
-	   return m[2].toLowerCase();
+	if(m.length >= 3){
+	   return [m[2].toLowerCase(),m[3]];
 	}
     }
     

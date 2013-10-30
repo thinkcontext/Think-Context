@@ -4,6 +4,7 @@
 // @include https://*.search.yahoo.com/*
 // @include http://search.yahoo.com/*
 // @include https://search.yahoo.com/*
+// goodsearch needs all-frames, puts yahoo in an iframe
 // @all-frames true
 // @require jquery-1.10.2.min.js
 // @require jquery-ui-1.9.2.custom.min.js

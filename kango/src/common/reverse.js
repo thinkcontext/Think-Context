@@ -26,15 +26,16 @@ console.log('reverse');
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
     tc.reverse = {};
     tc.reverse.revGotResponse = 0;
-    kango.addMessageListener('reverse', function(event) {
+    tc.registerResponse('domain', function(data) {
         // event.data - the data sent with message
         console.log('Background script says: ');
-	console.log(event);
-	if(event.data.request.pop == 1){
-	    tc.resultPop(event.data);
+	console.log(data);
+	if(data.request.pop == 1){
+	    tc.resultPop(data);
 	} else {
-	    $("[sid=" + event.data.request.sid +"]").map(function(){
-		tc.resultPrev(this,event.data);});
+	    var sid = data.request.sid;
+	    $("[sid=" + sid +"]").map(function(){
+		tc.resultPrev(this,data);});
 	}
     });
 

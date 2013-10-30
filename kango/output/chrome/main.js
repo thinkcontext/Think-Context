@@ -66,7 +66,7 @@ function MyExtension() {
 
     var templates = this.templates;
     this.domain = new Store('domain');
-
+    this.googleplus = new Store('googleplus');
 //    this.load();
 
     // open for business, listen for requests
@@ -84,9 +84,24 @@ function MyExtension() {
 					 reply.templates = {};
 					 for(var c in reply.campaigns){
 					     console.log(c);
+					     
 					     reply.templates[c] = templates[c];
 					 }
 					 event.target.dispatchMessage('content',reply);
+				     }
+				     break;
+				 case 'googleplus':
+				     reply = self.lookupGooglePlus(data);
+				     console.log(reply);
+				     if(reply){
+					 reply.request = data;
+					 reply.templates = {};
+					 for(var c in reply.campaigns){
+					     console.log(c);
+					     reply.templates[c] = templates[c];
+					 }
+					 event.target.dispatchMessage('content',reply);
+
 				     }
 				     break;
 				 }
@@ -152,17 +167,30 @@ MyExtension.prototype = {
     },
     lookupDomain: function(rdata){
 	console.log(rdata);
-	var d = this.getDomain(rdata.key);
-	console.log(d);
+	var d,p,dp;
+	if(dp = this.getDP(rdata.key)){
+	    d = dp[0];
+	    p = dp[1];
+	}
+	
+	console.log(d,p);
 	if(d){
 	    return this.domain.getItem(d);
 	}
     },
-    getDomain: function(d){
-	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)/);
+    lookupGooglePlus: function(rdata){
+	console.log(rdata);
+	var d = this.getGooglePlus(rdata.key);
+	console.log(d);
+	if(d){
+	    return this.GooglePlus.getItem(d);
+	}
+    },
+    getDP: function(d){
+	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)(\/.*$)?/);
 	console.log(d,m);
-	if(m.length == 3){
-	   return m[2].toLowerCase();
+	if(m.length >= 3){
+	   return [m[2].toLowerCase(),m[3]];
 	}
     }
     
