@@ -255,11 +255,12 @@ tc.googlePlaces = function(request){
 
 tc.resultPop = function(reply){
     console.log(reply);
-    var campaigns = reply.campaigns,html = '',e,template,icon;
+    var campaigns = reply.campaigns,html = '',e,template,icon,action;
     for(var c in campaigns){
-	template = reply['templates'][c]['template'];
+	action = campaigns[c].data.action;
+	template = reply['templates'][action]['template'];
 	if(!icon)
-	    icon = reply['templates'][c]['icon'];
+	    icon = reply['templates'][action]['icon'];
 	html += new EJS({text: template}).render(campaigns[c]);
     }
 
@@ -271,11 +272,12 @@ tc.resultPop = function(reply){
 tc.resultPrev = function(n,reply){
     console.log('resultPrev');
     console.log(reply);
-    var campaigns = reply.campaigns,html='',e,template,icon;
+    var campaigns = reply.campaigns,html='',e,template,icon,action;
     for(var c in campaigns){
-	template = reply['templates'][c]['template'];
+	action = campaigns[c].data.action;
+	template = reply['templates'][action]['template'];
 	if(!icon)
-	    icon = reply['templates'][c]['icon'];
+	    icon = reply['templates'][action]['icon'];
 	html += new EJS({text: template}).render(campaigns[c]);
     }
 
