@@ -261,7 +261,7 @@ tc.resultPop = function(reply){
 	template = reply['templates'][action]['template'];
 	if(!icon)
 	    icon = reply['templates'][action]['icon'];
-	html += new EJS({text: template}).render(campaigns[c]);
+	html += new EJS({text: template}).render(campaigns[c].data);
     }
 
     r = tc.random();
@@ -278,7 +278,7 @@ tc.resultPrev = function(n,reply){
 	template = reply['templates'][action]['template'];
 	if(!icon)
 	    icon = reply['templates'][action]['icon'];
-	html += new EJS({text: template}).render(campaigns[c]);
+	html += new EJS({text: template}).render(campaigns[c].data);
     }
 
     r = tc.random();
