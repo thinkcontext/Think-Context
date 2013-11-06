@@ -78,6 +78,9 @@ function MyExtension() {
 				 case 'domain':
 
 				     var dp = self.getDP(data.key), domain = dp[0], path = dp[1];
+				     if(!path){
+					 path = '/';
+				     }
 				     console.log(dp);
 				     
 				     reply = self.lookupDomain(domain);

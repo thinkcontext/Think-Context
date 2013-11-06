@@ -60,73 +60,68 @@ tc.googleSearch = {
     ,  examineResults: function(){
 	// place page in an lclbox brief results
 	// eg "westin dc"
-	// var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
-	//     function(){
-	// 	this.setAttribute('tcPlace','tcPlace');
-    	// 	if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
-	// 	    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	// 	    cid_res = cid_regex.exec(this.href);
-	// 	    if(cid_res[1]){
-	// 		var cid = cid_res[1];
-	// 		//var sid = "gs" + tc.random();
-	// 		//this.parentNode.children[0].setAttribute("sid",sid);
-	// 		return [ {cid:cid} ];
-	// 	    }
-	// 	}
-	//     }
-	// );
+	var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
+	    function(){
+		this.setAttribute('tcPlace','tcPlace');
+    		if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
+		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    		    cid_res = cid_regex.exec(this.href);
+		    if(cid_res[1]){
+			var cid = cid_res[1];
+			var sid = "gs" + tc.random();
+			this.parentNode.children[0].setAttribute("sid",sid);
+			tc.sendMessage({kind: 'googleplus'
+					, source: 'google-search'
+					, subtype: 'gs-cid'
+					, key: cid
+				       });
+		    }
+		}
+	    }
+	);
 	
-	// if(urlmap.length > 0){
-	//     tc.sendMessage({'kind': 'places'
-	// 		    ,'type': 'google'
-	// 		    ,'subtype': 'gs-cid'
-	// 		    , 'data': jQuery.makeArray(urlmap)
-	// 		   });
-	// }
-
+	// place page in an lclbox long result
+	// eg "hay adams hotel"
+	$("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
+	    function(){
+		this.setAttribute('tcPlace','tcPlace');
+		var target = this.parentNode.parentNode.parentNode.children[0].children[0];
+    		if(target && target.getAttribute && !target.getAttribute('subv')){
+		    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    		    cid_res = cid_regex.exec(this.href);
+		    if(cid_res[1]){
+			var cid = cid_res[1];
+			var sid = "gs" + tc.random();
+			target.setAttribute("sid",sid);
+			tc.sendMessage({kind: 'googleplus'
+					, source: 'google-search'
+					, subtype: 'gs-lcll'
+					, sid: sid
+					, key: cid  });
+		    }
+		}
+	    }
+	);
 	
-	// // place page in an lclbox long result
-	// // eg "hay adams hotel"
-	// $("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
-	//     function(){
-	// 	this.setAttribute('tcPlace','tcPlace');
-	// 	var target = this.parentNode.parentNode.parentNode.children[0].children[0];
-    	// 	if(target && target.getAttribute && !target.getAttribute('subv')){
-	// 	    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	// 	    cid_res = cid_regex.exec(this.href);
-	// 	    if(cid_res[1]){
-	// 		var cid = cid_res[1];
-	// 		var sid = "gs" + tc.random();
-	// 		target.setAttribute("sid",sid);
-	// 		tc.sendMessage({'kind': 'place'
-	// 				, 'type': 'google'
-	// 				,'subtype': 'gs-lcll'
-	// 				, 'sid': sid
-	// 				, 'key': cid  });
-	// 	    }
-	// 	}
-	//     }
-	// );
-	
-	// // place not in an lclbox
-	// // boston hotels
-	// $("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
-	//     function(){
-	// 	this.setAttribute('tcPlace','tcPlace');
-	// 	var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	// 	cid_res = cid_regex.exec(this.href);
-	// 	if(cid_res[1]){
-	// 	    var cid = cid_res[1];
-	// 	    var sid = "gs" + tc.random();
-	// 	    this.setAttribute("sid",sid);
-	// 	    tc.sendMessage({ 'kind': 'place'
-	// 			     ,'subtype': 'gs-ptable'
-	// 			     , 'sid': sid
-	// 			     , 'type': 'google'
-	// 			     , 'key': cid  });
-	// 	}
-	//     }
-	// );
+	// place not in an lclbox
+	// boston hotels
+	$("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
+	    function(){
+		this.setAttribute('tcPlace','tcPlace');
+		var cid_regex = new RegExp('plus.google.com/([0-9]+)');
+    		cid_res = cid_regex.exec(this.href);
+		if(cid_res[1]){
+		    var cid = cid_res[1];
+		    var sid = "gs" + tc.random();
+		    this.setAttribute("sid",sid);
+		    tc.sendMessage({kind: 'googleplus'
+				    , source: 'google-search'
+				    , subtype: 'gs-ptable'
+				    , sid: sid
+				    , key: cid  });
+		}
+	    }
+	);
 
 	var linkExam = function(){
 	    this.setAttribute('tcLink','tcLink');
