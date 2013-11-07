@@ -237,22 +237,6 @@ tc.intersect_safe = function(a, b)
     return result;
 }
 
-tc.googlePlaces = function(request){ 
-    console.log('googlePlaces');
-
-    var data = request.data;
-    var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
-    for(var r in data){
-	d = data[r];
-	ra = tc.random();
-	blurb = $("<div>",{id: "d"+ra}).appendTo('body');
-	rdc = JSON.parse(data.template_data);
-	h = new EJS({text: rdc.template}).render();
-	$("#d"+ra).append(h);
-	tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
-    }
-}
-
 tc.resultPop = function(reply){
     console.log(reply);
     var campaigns = reply.campaigns,html = '',e,template,icon,action;
@@ -290,21 +274,6 @@ tc.resultPrev = function(n,reply){
 		  , d
 		 );
 }
-
-tc.place = function(n, cid,data){
-    var rdc = JSON.parse(data.template_data);
-    r = tc.random();
-    var d = $("<div>",{id: "d"+r}).appendTo('body');
-    new EJS({text: rdc.template}).update("d"+r);
-    
-    tc.insertPrev(n
-		  , rdc.icon
-		  , r
-		  , rdc.title
-		  , d
-		 );
-}
-
 
 tc.random = function(){return Math.floor(Math.random() * 100000);}
 tc.sendMessage = function(msg){
