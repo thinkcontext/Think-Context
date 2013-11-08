@@ -11,6 +11,7 @@ Store.prototype = {
     },
 
     getItem: function(key){
+	console.log('getItem',this.name,key);
 	return kango.storage.getItem(this.name + '-' + key);
     },
     removeItem: function(key){
@@ -70,25 +71,46 @@ function MyExtension() {
 	}; // preload templates, store as single document
     
     var templates = this.templates;
-    this.domain = new Store('domain');
-    this.googleplus = new Store('googleplus');
+    var kinds = { domain: new Store('domain')
+		   , googleplus: new Store('googleplus')
+		   , glatlng: new Store('glatlng')
+		   , yelp: new Store('yelp')
+		   , tripadvisor: new Store('tripadvisor')
+		   , hcom: new Store('hcom')
+		   , facebook: new Store('facebook')
+		   , gcid: new Store('gcid')
+		};
 //    this.load();
+
+
+    function do_reply(data,event){
+	var reply, kind = data.kind, key = data.key;
+	console.log('do_reply',kind,key);
+	reply = kinds[kind].getItem(key);
+	console.log(reply);
+	if(reply){
+	    reply.request = data;
+	    reply.templates = {};
+	    for(var c in reply.campaigns){
+		console.log(c);
+		reply.templates[c] = templates[c];
+	    }
+	    event.target.dispatchMessage('content',reply);
+	}
+    }
 
     // open for business, listen for requests
     kango.addMessageListener('content2background'
 			     , function(event){
 				 var data = event.data, reply;
 				 console.log(data.kind);
-				 switch(data.kind){
-				 case 'domain':
-
+				 if(data.kind == 'domain'){
 				     var dp = self.getDP(data.key), domain = dp[0], path = dp[1];
 				     if(!path){
 					 path = '/';
 				     }
 				     console.log(dp);
-				     
-				     reply = self.lookupDomain(domain);
+				     reply = kinds['domain'].getItem(domain);
 				     console.log(reply);
 				     
 				     if(reply){
@@ -112,21 +134,8 @@ function MyExtension() {
 					 if(pathmatch)
 					     event.target.dispatchMessage('content',reply);
 				     }
-				     break;
-				 case 'googleplus':
-				     reply = self.lookupGooglePlus(data);
-				     console.log(reply);
-				     if(reply){
-					 reply.request = data;
-					 reply.templates = {};
-					 for(var c in reply.campaigns){
-					     console.log(c);
-					     reply.templates[c] = templates[c];
-					 }
-					 event.target.dispatchMessage('content',reply);
-
-				     }
-				     break;
+				 } else {
+				     do_reply(data,event);
 				 }
 			     });
  
@@ -187,17 +196,6 @@ MyExtension.prototype = {
 		      kango.storage.setItem('metaTime',maxTime);
 		      self.loadTemplates();		      
 		  });
-    },
-    lookupDomain: function(d){
-	    return this.domain.getItem(d);
-    },
-    lookupGooglePlus: function(rdata){
-	console.log(rdata);
-	var d = this.getGooglePlus(rdata.key);
-	console.log(d);
-	if(d){
-	    return this.GooglePlus.getItem(d);
-	}
     },
     getDP: function(d){
 	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)(\/.*$)?/);

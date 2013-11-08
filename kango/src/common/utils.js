@@ -15,6 +15,29 @@ tc.onResponse = function(event){
     console.log('onResponse',event,kind,request,tc.responses);
     tc.responses[kind](event.data);
 };
+
+tc.keyMatch = {};
+tc.keyMatch.tripadvisor = function(url){
+    if(m = url.match('tripadvisor\.com/.*(g[0-9]+-d[0-9]+)'))
+	return m[1]
+};
+
+tc.keyMatch.facebook = function(url){
+    if(m = url.match('facebook\.com/([^\?/]+)'))
+    return m[1]
+};
+
+tc.keyMatch.yelp = function(url){
+    if(m = url.match('yelp\.com/biz/([^\?/]+)'))
+    return m[1]
+};
+
+tc.keyMatch.hcom = function(url){
+  if(m = url.match('hotels\.com/ho([0-9]+)/'))
+    return m[1]
+};
+
+
 kango.addMessageListener('content',tc.onResponse);
 
 kango.addMessageListener(
