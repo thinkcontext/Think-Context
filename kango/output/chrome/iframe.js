@@ -23,14 +23,8 @@ tc.iframe.sendReq = function(j){
      		    , key: tc.sigURL(j.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
     
 };
-tc.registerResponse('iframe',
-		    function(request){
-			console.log("iframe got reply");
-			console.log(request);
-			$("[sid=" + request.sid +"]").map(function(){
-			    tc.resultPrev(this,request.key,request.data);});
-		    }
-		   );
+
+tc.registerResponse('domain', tc.resultPrevResponse);
 
 if(document.domain.match('adsonar.com')){
     $("p.lnk a").not('a[sid]').map(

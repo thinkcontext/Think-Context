@@ -13,14 +13,7 @@ console.log('google-search');
 tc.googleSearch = {
     
     doit: function(){
-	
-	tc.registerResponse('domain', function(data){
-	    console.log('domain listener');
-	    var sid = data.request.sid;
-	    $("[sid=" + sid +"]").map(function(){
-		tc.resultPrev(this,data);});
-	});
-	
+		
 	tc.googlePlacesHandler = function(siteid, icon,ra ,title ,blurb){
 	    $("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
 		tc.insertPrev(this,icon,ra,title,blurb);});	    
@@ -39,47 +32,14 @@ tc.googleSearch = {
 
     ,  examineResults: function(){
 
-	var linkExam = function(){
-	    this.setAttribute('tcLink','tcLink');
-	    var sid = "gs" + tc.random();
-	    var url = tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'');
-	    this.setAttribute("sid",sid);
-	    tc.sendMessage({kind: 'domain'
-			    , source: 'google-search'
-     			    , sid: sid
-     			    , key: url });		
-	    if(url.match('tripadvisor\.com')){
-		tc.sendMessage({kind: 'tripadvisor'
-				, source: 'google-search'
-     				, sid: sid
-     				, key: tc.keyMatch.tripadvisor(url) });
-	    } else if(url.match('yelp.com')){
-		tc.sendMessage({kind: 'yelp'
-				, source: 'google-search'
-     				, sid: sid
-     				, key: tc.keyMatch.yelp(url) });	
-	    } else if(url.match('facebook\.com')){
-		tc.sendMessage({kind: 'facebook'
-				, source: 'google-search'
-     				, sid: sid
-     				, key: tc.keyMatch.facebook(url) });	
-	    } else if(url.match('hotels\.com')){
-		tc.sendMessage({kind: 'hcom'
-				, source: 'google-search'
-     				, sid: sid
-     				, key: tc.keyMatch.hcom(url) });	
-	    }
-	};
-
 	//     ad links
-
-	$('div#tvcap h3 a#vpa1, a#vpa2, a#vpa3, a#vpa4').not('[tcLink]').map(linkExam);	
-	$("div#mbEnd a#van1, a#van2, a#van3, a#van4, a#van5, a#van6").not('[tcLink]').map(linkExam);		
-	$("div#bottomads a#vpab1, a#vpab2, a#vpab3, a#vpab4").not('[tcLink]').map(linkExam);
+	
+	tc.searchLinkExam('div#tvcap h3 a#vpa1, a#vpa2, a#vpa3, a#vpa4','google-search');
+	tc.searchLinkExam("div#mbEnd a#van1, a#van2, a#van3, a#van4, a#van5, a#van6",'google-search');
+	tc.searchLinkExam("div#bottomads a#vpab1, a#vpab2, a#vpab3, a#vpab4",'google-search');
 
 	//	result link	
-	$("ol#rso > li.g > div > h3 > a").not('[tcLink]').map(linkExam);
-
+	tc.searchLinkExam("ol#rso > li.g > div > h3 > a",'google-search');
     }
 }
 

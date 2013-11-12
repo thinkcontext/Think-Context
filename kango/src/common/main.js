@@ -83,15 +83,18 @@ function MyExtension() {
 
 
     function do_reply(data,event){
-	var reply, kind = data.kind, key = data.key;
+	var reply, kind = data.kind, key = data.key,action;
 	reply = kinds[kind].getItem(key);
 	if(reply){
+	    console.log(kind,key);
 	    reply.request = data;
 	    reply.templates = {};
 	    for(var c in reply.campaigns){
 		console.log(c);
-		reply.templates[c] = templates[c];
+		action = reply.campaigns[c].action
+		reply.templates[action] = templates[action];
 	    }
+	    console.log(reply)
 	    event.target.dispatchMessage('content',reply);
 	}
     }
@@ -120,8 +123,8 @@ function MyExtension() {
 					     for(var p in reply.campaigns[c]){
 						 console.log(p,path);
 						 if(path.indexOf(p) == 0){
-						     reply.campaigns[c].data = reply.campaigns[c][p];
-						     action = reply.campaigns[c].data.action;
+						     reply.campaigns[c] = reply.campaigns[c][p];
+						     action = reply.campaigns[c].action;
 						     reply.templates[action] = templates[action];					 
 						     console.log(action,templates[action]);
 						     pathmatch = true;
@@ -197,7 +200,6 @@ MyExtension.prototype = {
     },
     getDP: function(d){
 	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)(\/.*$)?/);
-	console.log(d,m);
 	if(m.length >= 3){
 	   return [m[2].toLowerCase(),m[3]];
 	}

@@ -276,16 +276,74 @@ tc.resultPop = function(reply){
     tc.popDialog('changeme', d, 'd'+r,reply.request.pop,icon,'result');   
 }
 
+tc.resultPrevResponse = function(data){
+    var sid = data.request.sid;
+    $("[sid=" + sid +"]").map(function(){
+	tc.resultPrev(this,data);});
+};
+
+tc.searchLinkExam = function(selector,source,placer,getval){
+    tc.registerResponse('domain', tc.resultPrevResponse);
+    tc.registerResponse('yelp', tc.resultPrevResponse);
+    tc.registerResponse('tripadvisor', tc.resultPrevResponse);
+    tc.registerResponse('hcom', tc.resultPrevResponse);
+
+    $(selector).not('[tcLink]').map(
+	function(){
+	    var target = this, href = this.href;
+	    if(getval)
+		href = getval(this);
+	    
+	    console.log('in map',this,href);
+	    if(placer)
+		target = placer(this);
+	    console.log('target',target);
+	    this.setAttribute('tcLink','tcLink');
+	    var sid = "gs" + tc.random();
+	    target.setAttribute("sid",sid);
+	    console.log(this,this.href);
+	    var url = tc.sigURL(href).replace(/https?:\/\//,'').replace(/\/$/,'');
+	    console.log(url);
+	    tc.sendMessage({kind: 'domain'
+			    ,source: source
+     			    , sid: sid
+     			    , key: url});
+	    if(url.match('tripadvisor\.com')){
+		tc.sendMessage({kind: 'tripadvisor'
+				, source: source
+     				, sid: sid
+     				, key: tc.keyMatch.tripadvisor(url) });
+	    } else if(url.match('yelp.com')){
+		tc.sendMessage({kind: 'yelp'
+				, source: source
+     				, sid: sid
+     				, key: tc.keyMatch.yelp(url) });	
+	    } else if(url.match('facebook\.com')){
+		tc.sendMessage({kind: 'facebook'
+				, source: source
+     				, sid: sid
+     				, key: tc.keyMatch.facebook(url) });	
+	    } else if(url.match('://(www\.)?hotels\.com')){
+		tc.sendMessage({kind: 'hcom'
+				, source: source
+     				, sid: sid
+     				, key: tc.keyMatch.hcom(url) });	
+	    }	
+	    console.log('leave map');
+    }
+    );
+};
+
 tc.resultPrev = function(n,reply){
     console.log('resultPrev');
     console.log(reply);
     var campaigns = reply.campaigns,html='',e,template,icon,action;
     for(var c in campaigns){
-	action = campaigns[c].data.action;
+	action = campaigns[c].action;
 	template = reply['templates'][action]['template'];
 	if(!icon)
 	    icon = reply['templates'][action]['icon'];
-	html += new EJS({text: template}).render(campaigns[c].data);
+	html += new EJS({text: template}).render(campaigns[c]);
     }
 
     r = tc.random();
@@ -322,5 +380,6 @@ tc.sigURL = function(url){
     } else {
 	ret = ret.split('?')[0].split('#')[0];	      
     }
+    console.log(ret);
     return ret;
 }

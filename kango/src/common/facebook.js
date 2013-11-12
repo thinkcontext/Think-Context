@@ -1,3 +1,14 @@
+// ==UserScript==
+// @name facebook.js
+// @include http://*.facebook.com/*
+// @include https://*.facebook.com/*
+// @require jquery-1.10.2.min.js
+// @require jquery-ui-1.9.2.custom.min.js
+// @require jquery-ui.css.js
+// @require ejs_production.js
+// @require utils.js
+// ==/UserScript==
+console.log('facebook');
 tc.facebook = {};
 
 tc.registerResponse('domain', function(request){

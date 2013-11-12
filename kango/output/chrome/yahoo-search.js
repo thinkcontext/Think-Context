@@ -15,13 +15,6 @@
 
 console.log('yahoo-search');
 
-tc.registerResponse('domain',
-		    function(data){
-			var sid = data.request.sid;
-			$("[sid=" + sid +"]").map(function(){
-			    tc.resultPrev(this,data);});
-		    });
-
 // result link - could be a place link else look up the result link
 $('div#web > ol h3 > a').map(
     function(){

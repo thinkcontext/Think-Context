@@ -11,7 +11,6 @@ Store.prototype = {
     },
 
     getItem: function(key){
-	console.log('getItem',this.name,key);
 	return kango.storage.getItem(this.name + '-' + key);
     },
     removeItem: function(key){
@@ -84,17 +83,18 @@ function MyExtension() {
 
 
     function do_reply(data,event){
-	var reply, kind = data.kind, key = data.key;
-	console.log('do_reply',kind,key);
+	var reply, kind = data.kind, key = data.key,action;
 	reply = kinds[kind].getItem(key);
-	console.log(reply);
 	if(reply){
+	    console.log(kind,key);
 	    reply.request = data;
 	    reply.templates = {};
 	    for(var c in reply.campaigns){
 		console.log(c);
-		reply.templates[c] = templates[c];
+		action = reply.campaigns[c].action
+		reply.templates[action] = templates[action];
 	    }
+	    console.log(reply)
 	    event.target.dispatchMessage('content',reply);
 	}
     }
@@ -106,6 +106,8 @@ function MyExtension() {
 				 console.log(data.kind);
 				 if(data.kind == 'domain'){
 				     var dp = self.getDP(data.key), domain = dp[0], path = dp[1];
+				     var pathmatch = false,action;
+
 				     if(!path){
 					 path = '/';
 				     }
@@ -116,14 +118,13 @@ function MyExtension() {
 				     if(reply){
 					 reply.request = data;
 					 reply.templates = {};
-					 var pathmatch = false,action;
 					 for(var c in reply.campaigns){
 					     console.log(c);
 					     for(var p in reply.campaigns[c]){
 						 console.log(p,path);
 						 if(path.indexOf(p) == 0){
-						     reply.campaigns[c].data = reply.campaigns[c][p];
-						     action = reply.campaigns[c].data.action;
+						     reply.campaigns[c] = reply.campaigns[c][p];
+						     action = reply.campaigns[c].action;
 						     reply.templates[action] = templates[action];					 
 						     console.log(action,templates[action]);
 						     pathmatch = true;
@@ -199,7 +200,6 @@ MyExtension.prototype = {
     },
     getDP: function(d){
 	var m = d.match(/^(www\.)?([^\/]+\.[^\/]+)(\/.*$)?/);
-	console.log(d,m);
 	if(m.length >= 3){
 	   return [m[2].toLowerCase(),m[3]];
 	}
