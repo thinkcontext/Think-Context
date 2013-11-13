@@ -1,5 +1,7 @@
 // ==UserScript==
 // @name reverse.js
+// @exclude http://*.facebook.com/*
+// @exclude https://*.facebook.com/*
 // @exclude http://*.google.com/*
 // @exclude https://*.google.com/*
 // @exclude http://*.bing.com/*
