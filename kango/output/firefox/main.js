@@ -104,7 +104,7 @@ function MyExtension() {
 			     , function(event){
 				 var data = event.data, reply;
 				 console.log(data.kind);
-				 if(data.kind == 'domain'){
+				 if(data.kind == 'domain' || data.kind == 'domainpop'){
 				     var dp = self.getDP(data.key), domain = dp[0], path = dp[1];
 				     var pathmatch = false,action;
 

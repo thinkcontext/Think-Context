@@ -264,16 +264,16 @@ tc.resultPop = function(reply){
     console.log(reply);
     var campaigns = reply.campaigns,html = '',e,template,icon,action;
     for(var c in campaigns){
-	action = campaigns[c].data.action;
+	action = campaigns[c].action;
 	template = reply['templates'][action]['template'];
 	if(!icon)
 	    icon = reply['templates'][action]['icon'];
-	html += new EJS({text: template}).render(campaigns[c].data);
+	html += new EJS({text: template}).render(campaigns[c]);
     }
 
     r = tc.random();
     var d = $("<div>",{id: "d"+r}).append(html).appendTo('body');
-    tc.popDialog('changeme', d, 'd'+r,reply.request.pop,icon,'result');   
+    tc.popDialog('changeme', d, 'd'+r,1,icon,'result');   
 }
 
 tc.resultPrevResponse = function(data){
