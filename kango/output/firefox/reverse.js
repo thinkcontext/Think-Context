@@ -32,9 +32,7 @@ tc.registerResponse('domain', function(data) {
     $("[sid=" + sid +"]").map(function(){
 	tc.resultPrev(this,data);});
 });
-tc.registerResponse('domainpop', function(data) {
-    tc.resultPop(data);
-});
+tc.registerResponse('domainpop', resultPop);
 
 tc.sendMessage(
     {kind: 'domainpop'

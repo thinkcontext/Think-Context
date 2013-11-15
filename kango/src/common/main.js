@@ -21,10 +21,10 @@ Store.prototype = {
 function MyExtension() {
     var self = this; // why is this here?
     // TODO check first run, update, outdated
-    this.urlPrefix = 'http://localhost:5984/domain/_design/think/_view';
+    this.urlPrefix = 'http://localhost:5984/tc/_design/think/_view';
 
-    this.campaigns = ['rushBoycott','bcorp']; // make this a setting
-    this.templates = 	this.templates = {
+    this.actions = ['bcorp','strike','safe','boycott','risky','rushBoycott','bcorp']; // make this a setting
+    this.templates = {
 	    rushBoycott:  { 
 		template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
 		, title: "Rush Limbaugh Advertiser"
@@ -135,7 +135,7 @@ function MyExtension() {
 					 if(pathmatch)
 					     event.target.dispatchMessage('content',reply);
 				     }
-				 } else {
+				 } else if(kinds[kind]){
 				     do_reply(data,event);
 				 }
 			     });
@@ -152,18 +152,27 @@ MyExtension.prototype = {
     }
     , loadTemplates: function(){
 //	this.templates = kango.storage.getItem('templates').templates;
+	$.getJSON(this.urlPrefix + '/templatesAll'
+		  , function(data){
+		      
+		      });
     },
 
     load: function(){
 	var self = this;
 	console.log('load');
-	$.getJSON(this.urlPrefix + '/loadByCampaign'
+	$.getJSON(this.urlPrefix + '/dataByCampaign'
 		  ,function(data){
-		      var k, rows = data.rows;
+		      var k, rows = data.rows, val;
 		      if(rows.length > 0){
 			  kango.storage.clear(); // only clear if there's data
 			  var maxTime = '2000-01-01 01:01:01 -0400';
 			  for(var k in rows){
+			      val = rows[k].value;
+			      delete val._id;
+			      delete val._rev;
+			      delete val.type;
+			      delete val.status;
 			      kango.storage.setItem(rows[k].id,rows[k].value);
 			      if(rows[k].value.date_added > maxTime)
 				  maxTime = rows[k].value.date_added;
