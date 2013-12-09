@@ -150,6 +150,8 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'rushBoycott'");
 	if(tc.optVal('opt_green') == 0)
 	    tc.simpleSql("delete from results where func = 'greenResult'");
+	if(tc.optVal('opt_green') == 0)
+	    tc.simpleSql("delete from results where func = 'bechdel'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -190,6 +192,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.optVal('opt_green') == 0)
 		resArr.push("greenResult");
+	    if(tc.optVal('opt_bechdel') == 0)
+		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0){
@@ -266,6 +270,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.optVal('opt_green') == 0)
 		resArr.push("greenResult");
+	    if(tc.optVal('opt_bechdel') == 0)
+		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0){

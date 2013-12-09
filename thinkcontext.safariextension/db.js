@@ -12,17 +12,6 @@ tc = {
 	    , version: '0.06'
 	    , opt : 'opt_news'
 	}
-	, reverse: {
-	    fields: {
-		id: 'integer primary key'
-		, source: 'text'
-		, reverse_link: 'text'
-		, title: 'text'
-		, link: 'text'
-	    }
-	    , opt: 'opt_news'
-	    , version: '0.07'
-	}
 	, results: { 
 	    fields: {
 		id:'integer primary key'
@@ -33,17 +22,6 @@ tc = {
 	    }
 	    , version: '0.09'
 	}
-	// , subverts: { 
-	//     fields: {
-	// 	id: 'integer'
-	// 	, sdid: 'integer'
-	// 	, txt: 'text'
-	// 	, location: 'text'
-	// 	, bin_op: 'text'
-		
-	//     }
-	//     , version: '0.02'
-	// }
 	, place: {
 	    fields: {
 		id: 'integer'
@@ -61,11 +39,19 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.08'
+	    , version: '0.09'
+	}
+	, template: {
+	    fields: {
+		id: 'integer primary key'
+		, func: 'text'
+		, data: 'text'
+	    }
+	    , version: '0.04'
 	}
     }
 
-    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
+    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -163,6 +149,8 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'rushBoycott'");
 	if(tc.optVal('opt_green') == 0)
 	    tc.simpleSql("delete from results where func = 'greenResult'");
+	if(tc.optVal('opt_green') == 0)
+	    tc.simpleSql("delete from results where func = 'bechdel'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -204,6 +192,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.optVal('opt_green') == 0)
 		resArr.push("greenResult");
+	    if(tc.optVal('opt_bechdel') == 0)
+		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0){
@@ -280,6 +270,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.optVal('opt_green') == 0)
 		resArr.push("greenResult");
+	    if(tc.optVal('opt_bechdel') == 0)
+		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_hotel') == 0){
@@ -338,13 +330,21 @@ tc = {
     }
 
     , lookupResult: function(key, request, callback){
+	console.log(key,request,callback);
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT * FROM results WHERE ? = key or ? like key || '/%' or ? like '%.' || key || '/%' or ? like '%.' || key  LIMIT 1";
+		var selTxt = "\
+SELECT r.*, t.data template_data FROM results r \
+inner join template t on t.func = r.func \
+WHERE ? = key \
+or ? like key || '/%' \
+or ? like '%.' || key || '/%' \
+or ? like '%.' || key";
+		
 		tx.executeSql(selTxt
 			      , [key,key,key,key]
 			      , function(tx,r){ 
-				  tc.onLookupSuccess(tx,r,request, callback)
+				  tc.onLookupResultSuccess(tx,r,request, callback);
 			      }
 			      , tc.onError);
 	    }
@@ -353,7 +353,8 @@ tc = {
     , lookupPlace: function(key,request,callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = ? and p.type = ? LIMIT 1";
+		var selTxt = "SELECT pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
+		console.log(selTxt);
 		tx.executeSql(selTxt
 			      , [key,request.type]
 			      , function(tx,r){ 
@@ -365,12 +366,13 @@ tc = {
     }
     , lookupPlaces: function(request,callback){
 	var data = request.data;
+	console.log(data);
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 	
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = ?";
+		var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
 		tx.executeSql(selTxt
 			      , [request.type]
 			      , function(tx,r){tc.onLookupSuccessMany(tx,r,request,callback)}
@@ -378,57 +380,6 @@ tc = {
 	    }
 	);
     }
-
-    , lookupReverse: function(key,request,callback){
-	// find reverse links and some other links to the same site
-	var host = getReverseHost(key);
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = ? union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = ? ) o on o.link = r.link WHERE ( r.reverse_link like 'http://%.'||?||'/%' or r.reverse_link like 'http://'||?||'/%' ) and r.reverse_link <> ? and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(selTxt
-			      , [key,key,host,host,key]
-			      , function(tx,r){ 
-				  tc.onLookupSuccessMany(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    });
-    }
-
-    , lookupReverseHome: function(key,request,callback){
-	var parSt;
-	for(var i in key){
-	    if(i == 0)
-		parSt = "?";
-	    else 
-		parSt += ",?";
-	}
-	
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + parSt + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
-	request.key = '';
-	tc.db.transaction(
-	    function(tx){
-		tx.executeSql(selTxt
-			      , key
-			      , function(tx,r){ 
-				  tc.onLookupSuccessMany(tx,r,request, callback)
-			      }
-			      , tc.onError);
-	    });
-    }
-
-
-    // , lookupSubvert: function(key, request, callback){
-    // 	tc.db.transaction(
-    // 	    function(tx){
-    // 		var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = ? ";
-    // 		tx.executeSql(selTxt
-    // 			      , [key]
-    // 			      , function(tx,r){ 
-    // 				  tc.onLookupSuccessMany(tx,r,request, callback)
-    // 			      }
-    // 			      , tc.onError);
-    // 	    });
-    // }
 
     , sendStat: function(key){
 	$.get('http://thinkcontext.org/s/?' + key);

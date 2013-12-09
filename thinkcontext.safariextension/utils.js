@@ -3,85 +3,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     tc.dialogs = [];
     tc.responses = {};
 
-tc.revTemplate = "<% \
-var found = 0;\
-var tcstat = 'rrr';\
-if(ex){\
-%>\
-<b>This link was mentioned in</b><br>\
-<%   } \
-for(var x in data){\
-    if(data[x]['s'] != 'exact' && found == 0){\
-%>\
-<b>Other links to this site</b><br>\
-<% \
-	    found = 1; }\
-%>\
-<li>\
-<%\
-    if(tc.iconStatus[data[x].source] == 1){ \
-%>\
-<%=	img_tag(tc.iconDir + \"/\" + data[x].source + \".ico\"\
-		, null\
-		, { height: \"16\", width: \"16\", style: \"display:inline;\" }) %>\
-<%    }  %>\
-<%=    link_to(tc.htmlDecode(data[x].title)\
-	    , data[x].link\
-	    , {target: '_blank', tcstat: tcstat + data[x].id })\
-%>\
-by\
-<%=  link_to(data[x].name, data[x].source_link) %>\
-links to \
-<%=  link_to('this page',data[x].reverse_link) %>\
-<%\
-}\
-%>";
-
-tc.resultDialogConfig = {
-    rushBoycott:  { 
-	template: '<%= name %> is listed as an advertiser of Rush Limbaugh\'s by <a href="http://stoprush.net/" target="_blank">The Stop Rush Project</a>.  Click <%= link_to("here", url, {target: "_blank"}) %> for more information on this advertiser.'
-	, title: "Rush Limbaugh Advertiser"
-	, icon: 'stopRush32'
-	, tcstat: 'grb'
-    }
-    , greenResult: {
-	title: 'Member of the Green Business Network'
-	, icon: 'greenG'
-	, tcstat: 'bsg'
-	, template: '<a target="_blank" href="http://<%= key %>"><%= name %></a> - <%= desc %>'
-    }
-
-    , hotelsafe: {
-	title: 'Patronize'
-	, icon: 'greenCheck'
-	, tcstat: 'bsp'
-	, template: '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends patronizing this hotel.'
-    }
-    , hotelboycott: {
-	title: 'Boycott'
-	, icon: 'redCirc'
-	, tcstat: 'bsp'
-	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-    }
-    , hotelrisky: {
-	title: 'Risky'
-	, icon: 'infoI'
-	, tcstat: 'bsp'
-	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> advises that there is a risk of a labor dispute at this hotel.'
-    }
-    , hotelstrike: {
-	title: 'Strike'
-	, icon: 'redCirc'
-	, tcstat: 'bsp'
-	, template:  '<a target="_blank" href="http://www.hotelworkersrising.org/">Hotel Workers Rising</a> recommends boycotting this hotel.'
-    }
-};
-
-tc.resultDialogConfig.boycott = tc.resultDialogConfig.hotelboycott;
-tc.resultDialogConfig.patronize = tc.resultDialogConfig.hotelsafe;
-tc.resultDialogConfig.risky = tc.resultDialogConfig.hotelrisky;
-tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
-
     tc.debug = function(txt){ 
 	//console.log(txt); 
     }
@@ -90,6 +11,18 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	tc.responses[kind] = func;
     }
 
+    safari.self.addEventListener(
+	"message"
+	,function(e){
+	    if(e.message.kind == 'tcPopD')
+		if(tc.popD.dialog('isOpen')){
+		    tc.popD.dialog('close');
+		} else {
+		    tc.popD.dialog('open');
+		}				     
+	}
+	, false);
+    
     tc.iconDir = safari.extension.baseURI + "icons";
     tc.icons = { infoI : tc.iconDir + "/infoI.png"
 		 ,greenG : tc.iconDir + "/greenG.png"
@@ -98,67 +31,8 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 		 ,stopRush : tc.iconDir + "/sr.png"
 		 ,stopRush32 : tc.iconDir + "/sr32.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
-		 ,trackback16: tc.iconDir + "/trackback-16.png"
-		 ,trackback32: tc.iconDir + "/trackback-32.png"
+		 ,bechdel: tc.iconDir + "/bechdel.png"
 	       };
-    // ick but need to keep in sync with icons directory
-    tc.iconStatus = {fair:	1,
-		     change:	1,
-		     cepr:	1,
-		     ej:	1,
-		     ips:	1,
-		     ggw:	1,
-		     alter:	1,
-		     cmj:	1,
-		     color:	1,
-		     itt:	1,
-		     nation:	1,
-		     eff:	1,
-		     soj:	1,
-		     350:	1,
-		     sbnyc:	1,
-		     sbdc:	1,
-		     sbla:	1,
-		     sbsf:	1,
-		     bitch:	1,
-		     grist:	1,
-		     prog:	1,
-		     ucs:	1,
-		     nrdc:	1,
-		     fp:	1,
-		     thinkprogress:	1,
-		     truthdig:	1,
-		     jwj:	1,
-		     bust:	1,
-		     fww:	1,
-		     narco:	1,
-		     pogo:	1,
-		     pk:	1,
-		     mj:	1,
-		     fmc:	1,
-		     climprog:	1,
-		     fpif:	1,
-		     onearth:	1,
-		     propublica:	1,
-		     dom:	1,
-		     acrj:	1,
-		     qcopy:	1,
-		     otherwords:	1,
-		     splc:	1,
-		     dwn:	1,
-		     amazonwatch:	1,
-		     dn:	1,
-		     dnb:	1,
-		     ledc:	1,
-		     cotton:	1,
-		     ctj:	1,
-		     innocence:	1,
-		     dcfpi:	1,
-		     feministing:	1,
-		     nationb:	1,
-		     usas:      1,
-		     greena:	1
-		    };
 
     tc.insertPrev = function(n,iconName,r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
@@ -173,24 +47,18 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen, icon, kind){
+    tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
 	var d;
-	var r = tc.random();
 
 	if(tc.popD == null){	
-	$('body').append($('<img>', { id: r
-				      ,src: tc.icons[icon]
-				      ,style: "z-index:10000000; position:fixed; bottom:125px; right:35px; display:inline; opacity:0.4; height:32px; width:32px"}));
-	    
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
-		.append($('<div>',{id:'tcReverse'}))
 		.append($('<div>',{id:'tcOther'}))
 		.dialog(
 		    { zIndex: 100000001
 		      ,title: 'thinkContext: ' + title
-		      , position:  [window.innerWidth - 350
-                           , window.innerHeight - 175 ]
+		      , position: [window.innerWidth - 350
+				   , 10 ]
 		      , close: function(){
 			  $(window).unbind('resize');
 			  $(window).unbind('scroll');
@@ -205,41 +73,36 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	case 'result':
 	    $('#tcResults',d).append(revDiv);
 	    break;
-	case 'reverse':
-	    $('#tcReverse',d).append(revDiv);
-	    break;
 	default:
 	    $('#tcOther',d).append(revDiv);
 	}
 	if(autoOpen){
 	    d.dialog('open');
 	}
-
+	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
-	    tc.sendMessage({'kind': 'sendstat'
-	 				  , 'key': this.attributes['tcstat'].value});
+	    tc.sendRequest({kind: 'sendstat'
+	 		    , key: this.attributes['tcstat'].value});
 	});
-	$('#'+r).click(function(){
-	    d.dialog('open');
-	    $(window).resize(function(){
-		d.dialog({position:  [window.innerWidth - 350
-                           , window.innerHeight - 175 ]}); });
-	    $(window).scroll(function(){
-		d.dialog({position:  [window.innerWidth - 350
-                           , window.innerHeight - 175 ]}); });
-	});
-	$('#'+r).hover(function(){$(this).css('opacity','1.0')}
-		       , function(){$(this).css('opacity','0.4')});
 	
-	$(window).resize(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
 	$(window).scroll(function(){
-	    d.dialog({position: [window.innerWidth - 350
-				 , window.innerHeight - 175 ]}); });
+	    d.dialog('close');
+	});
+	$(window).click(function(){
+	    d.dialog('close');
+	});
+	d.mouseenter(function(){
+	    $(window).off('click');
+	});
+	d.mouseleave(function(){
+	    $(window).click(function(){
+		d.dialog('close');
+	    });
+	});
+
 	// really irritating when the dialog steals focus
 	if(autoOpen){
-	    document.activeElement.blur();	
+	    document.activeElement.blur();
 	}
     }
 
@@ -372,79 +235,6 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 
-    tc.reverseExamine = function(){
-	var urlmap;
-	urlmap = $("a[href^='http']:visible").not('[tcRev]').map(function(){
-	    this.setAttribute('tcRev','tcRev');
-	    if(this.textContent.match(/\w/) && tc.sigURL(this.href) != tc.sigURL(document.URL)){
-		return tc.sigURL(this.href);
-	    }});
-	if(urlmap.length > 0){
-    	    var revArr = jQuery.makeArray(urlmap);
-    	    while(revArr.length > 0){
-    		tc.sendMessage(
-    		    {'kind': 'reversehome'
-    		     , 'key': revArr.slice(0,400)
-    		    });
-    		revArr.splice(0,400);
-    	    }
-	}
-    }
-
-    tc.reverseResponseTwit = 0;
-    tc.reverseResponseFB = 0;
-    tc.reverseResponse = function(request){
-	var data = request.data;
-	var out = {};
-	var t;
-	var docHost = getReverseHost(document.baseURI);
-	for(var i in data){
-	    t = data[i].reverse_link;
-	    if(docHost != getReverseHost(data[i].link)){
-		if(!out[t]){
-		    out[t] = { }
-		}
-		out[t][data[i].link] = data[i];
-	    }
-	}
-	var tcstat = 'rrh';
-	var jsearch;
-	for(var rl in out){
-
-	    jsearch = 'a[href^="'+rl+'"]:visible';
-	    if(tc.reverseResponseTwit == 1)
-		jsearch = 'a[tcurl^="'+rl+'"]:visible';	
-	    else if(tc.reverseResponseFB == 1)
-		jsearch = "a[href*='facebook.com/l.php?u=" + encodeURIComponent(rl) + "']";
-	    $(jsearch).map(function(){
-		if(!(this.previousSibling && this.previousSibling.getAttribute && this.previousSibling.getAttribute("subv"))){
-		    if(this.textContent.match(/\w/)){
-			var r = tc.random();
-			var revDiv = $('<div>',{id: "d"+r}).appendTo('body');
-			new EJS({text: tc.revTemplate}).update("d"+r,{data:out[rl],ex:false});
-			var height = document.defaultView.getComputedStyle(this).getPropertyValue('font-size');
-			var resDiv = document.createElement("div");
-			resDiv.setAttribute("id",r);
-			resDiv.setAttribute("subv",true);
-			resDiv.style.display = "inline";
-			resDiv.style.height = height + "px";
-			resDiv.style.width = height + "px";;
-			var redih = document.createElement("img");
-			redih.src = tc.icons['trackback16'];
-			redih.style.height = height;// + "px";
-			redih.style.width = height;// + "px";
-			redih.style.margin = "1px";
-			redih.style.display = "inline";
-			resDiv.appendChild(redih);
-			this.parentNode.insertBefore(resDiv,this);
-			this.style.display = "inline";
-			tc.iconDialog("Progressive Trackback", revDiv, r);
-		    }
-		}
-	    });
-	}
-    }
-
     tc.closeAllDialogs = function(){
 	for(var d in tc.dialogs){
 	    tc.dialogs[d].dialog('close');
@@ -465,45 +255,100 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 	}
     }
     
-    tc.sub = {};
-    
     tc.resultPop = function(request){
 	var data = request.data;
 	var detail = JSON.parse(data.data);
-	var rdc = tc.resultDialogConfig[data.func];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = request.data.key;
 	detail.url = data.url;
-	
+
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
 	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
     }
 
+    tc.resultPrevResponse = function(request){
+	$("[sid=" + request.sid +"]").map(function(){
+	    tc.resultPrev(this,request.key,request.data);});
+    };
+    
+    tc.searchLinkExam = function(selector,source,placer,getval){
+	tc.registerResponse('link', tc.resultPrevResponse);
+	// tc.registerResponse('yelp', tc.resultPrevResponse);
+	// tc.registerResponse('tripadvisor', tc.resultPrevResponse);
+	// tc.registerResponse('hcom', tc.resultPrevResponse);
+
+	$(selector).not('[tcLink]').map(
+	    function(){
+		var target = this, href = this.href;
+		if(getval)
+		    href = getval(this);
+		
+		console.log('in map',this,href);
+		if(placer)
+		    target = placer(this);
+		console.log('target',target);
+		this.setAttribute('tcLink','tcLink');
+		var sid = "gs" + tc.random();
+		target.setAttribute("sid",sid);
+		console.log(this,this.href);
+		var url = tc.sigURL(href).replace(/https?:\/\//,'').replace(/\/$/,'');
+		console.log(url);
+		tc.sendMessage({kind: 'link'
+				,source: source
+     				, sid: sid
+     				, key: url});
+		// if(url.match('tripadvisor\.com')){
+		//     tc.sendMessage({kind: 'tripadvisor'
+		// 		    , source: source
+     		// 		    , sid: sid
+     		// 		    , key: tc.keyMatch.tripadvisor(url) });
+		// } else if(url.match('yelp.com')){
+		//     tc.sendMessage({kind: 'yelp'
+		// 		    , source: source
+     		// 		    , sid: sid
+     		// 		    , key: tc.keyMatch.yelp(url) });	
+		// } else if(url.match('facebook\.com')){
+		//     tc.sendMessage({kind: 'facebook'
+		// 		    , source: source
+     		// 		    , sid: sid
+     		// 		    , key: tc.keyMatch.facebook(url) });	
+		// } else if(url.match('://(www\.)?hotels\.com')){
+		//     tc.sendMessage({kind: 'hcom'
+		// 		    , source: source
+     		// 		    , sid: sid
+     		// 		    , key: tc.keyMatch.hcom(url) });	
+		// }	
+		console.log('leave map');
+	    }
+	);
+    };
+
     tc.resultPrev = function(n,key,data){
 	var detail = JSON.parse(data.data);
-	var rdc = tc.resultDialogConfig[data.func];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = key;
 	detail.url = data.url;
-	
+
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
-	
+
 	tc.insertPrev(n
 		      , rdc.icon
 		      , r
 		      , rdc.title
 		      , d
-		     )
+		     );
     }
-    
+
     tc.place = function(n, cid,data){
-	var rdc = tc.resultDialogConfig['hotel' + data.type];
+	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r);
@@ -516,17 +361,5 @@ tc.resultDialogConfig.strike = tc.resultDialogConfig.hotelstrike;
 		     );
     }
 
-    // hyatt_result: function(n,key,data){
-    // 	// passed a google search result, insert a dialog
-    // 	// "n" is the header link for the result
-    
-    // 	var tcstat = 'gsh';
-    // 	tc.insertPrev(n
-    // 		      ,'infoI'
-    // 		      ,'Info from Hotel Workers Rising','<b><a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">Hyatt Hurts Our Economic Recovery</a></b> - In city after city across North America, Hyatt Hotels is leading the fight against middle class jobs for hotel workers. Nationwide, the hotel industry is rebounding faster and stronger than expected, with a hearty rebound projected in 2011 and 2012. Hyatt reported that as of June 30, 2010 it had over $1.6 billion in cash and short term investments available.<p>Despite a strong recovery for the hotel industry, hotels are still squeezing workers and cutting staff. While this marks a trend involving several major hotel companies, Hyatt is the starkest example. Hyatt is using the weak economy as an excuse to slash benefits, eliminate jobs and lock workers into the recession. <a tcstat="' + tcstat + data.id + '" target="_blank" href="http://hotelworkersrising.org/hyatt/">more info</a>'
-    // 		     );
-    // }
-
     tc.random = function(){return Math.floor(Math.random() * 100000);}
-
 }
