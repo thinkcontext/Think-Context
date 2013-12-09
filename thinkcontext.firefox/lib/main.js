@@ -13,6 +13,10 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,trackback16: iconDir + "/trackback-16.png"
 	      ,trackback32: iconDir + "/trackback-32.png"};
 
+if(self.loadReason == 'upgrade'){
+    db.deleteReverse();
+}
+
 pageMod.PageMod({
     include : ["http://www.google.com/*","https://www.google.com/*"],
     attachTo: "top",
@@ -38,9 +42,6 @@ pageMod.PageMod({
 		break;
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r)});
-		break;
-	    case 'links':
-		db.lookupResults(request, function(r){worker.postMessage(r)});
 		break;
 	    case 'place':
 		db.lookupPlace(key,request,function(r){worker.postMessage(r)});
@@ -119,17 +120,6 @@ var buttonTab = function(tab) {
 			    button.setImage(icons[r.data.func],r.origLink);
 			    button.setVisibility(true,r.origLink);
 			});
-	db.lookupReverse(
-	    sigURL(tab.url)
-	    ,{kind: 'reverse'
-	      , key: sigURL(tab.url).replace(/https?:\/\//,'').replace(/\/$/,'')
-	      , origLink:tab.url
-	     }
-	    , function(r){
-		button.setImage(icons['trackback16'],r.origLink);
-		button.setVisibility(true,r.origLink);
-	    }
-	);
     }
 };
 
@@ -169,12 +159,6 @@ pageMod.PageMod({
 	    case 'link':
 		db.lookupResult(request, function(r){worker.postMessage(r);});
 		break;
-	    case 'reverse':
-	    	db.lookupReverse(key,request,function(r){worker.postMessage(r)});
-	    	break;
-	    case 'reversehome':
-	    	db.lookupReverseHome(key,request,function(r){worker.postMessage(r)});
-	    	break;
 	    }
 	});	
     }});   
@@ -258,9 +242,48 @@ pageMod.PageMod({
 	})
     }});
 
-pageMod.PageMod({
-    include : ["http://facebook.com/*","https://facebook.com/*","http://www.facebook.com/*","https://www.facebook.com/*"],
+pageMod.PageMode({
+    include: [ ]
     attachTo: "top",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.0.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('facebook.js')],
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    var key = request.key;
+	    var data;
+	    switch(request.kind){
+	    case 'resource':
+		request.data = iconDir;
+		worker.postMessage(request);
+		break;
+	    case 'sendstat':
+		db.sendStat(request.key);
+		break;
+	    case 'link':
+		db.lookupResult(request, function(r){worker.postMessage(r)});
+		break;
+	    case 'urlresolve':
+		db.urlResolve(request, function(r){worker.postMessage(r)});
+		break;
+	    }
+	})
+});
+
+
+pageMod.PageMod({
+    include : ["http://*.adsonar.com/*"
+			,"http://*.msn.com/*"
+			,"http://*.doubleclick.net/pagead/*"
+			,"http://*.overture.com/*"
+			,"http://ad.doubleclick.net/adi/*"
+		       ],
+    attachTo: "frame",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [

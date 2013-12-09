@@ -128,7 +128,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
   ){
     tc.googleSearch.doit();
-}else{
-    tc.registerResponse('reversehome', tc.reverseResponse);
-    tc.reverseExamine();
 }
+
+

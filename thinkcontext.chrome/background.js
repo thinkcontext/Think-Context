@@ -34,13 +34,14 @@ chrome.extension.onRequest.addListener(onRequest);
 setInterval(tc.updateAllTables, 10870000);
 
 // Check whether new version is installed
-// chrome.runtime.onInstalled.addListener(
-//     function(details){
-// 	if(details.reason == "install"){
-//             console.log("This is a first install!");
-// 	}else if(details.reason == "update"){
-//             var thisVersion = chrome.runtime.getManifest().version;
-//             console.log("Updated from " + details.previousVersion + " to " + thisVersion + " + !");
-// 	    chrome.tabs.create({url:"update.html"});
-// 	}
-//     });
+chrome.runtime.onInstalled.addListener(
+    function(details){
+	// if(details.reason == "install"){
+        //     console.log("This is a first install!");
+	// }else
+	    
+	if(details.reason == "update"){
+	    tc.simpleSql("drop table reverse");
+//	    chrome.tabs.create({url:"update.html"});
+	}
+    });

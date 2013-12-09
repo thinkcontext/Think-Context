@@ -16,7 +16,7 @@ function onPrefChange(prefName) {
     prefSet.prefs[prefName]; 
     tc.loadAllTables();
 }
-prefSet.on('opt_news', onPrefChange);
+prefSet.on('opt_bechdel', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
@@ -51,17 +51,6 @@ tc = {
 	    , version: '0.06'
 	    , opt : 'opt_news'
 	}
-	, reverse: {
-	    fields: {
-		id: 'integer primary key'
-		, source: 'text'
-		, reverse_link: 'text'
-		, title: 'text'
-		, link: 'text'
-	    }
-	    , opt: 'opt_news'
-	    , version: '0.07'
-	}
 	, results: { 
 	    fields: {
 		id:'integer primary key'
@@ -72,17 +61,6 @@ tc = {
 	    }
 	    , version: '0.09'
 	}
-	// , subverts: { 
-	//     fields: {
-	// 	id: 'integer'
-	// 	, sdid: 'integer'
-	// 	, txt: 'text'
-	// 	, location: 'text'
-	// 	, bin_op: 'text'
-		
-	//     }
-	//     , version: '0.02'
-	// }
 	, place: {
 	    fields: {
 		id: 'integer'
@@ -91,7 +69,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.07'
+	    , version: '0.08'
 	}
 	, place_data: {
 	    fields: {
@@ -100,11 +78,19 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.08'
+	    , version: '0.09'
+	}
+	, template: {
+	    fields: {
+		id: 'integer primary key'
+		, func: 'text'
+		, data: 'text'
+	    }
+	    , version: '0.04'
 	}
     }
     
-    , dataUrl: 'http://www.data.thinkcontext.org/tc.php?'
+    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
 
     , optVal: function(o){ return prefSet.prefs[o]; }
 
@@ -194,6 +180,8 @@ tc = {
     , loadAllTables: function(){
 	if(tc.optVal('opt_hotel') == false)
 	    sql.execute("delete from results where func like 'hotel%'");
+	if(tc.optVal('opt_bechdel') == false)
+	    sql.execute("delete from results where func = 'bechdel'");
 	if(tc.optVal('opt_rush') == false)
 	    sql.execute("delete from results where func = 'rushBoycott'");
 	if(tc.optVal('opt_green') == false)
@@ -237,6 +225,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
+	    if(tc.opt_bechdel == false)
+		resArr.push("bechdel");
 	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
 	    if(tc.opt_hotel == false){
@@ -249,6 +239,10 @@ tc = {
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
 	}
+
+	var dateClause = '';
+	var secs;
+
 	if(secs=tc.checkLocalDeleteTime(table)){
 	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 	}
@@ -321,6 +315,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
+	    if(tc.opt_bechdel == false)
+		resArr.push("bechdel");
 	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
 	    if(tc.opt_hotel == false){
@@ -407,7 +403,13 @@ tc = {
 
     , lookupResult: function(request, callback){
 	var key = request.key;
-	var selTxt = "SELECT * FROM results WHERE key = :key or :key like key || '/%' or :key like '%.' || key || '/%' or :key like '%.' || key  LIMIT 1";
+	var selTxt = "\
+SELECT r.*, t.data template_data FROM results r \
+inner join template t on t.func = r.func \
+WHERE :key = key \
+or :key like key || '/%' \
+or :key like '%.' || key || '/%' \
+or :key like '%.' || key";
 
 	sql.execute(selTxt 
 		    , {key: key}
@@ -429,33 +431,33 @@ tc = {
 				}		
 			    }
 			}
-			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data']);}
+			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data','template_data']);}
 		    ,tc.onError);
     }
     
-    , lookupResults: function(request, callback){
-	if(request.data.length > 0){
-	    var keys = [];
-	    for(var i in request.data){
-		keys.push(request.data[i].key);
-	    }
+    // , lookupResults: function(request, callback){
+    // 	if(request.data.length > 0){
+    // 	    var keys = [];
+    // 	    for(var i in request.data){
+    // 		keys.push(request.data[i].key);
+    // 	    }
 	    
-	    var b = bindNums(keys.length);
-	    var c = bindNums(keys.length).split(',');
-	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%' ";
-	    request.orig_data = request.data;
-	    sql.execute(selTxt
-			, bindArr(keys)
-			, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));}
-			,tc.onError);
-	}
-    }
+    // 	    var b = bindNums(keys.length);
+    // 	    var c = bindNums(keys.length).split(',');
+    // 	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%' ";
+    // 	    request.orig_data = request.data;
+    // 	    sql.execute(selTxt
+    // 			, bindArr(keys)
+    // 			, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));}
+    // 			,tc.onError);
+    // 	}
+    // }
     
     , lookupPlace: function(key,request,callback){
-	var selTxt = "SELECT pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid = :key and p.type = :type LIMIT 1";
+		var selTxt = "SELECT pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
 	sql.execute(selTxt
 		    ,{key: key, type:request.type}
-		    , function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type']);}
+		    , function(result,status){tc.onLookupSuccess(result,status,request,callback,['id','type','template_data']);}
 		    ,tc.onError);
     }
 
@@ -466,38 +468,10 @@ tc = {
 	var i = bindArr(data.map(function(x){ return x.cid }));
 	i['type'] = request.type
 
-	var selTxt = "SELECT p.siteid, pd.id, pd.type FROM place p inner join place_data pd on pd.id = p.pdid WHERE siteid in " + inStmt +" and p.type = :type " ;
+	var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
 	sql.execute(selTxt
 		    , i
-		    , function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type']);});
-    }
-
-    , lookupReverse: function(key,request,callback){
-	// find reverse links and some other links to the same site
-	var host = getReverseHost(key);
-
-	var selTxt = "select distinct min(id) id, s, title, link, reverse_link, name, source, source_link from ( SELECT 'exact' s,r.id, reverse_link, title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link = :key union SELECT 'not exact',r.id, r.reverse_link, r.title, r.link, s.name, s.source, s.link source_link FROM reverse r left outer join source s on s.source = r.source left outer join ( SELECT 'exact' s,r.id, r.reverse_link, title, r.link, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE r.reverse_link = :key ) o on o.link = r.link WHERE ( r.reverse_link like :host2 or r.reverse_link like :host1 ) and r.reverse_link <> :key and o.link is null ) t group by s, title, link, name, source, source_link order by s, id desc limit 5;"
-
-	var q = sql.execute(selTxt
-			    ,{key:key
-			      ,host1 : 'http://' + host + '/%'
-			      ,host2 : 'http://%.' + host + '/%'}
-			    , function(result,status){
-				tc.onLookupManySuccess(result,status,request
-						       ,callback
-						       ,['id','s','title','link','reverse_link','name','source','source_link'])}
-			    ,tc.onError);
-    }
-
-    , lookupReverseHome: function(key,request,callback){
-	var selTxt = "SELECT distinct min(r.id) id, 'exact' s, reverse_link, title, r.link, s.source, s.name, s.link source_link FROM reverse r left outer join source s on s.source = r.source WHERE reverse_link in (" + bindNums(key.length) + ") group by 'exact', reverse_link, title, r.link, s.source, s.name, s.link";
-	request.key = '';
-	sql.execute(selTxt, bindArr(key),function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id','s','reverse_link','title','link','source','name','source_link'])},tc.onError);
-    }
-    
-    , lookupSubvert: function(key, request, callback){
-	var selTxt = "select sd.id, data, url from subverts s join results sd on sd.id = s.sdid where s.txt = :key ";
-	sql.execute(selTxt,{key:key},function(result,status){tc.onLookupManySuccess(result,status,request,callback,['id', 'data','url']);},tc.onError);
+		    , function(result,status){tc.onLookupManySuccess(result,status,request,callback,['siteid','id','type','template_data']);});
     }
 
     , sendStat: function(key){
@@ -534,6 +508,10 @@ tc = {
     // 	}
     // }
 
+    , deleteReverse: function(){
+	sql.execute('drop table reverse');
+    }
+
 };
 function getReverseHost(url){
     var host;
@@ -567,21 +545,51 @@ function getReverseHost(url){
     return null;
 }
 
+function getReverseHost(url){
+    var host;
+    var ar;
+    var tld;
+    if(host = url.split('/')[2]){
+        ar = host.split('.');
+        if(ar[0] == 'www'){
+            ar.shift();
+        }
+        tld = ar[ar.length - 1];
+        if(ar.length <= 2){
+            return ar.join('.')
+        } else if((tld == 'com'
+                   || tld == 'net'
+                   || tld == 'gov'
+                   || tld == 'edu'
+                   || tld == 'org')
+                  && !(tld == 'com' 
+                       && (ar[ar.length - 2] == 'patch'
+                           || ar[ar.length - 2] == 'cbslocal'
+                           || ar[ar.length - 2] == 'curbed'
+                           || ar[ar.length - 2] == 'yahoo'
+                           || ar[ar.length - 2] == 'craigslist')
+                      )){
+            return ar.slice(ar.length - 2).join('.')
+        } else {
+            return ar.slice(ar.length - 3).join('.')
+        }
+    }
+    return null;
+}
+
+
+
 tc.connectDB();
 tc.loadAllTables();
 timer.setTimeout(tc.updateAllTables,10000); // do at idle?
-timer.setInterval(function(){tc.updateTable('reverse')}, 3650000);
 timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;
-exports.lookupResults = tc.lookupResults;
 exports.lookupPlace = tc.lookupPlace;
 exports.lookupPlaces = tc.lookupPlaces;
-exports.lookupReverse = tc.lookupReverse;
-exports.lookupReverseHome = tc.lookupReverseHome;
-exports.lookupSubvert = tc.lookupSubvert;
 exports.sendStat = tc.sendStat;
 exports.getReverseHost = getReverseHost;
+exports.deleteReverse = tc.deleteReverse;
 //exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this

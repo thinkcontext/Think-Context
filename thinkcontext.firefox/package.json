@@ -3,14 +3,14 @@
     "fullName": "Think Context",
     "description": "Inserts contextual, politically progressive information into your web browsing", 
     "author": "", 
-    "version": "0.93", 
+    "version": "0.96", 
     "id": "jid0-TgUunRgcCYuVnWCzbw3bV96wGAI", 
     "homepage": "http://www.thinkcontext.org/",
     "preferences": [
 	{
-    	    "name": "opt_news"
-	    , "title": "Enable Progressive News Trackback"
-	    , "description": "When reading mainstream news thinkContext will let you know what progressive news sources are saying about what you are reading.  thinkContext scans over 50 progressive news sources such as The Nation, Earthjustice, Colorlines, and Feministing.  For a full list see here."
+    	    "name": "opt_bechdel"
+	    , "title": "Bechdel Movie Test"
+	    , "description": "Indicates whether a movie passes the <a href=\"http://www.bechdeltest.com/\" target=\"_blank\">The Bechdel Test</a>, that is, if a movie contains two women that at some point speak to each other about something besides a man."
 	    , "type": "bool"
 	    , "value": true
 	}

@@ -74,7 +74,7 @@ if(typeof(tc) == 'undefined'){
 	}
 	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
-	    tc.sendRequest({kind: 'sendstat'
+	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
 	
@@ -193,30 +193,10 @@ if(typeof(tc) == 'undefined'){
 		return false;}
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
-	    tc.sendRequest({'kind': 'sendstat'
+	    tc.sendMessage({'kind': 'sendstat'
 	 		    , 'key': this.attributes['tcstat'].value});
 	});
 	tc.dialogs.push(d);
-    }
-
-    tc.intersect_safe = function(a, b)
-    {
-	var ai=0, bi=0;
-	var result = new Array();
-
-	while( ai < a.length && bi < b.length )
-	{
-	    if      (a[ai] < b[bi] ){ ai++; }
-	    else if (a[ai] > b[bi] ){ bi++; }
-	    else /* they're equal */
-	    {
-		result.push(a[ai]);
-		ai++;
-		bi++;
-	    }
-	}
-
-	return result;
     }
 
     tc.onResponse = function(request){
