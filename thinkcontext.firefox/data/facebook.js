@@ -7,9 +7,7 @@ if (window.frameElement === null){
     });
     
     tc.facebook.examine = function(){
-	var urlmap;
-	
-	$('div.adInfo a').not('a[sid]').map(
+	$('div.adboard_unit div._5fxl').not('[sid]').map(
 	    function(){
 		var sid = "gs" + tc.random();
 		this.setAttribute("sid",sid);
