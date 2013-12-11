@@ -4,10 +4,11 @@ var ss = require("simple-storage");
 var timer = require("timer");
 
 var prefSet = require("simple-prefs");
-var opt_news = prefSet.prefs.opt_news;
+var opt_bechdel = prefSet.prefs.opt_bechdel;
 var opt_green = prefSet.prefs.opt_green;
 var opt_rush = prefSet.prefs.opt_rush;
 var opt_hotel = prefSet.prefs.opt_hotel;
+var opt_bcorp = prefSet.prefs.opt_bcorp;
 var opt_popd = prefSet.prefs.opt_popd;
 
 function onPrefChange(prefName) {  
@@ -17,6 +18,7 @@ function onPrefChange(prefName) {
     tc.loadAllTables();
 }
 prefSet.on('opt_bechdel', onPrefChange);
+prefSet.on('opt_bcorp', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
@@ -41,17 +43,7 @@ function bindArr(arr){
 tc = {
     dbName: 'thinkcontext'
     , tables: {
-	source: {
-	    fields: {
-		id: 'integer primary key'
-		, source: 'text'
-		, name: 'text'
-		, link: 'text'
-	    }
-	    , version: '0.06'
-	    , opt : 'opt_news'
-	}
-	, results: { 
+	results: { 
 	    fields: {
 		id:'integer primary key'
 		, key: 'text'
@@ -186,6 +178,8 @@ tc = {
 	    sql.execute("delete from results where func = 'rushBoycott'");
 	if(tc.optVal('opt_green') == false)
 	    sql.execute("delete from results where func = 'greenResult'");
+	if(tc.optVal('opt_bcorp') == false)
+	    sql.execute("delete from results where func = 'bcorp'");
 	
 	for(var t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == false)){
@@ -225,6 +219,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
+	    if(tc.opt_bcorp == false)
+		resArr.push("bcorp");
 	    if(tc.opt_bechdel == false)
 		resArr.push("bechdel");
 	    if(tc.opt_rush == false)
@@ -315,6 +311,8 @@ tc = {
 	if(table == 'results'){
 	    if(tc.opt_green == false)
 		resArr.push("greenResult");
+	    if(tc.opt_bcorp == false)
+		resArr.push("bcorp");
 	    if(tc.opt_bechdel == false)
 		resArr.push("bechdel");
 	    if(tc.opt_rush == false)

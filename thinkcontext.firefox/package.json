@@ -35,6 +35,13 @@
 	    , "type": "bool"
 	    , "value": true
 	}
+	, {
+    	    "name": "opt_bcorp"
+	    , "title": "B Corps"
+	    , "description": "<b><a href=\"http://www.bcorporation.net\">B Corps</a></b> are certified to meet rigorous standards of social and environmental performance, accountability, and transparency."
+	    , "type": "bool"
+	    , "value": true
+	}
 	, { 
 	    "name": "opt_popd"
 	    , "title": "Behavior"

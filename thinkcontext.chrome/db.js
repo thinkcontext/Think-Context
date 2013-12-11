@@ -3,17 +3,7 @@ tc = {
     
     , dbName: 'thinkcontext'
     , tables: {
-	source: {
-	    fields: {
-		id: 'integer primary key'
-		, source: 'text'
-		, name: 'text'
-		, link: 'text'
-	    }
-	    , version: '0.06'
-	    , opt : 'opt_news'
-	}
-	, results: { 
+	results: { 
 	    fields: {
 		id:'integer primary key'
 		, key: 'text'
@@ -150,8 +140,10 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'rushBoycott'");
 	if(tc.optVal('opt_green') == 0)
 	    tc.simpleSql("delete from results where func = 'greenResult'");
-	if(tc.optVal('opt_green') == 0)
+	if(tc.optVal('opt_bechdel') == 0)
 	    tc.simpleSql("delete from results where func = 'bechdel'");
+	if(tc.optVal('opt_bcorp') == 0)
+	    tc.simpleSql("delete from results where func = 'bcorp'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -196,6 +188,8 @@ tc = {
 		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
+	    if(tc.optVal('opt_bcorp') == 0)
+		resArr.push("bcorp");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -274,6 +268,8 @@ tc = {
 		resArr.push("bechdel");
 	    if(tc.optVal('opt_rush') == 0)
 		resArr.push("rushBoycott");
+	    if(tc.optVal('opt_bcorp') == 0)
+		resArr.push("bcorp");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");

@@ -1,6 +1,6 @@
 // Saves options to localStorage.
 
-var checkOpts = [ 'opt_rush','opt_green','opt_hotel','opt_bechdel' ]
+var checkOpts = [ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp' ]
 var bgPage = chrome.extension.getBackgroundPage();
 
 function save_options() {
