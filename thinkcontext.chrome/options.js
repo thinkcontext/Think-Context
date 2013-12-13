@@ -6,10 +6,16 @@ var bgPage = chrome.extension.getBackgroundPage();
 function save_options() {
     var val;
     for(var i in checkOpts){
-	if(document.getElementById(checkOpts[i]).checked == true)
-	    val = 1;
-	else 
+	if(document.getElementById(checkOpts[i]).checked == true){
+	    val = 1;	    
+	}else{ 
 	    val = 0;
+	}
+	bgPage.tc.removeLocalTableVersion('results');
+	if(i == 'opt_hotel'){
+	    bgPage.tc.removeLocalTableVersion('place');
+	    bgPage.tc.removeLocalTableVersion('place_data');	    
+	}
 	localStorage[checkOpts[i]] = val;
     }
     
@@ -20,6 +26,7 @@ function save_options() {
     setTimeout(function() {
 	status.innerHTML = "";
     }, 750);
+    bgPage.tc.loadAllTables();
 }
 
 

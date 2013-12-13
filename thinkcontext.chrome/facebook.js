@@ -6,7 +6,7 @@ tc.registerResponse('link', function(request){
 });
 
 tc.facebook.examine = function(){
-    $('div.adboard_unit div._5fxl').not('[sid]').map(
+    $('div._5fxh div._5fxl').not('[sid]').map(
 	function(){
 	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);

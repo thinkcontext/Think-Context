@@ -508,6 +508,7 @@ or :key like '%.' || key";
 
     , deleteReverse: function(){
 	sql.execute('drop table reverse');
+	sql.execute('drop table source');
     }
 
 };

@@ -21,17 +21,6 @@
         case 'places':
             tc.lookupPlaces(request,callback);
 	    break;
-        case 'yahoo-text':
-	case 'gs-text':
-        case 'bing-text':
-	    tc.lookupSubvert(request.key, request, callback);
-	    break;
-        case 'reverse':
-            tc.lookupReverse(request.key,request,callback);
-            break;
-	case 'reversehome':
-            tc.lookupReverseHome(request.key,request,callback);
-            break;
 	case 'sendstat':
             tc.sendStat(request.key);
 	    break;
@@ -61,8 +50,10 @@ if(!(localStorage.getItem('tcversion') == tcversion)){
     localStorage.setItem('tcversion',tcversion);
     if(localStorage.getItem('resultsversion')){
 	//console.log('update');
-    } else {
-	openInstall();
+        tc.simpleSql("drop table reverse");
+        tc.simpleSql("drop table source");    
+      } else {
+        openInstall();
     }
 }      
 

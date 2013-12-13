@@ -41,9 +41,10 @@ tc.googleSearch = {
 
 	//     ad links
 	
-	tc.searchLinkExam('div#tvcap h3 a#vpa1, a#vpa2, a#vpa3, a#vpa4','google-search');
-	tc.searchLinkExam("div#mbEnd a#van1, a#van2, a#van3, a#van4, a#van5, a#van6",'google-search');
-	tc.searchLinkExam("div#bottomads a#vpab1, a#vpab2, a#vpab3, a#vpab4",'google-search');
+	tc.searchLinkExam('div.ads-container li.ads-ad:has(h3) div.ads-visurl cite'
+			  ,'google-search'
+			  , function(x){return x.parentElement.children[0]}
+			  , function(x){ return x.textContent});
 	
 	//	result link	
 	tc.searchLinkExam("ol#rso > li.g > div > h3 > a",'google-search');

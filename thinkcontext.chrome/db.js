@@ -381,7 +381,6 @@ or ? like '%.' || key";
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
-		console.log(selTxt);
 		tx.executeSql(selTxt
 			      , [key,request.type]
 			      , function(tx,r){ 
@@ -393,15 +392,12 @@ or ? like '%.' || key";
     }
     , lookupPlaces: function(request,callback){
 	var data = request.data;
-	console.log(data);
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 	
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
-		console.log(selTxt);
-		console.log(data);
 		tx.executeSql(selTxt
 			      , [request.type]
 			      , function(tx,r){tc.onLookupSuccessMany(tx,r,request,callback)}
