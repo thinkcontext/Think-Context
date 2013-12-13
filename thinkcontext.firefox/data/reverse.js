@@ -6,7 +6,7 @@ if (window.frameElement === null){
 	  || document.domain.match('bing.com$')
 	)
       ){    
-	
+	console.log('reverse');
 	tc.reverse = {};
 	
 	tc.registerResponse('link',

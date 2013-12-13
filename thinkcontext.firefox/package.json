@@ -10,7 +10,7 @@
 	{
     	    "name": "opt_bechdel"
 	    , "title": "Bechdel Movie Test"
-	    , "description": "Indicates whether a movie passes the <a href=\"http://www.bechdeltest.com/\" target=\"_blank\">The Bechdel Test</a>, that is, if a movie contains two women that at some point speak to each other about something besides a man."
+	    , "description": "Indicates whether a movie passes the The Bechdel Test, that is, if a movie contains two women that at some point speak to each other about something besides a man."
 	    , "type": "bool"
 	    , "value": true
 	}
@@ -38,7 +38,7 @@
 	, {
     	    "name": "opt_bcorp"
 	    , "title": "B Corps"
-	    , "description": "<b><a href=\"http://www.bcorporation.net\">B Corps</a></b> are certified to meet rigorous standards of social and environmental performance, accountability, and transparency."
+	    , "description": "B Corps are certified to meet rigorous standards of social and environmental performance, accountability, and transparency."
 	    , "type": "bool"
 	    , "value": true
 	}

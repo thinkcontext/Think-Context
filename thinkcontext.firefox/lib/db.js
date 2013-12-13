@@ -4,17 +4,19 @@ var ss = require("simple-storage");
 var timer = require("timer");
 
 var prefSet = require("simple-prefs");
-var opt_bechdel = prefSet.prefs.opt_bechdel;
-var opt_green = prefSet.prefs.opt_green;
-var opt_rush = prefSet.prefs.opt_rush;
-var opt_hotel = prefSet.prefs.opt_hotel;
-var opt_bcorp = prefSet.prefs.opt_bcorp;
-var opt_popd = prefSet.prefs.opt_popd;
+var opt_bechdel, opt_green, opt_rush, opt_hotel, opt_bcorp, opt_popd;
+
+function setPrefs(){
+    opt_bechdel = prefSet.prefs.opt_bechdel;
+    opt_green = prefSet.prefs.opt_green;
+    opt_rush = prefSet.prefs.opt_rush;
+    opt_hotel = prefSet.prefs.opt_hotel;
+    opt_bcorp = prefSet.prefs.opt_bcorp;
+    opt_popd = prefSet.prefs.opt_popd;
+}
 
 function onPrefChange(prefName) {  
-    // 'results' is a shared table so we have to always refresh 
-    tc.removeLocalTableVersion('results');
-    prefSet.prefs[prefName]; 
+    setPrefs();
     tc.loadAllTables();
 }
 prefSet.on('opt_bechdel', onPrefChange);
@@ -420,7 +422,7 @@ or :key like '%.' || key";
 			    request.popD = true;
 			    break;
 			default:
-			    if(request.front){
+			    if(request.pop){
 				if(! ss.storage['tcPopD_' + request.key]){
 				    request.popD = true;
 				    ss.storage['tcPopD_' + request.key]=1;

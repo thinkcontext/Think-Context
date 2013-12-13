@@ -11,7 +11,10 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,rushBoycott : iconDir + "/sr.png"
 	      ,unitehere : iconDir + "/unitehere.ico"
 	      ,trackback16: iconDir + "/trackback-16.png"
-	      ,trackback32: iconDir + "/trackback-32.png"};
+	      ,trackback32: iconDir + "/trackback-32.png"
+	      ,bechdel: iconDir + "/greenCheck.png"
+	      ,bcorp: iconDir + "/bcorp.ico"
+};
 
 if(s.loadReason == 'upgrade'){
     db.deleteReverse();
