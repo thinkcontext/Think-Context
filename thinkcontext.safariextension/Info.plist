@@ -37,7 +37,7 @@
 				<string>yahoo-search.js</string>
 				<string>google-place-page.js</string>
 				<string>facebook.js</string>
-				<string>twitter.js</string>
+				<string>iframe.js</string>
 				<string>bg-utils.js</string>
 			</array>
 		</dict>

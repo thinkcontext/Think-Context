@@ -356,7 +356,6 @@ tc = {
     }
 
     , lookupResult: function(key, request, callback){
-	console.log(key,request,callback);
 	tc.db.transaction(
 	    function(tx){
 		var selTxt = "\

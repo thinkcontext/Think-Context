@@ -32,15 +32,16 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 		 ,stopRush32 : tc.iconDir + "/sr32.png"
 		 ,unitehere : tc.iconDir + "/unitehere.ico"
 		 ,bechdel: tc.iconDir + "/bechdel.png"
+		 ,bcorp: tc.iconDir + "/bcorp.ico"
 	       };
 
-    tc.insertPrev = function(n,iconName,r,title,theDiv){
+    tc.insertPrev = function(n,icon,r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	    var resDiv = $('<div>'
 			   , { id: r
 			       , subv: true
 			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-		.append($('<img>', { src: tc.icons[iconName]}))[0];
+		.append($('<img>', { src: icon}))[0];
 	    n.parentNode.insertBefore(resDiv,n);
 	    n.style.display = "inline";
 	    tc.iconDialog(title,theDiv,r);
@@ -49,7 +50,6 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 
     tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
 	var d;
-
 	if(tc.popD == null){	
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
