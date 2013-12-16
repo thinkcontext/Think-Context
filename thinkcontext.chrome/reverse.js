@@ -1,4 +1,6 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
+    console.log('reverse',document.webkitHidden);
+
     tc.reverse = {};
     
     tc.registerResponse('link',
@@ -16,7 +18,6 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	 , pop: 1
 	 , key: tc.sigURL(document.baseURI).replace(/https?:\/\//,'').replace(/\/$/,'')
 	});
-
     $("a[href*='shlinks.industrybrains.com']").not('a[sid]').map(
 	function(){
 	    if(!this.textContent.match(' ')){

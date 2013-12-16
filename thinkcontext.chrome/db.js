@@ -330,28 +330,30 @@ tc = {
     , onLookupResultSuccess: function(tx, r, request, callback){
 	var x;
 	if(r.rows.length > 0){
-	    request.data = r.rows.item(0);;
-	    switch(tc.optVal('opt_popD')){
-	    case 'never':
-		request.popD = false;
-		break;
-	    case 'every':
-		request.popD = true;
-	    case 'session':
-		if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
-		    request.popD = true;
-		    sessionStorage.setItem('tcPopD_' + request.data.key,1);
-		} else {
+	    request.data = r.rows.item(0);
+	    if(request.pop){
+		switch(tc.optVal('opt_popD')){
+		case 'never':
 		    request.popD = false;
+		    break;
+		case 'every':
+		    request.popD = true;
+		case 'session':
+		    if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
+			request.popD = true;
+			sessionStorage.setItem('tcPopD_' + request.data.key,1);
+		    } else {
+			request.popD = false;
+		    }
+		    break;
+		default:
+		    if(! localStorage.getItem('tcPopD_' + request.data.key)){
+			request.popD = true;
+			localStorage.setItem('tcPopD_' + request.data.key,1);
+		    } else {
+			request.popD = false;
+		    }		
 		}
-		break;
-	    default:
-		if(! localStorage.getItem('tcPopD_' + request.data.key)){
-		    request.popD = true;
-		    localStorage.setItem('tcPopD_' + request.data.key,1);
-		} else {
-		    request.popD = false;
-		}		
 	    }
 	    callback(request);
 	}

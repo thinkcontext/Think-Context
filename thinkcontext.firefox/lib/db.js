@@ -414,21 +414,23 @@ or :key like '%.' || key";
 	sql.execute(selTxt 
 		    , {key: key}
 		    ,function(result,status){
-			switch(tc.optVal('opt_popd')){ 
-			case 'never':
-			    request.popD = false;
-			    break;
-			case 'every':
-			    request.popD = true;
-			    break;
-			default:
-			    if(request.pop){
-				if(! ss.storage['tcPopD_' + request.key]){
-				    request.popD = true;
-				    ss.storage['tcPopD_' + request.key]=1;
-				} else {
-				    request.popD = false;
-				}		
+			if(request.pop){
+			    switch(tc.optVal('opt_popd')){ 
+			    case 'never':
+				request.popD = false;
+				break;
+			    case 'every':
+				request.popD = true;
+				break;
+			    default:
+				if(request.pop){
+				    if(! ss.storage['tcPopD_' + request.key]){
+					request.popD = true;
+					ss.storage['tcPopD_' + request.key]=1;
+				    } else {
+					request.popD = false;
+				    }		
+				}
 			    }
 			}
 			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data','template_data']);}
