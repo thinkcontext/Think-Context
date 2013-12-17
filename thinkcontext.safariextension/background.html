@@ -39,9 +39,13 @@ function openOptions(){
     var t = safari.application.activeBrowserWindow.openTab('foreground');
     t.url = safari.extension.baseURI + "options.html";
 }
+function openUpdate(){
+    var t = safari.application.activeBrowserWindow.openTab('foreground');
+    t.url = safari.extension.baseURI + "options.html?update";
+}
 function openInstall(){
     var t = safari.application.activeBrowserWindow.openTab('foreground');
-    t.url = safari.extension.baseURI + "install.html";
+    t.url = safari.extension.baseURI + "options.html?install";
 }
 
 safari.extension.settings.addEventListener("change", openOptions, false);
@@ -49,9 +53,9 @@ safari.extension.settings.addEventListener("change", openOptions, false);
 if(!(localStorage.getItem('tcversion') == tcversion)){
     localStorage.setItem('tcversion',tcversion);
     if(localStorage.getItem('resultsversion')){
-	//console.log('update');
         tc.simpleSql("drop table reverse");
         tc.simpleSql("drop table source");    
+        tc.openUpdate();
       } else {
         openInstall();
     }

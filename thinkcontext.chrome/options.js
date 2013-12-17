@@ -52,3 +52,9 @@ function restore_options() {
 
 document.addEventListener('DOMContentLoaded', restore_options);
 document.querySelector('#save').addEventListener('click', save_options);
+
+if(document.documentURI.match(/\?update$/)){
+    $('div#update').css('display','inline');
+} else if(document.documentURI.match(/\?install$/)){
+    $('div#install').css('display','inline');
+}
