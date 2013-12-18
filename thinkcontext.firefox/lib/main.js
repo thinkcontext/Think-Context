@@ -3,7 +3,6 @@ var data = s.data;
 var db = require("db");
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
-var addontab = require("sdk/addon-page");
 var tabs = require("sdk/tabs");
 
 var icons = { hotelrisky : iconDir + "/infoI.png"
@@ -18,12 +17,12 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,bcorp: iconDir + "/bcorp.ico"
 };
 
-// if(s.loadReason == 'upgrade'){
-//     db.deleteReverse();
-//     tabs.open(data.url('update.html'));
-// } else if(s.loadReason == 'install'){
-//     tabs.open(data.url('install.html'));
-// }
+if(s.loadReason == 'upgrade'){
+    db.deleteReverse();
+    tabs.open(data.url('update.html'));
+} else if(s.loadReason == 'install'){
+    tabs.open(data.url('install.html'));
+}
 
 pageMod.PageMod({
     include : "*.www.google.com",
