@@ -245,6 +245,7 @@ if (window.frameElement === null){
     }
 
     tc.resultPrevResponse = function(request){
+	console.log("resultPrevResponse",request.sid, request.key);
 	$("[sid=" + request.sid +"]").map(function(){
 	    tc.resultPrev(this,request.key,request.data);});
     };
@@ -303,6 +304,7 @@ if (window.frameElement === null){
 	detail.r = r;
 	detail.key = key;
 	detail.url = data.url;
+	console.log("resultPrev",detail.key,detail.did);
 
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);

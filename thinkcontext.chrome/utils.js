@@ -12,10 +12,6 @@ if(typeof(tc) == 'undefined'){
 	tc.responses[kind] = func;
     }
 
-    tc.isHidden = function(){
-	return document.webkitHidden;
-    }
-
     chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse){
 	    if(request.kind == 'tcPopD')

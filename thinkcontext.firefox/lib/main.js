@@ -1,8 +1,10 @@
-var data = require('self').data;
-var db = require("db");
 var s = require("self");
+var data = s.data;
+var db = require("db");
 var pageMod = require("page-mod");
 var iconDir = s.data.url("icons");
+var addontab = require("sdk/addon-page");
+var tabs = require("sdk/tabs");
 
 var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,greenResult : iconDir + "/greenG.png"
@@ -16,9 +18,12 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,bcorp: iconDir + "/bcorp.ico"
 };
 
-if(s.loadReason == 'upgrade'){
-    db.deleteReverse();
-}
+// if(s.loadReason == 'upgrade'){
+//     db.deleteReverse();
+//     tabs.open(data.url('update.html'));
+// } else if(s.loadReason == 'install'){
+//     tabs.open(data.url('install.html'));
+// }
 
 pageMod.PageMod({
     include : "*.www.google.com",
@@ -91,7 +96,6 @@ pageMod.PageMod({
 });
 
 var tabWorkers = {};
-var tabs = require("sdk/tabs");
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 button = urlbarButton({id: 'tcpopd'
 		       , onClick: function(){
