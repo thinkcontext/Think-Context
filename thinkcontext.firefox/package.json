@@ -15,6 +15,13 @@
 	    , "value": true
 	}
 	, {
+	    "name": "opt_roc"
+	    , "title": "Restaurant Opportunities Center (ROC)"
+	    , "description": "ROC maintains a list of restaurants which provide decent working conditions for their employees.  See which eateries pay their workers a living wage, provide sick days and offer opportunities for advancement."
+	    , "type": "bool"
+	    , "value": true
+	}
+	, {
     	    "name": "opt_hotel"
 	    , "title": "Enable Union Hotels"
 	    , "description": "Using the Union Hotel Guide put out by Hotel Workers Rising this feature will show you which hotels have union workers and which are involved involved in a labor dispute."

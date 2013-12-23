@@ -4,7 +4,7 @@ var ss = require("simple-storage");
 var timer = require("timer");
 
 var prefSet = require("simple-prefs");
-var opt_bechdel, opt_green, opt_rush, opt_hotel, opt_bcorp, opt_popd;
+var opt_roc, opt_bechdel, opt_green, opt_rush, opt_hotel, opt_bcorp, opt_popd;
 
 function setPrefs(){
     opt_bechdel = prefSet.prefs.opt_bechdel;
@@ -12,6 +12,7 @@ function setPrefs(){
     opt_rush = prefSet.prefs.opt_rush;
     opt_hotel = prefSet.prefs.opt_hotel;
     opt_bcorp = prefSet.prefs.opt_bcorp;
+    opt_roc = prefSet.prefs.opt_roc;
     opt_popd = prefSet.prefs.opt_popd;
 }
 
@@ -24,6 +25,7 @@ prefSet.on('opt_bcorp', onPrefChange);
 prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
+prefSet.on('opt_roc', onPrefChange);
 prefSet.on('opt_popd', onPrefChange);
 
 function bindNums(x){
@@ -182,6 +184,8 @@ tc = {
 	    sql.execute("delete from results where func = 'greenResult'");
 	if(tc.optVal('opt_bcorp') == false)
 	    sql.execute("delete from results where func = 'bcorp'");
+	if(tc.optVal('opt_roc') == false)
+	    sql.execute("delete from results where func = 'roc'");
 	
 	for(var t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == false)){
@@ -227,6 +231,8 @@ tc = {
 		resArr.push("bechdel");
 	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
+	    if(tc.opt_roc == false)
+		resArr.push("roc");
 	    if(tc.opt_hotel == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -319,6 +325,8 @@ tc = {
 		resArr.push("bechdel");
 	    if(tc.opt_rush == false)
 		resArr.push("rushBoycott");
+	    if(tc.opt_roc == false)
+		resArr.push("roc");
 	    if(tc.opt_hotel == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");

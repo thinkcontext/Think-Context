@@ -1,6 +1,6 @@
 // Saves options to localStorage.
 
-var checkOpts = [ 'opt_rush','opt_green','opt_hotel', 'opt_bechdel', 'opt_bcorp' ]
+var checkOpts = [ 'opt_rush','opt_green','opt_hotel', 'opt_bechdel', 'opt_bcorp', 'opt_roc' ]
 var bgPage = safari.extension.globalPage;
 
 function save_options() {
@@ -12,7 +12,7 @@ function save_options() {
 	    val = 0;
 	}
 	bgPage.tc.removeLocalTableVersion('results');
-	if(i == 'opt_hotel'){
+	if(i == 'opt_hotel' or i == 'opt_roc'){
 	    bgPage.tc.removeLocalTableVersion('place');
 	    bgPage.tc.removeLocalTableVersion('place_data');	    
 	}

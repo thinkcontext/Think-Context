@@ -47,7 +47,7 @@ tc.googleSearch = {
 			  , function(x){ return x.textContent});
 	
 	//	result link	
-	tc.searchLinkExam("ol#rso > li.g > div > h3 > a",'google-search');
+	tc.searchLinkExam("ol#rso > li.g div > h3 > a",'google-search');
 
 
 	// // place page in an lclbox brief results

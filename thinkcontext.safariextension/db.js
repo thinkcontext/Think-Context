@@ -143,6 +143,8 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'bechdel'");
 	if(tc.optVal('opt_bcorp') == 0)
 	    tc.simpleSql("delete from results where func = 'bcorp'");
+	if(tc.optVal('opt_roc') == 0)
+	    tc.simpleSql("delete from results where func = 'roc'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -190,6 +192,8 @@ tc = {
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_bcorp') == 0)
 		resArr.push("bcorp");
+	    if(tc.optVal('opt_roc') == 0)
+		resArr.push("roc");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -270,6 +274,8 @@ tc = {
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_bcorp') == 0)
 		resArr.push("bcorp");
+	    if(tc.optVal('opt_roc') == 0)
+		resArr.push("roc");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
