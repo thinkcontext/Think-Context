@@ -30,7 +30,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -68,7 +68,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -140,7 +140,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -150,6 +150,7 @@ pageMod.PageMod({
 	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
 	    var key = request.key;
+	    console.log(request.key);
 	    var data;
 	    switch(request.kind){
 	    case 'resource':
@@ -173,7 +174,7 @@ pageMod.PageMod(
 	contentStyleFile: data.url("jquery-ui.css"),
 	contentScriptWhen:  'ready',
 	contentScriptFile: [
-	    data.url('jquery-2.0.0.min.js')
+	    data.url('jquery-2.0.3.min.js')
 	    ,data.url('jquery-ui-1.9.2.custom.min.js')
 	    ,data.url('ejs_production.js') 
 	    ,data.url('utils.js')
@@ -208,7 +209,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -241,7 +242,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
@@ -279,7 +280,7 @@ pageMod.PageMod({
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
     contentScriptFile: [
-	data.url('jquery-2.0.0.min.js')
+	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')

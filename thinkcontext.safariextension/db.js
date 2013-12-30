@@ -10,7 +10,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.09'
+	    , version: '0.10'
 	}
 	, place: {
 	    fields: {
@@ -20,7 +20,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.08'
+	    , version: '0.09'
 	}
 	, place_data: {
 	    fields: {
@@ -29,7 +29,7 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.09'
+	    , version: '0.10'
 	}
 	, template: {
 	    fields: {
@@ -37,7 +37,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.04'
+	    , version: '0.05'
 	}
     }
 

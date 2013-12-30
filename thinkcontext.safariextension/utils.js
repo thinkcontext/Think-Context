@@ -51,6 +51,11 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
     tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
 	var d;
 	if(tc.popD == null){	
+            $('body').append($('<img>',
+			       { id: r
+				 ,src: icon
+				 ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
+            
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcOther'}))
@@ -78,27 +83,40 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	}
 	if(autoOpen){
 	    d.dialog('open');
+	
+	    $(window).scroll(function(){
+		d.dialog('close');
+	    });
+	    $(window).click(function(){
+		d.dialog('close');
+		$(window).off('click');
+	    });
+	    d.mouseenter(function(){
+		$(window).off('click');
+	    });
+	    d.mouseleave(function(){
+		$(window).click(function(){
+		    d.dialog('close');
+		    $(window).off('click');
+		});
+	    });
 	}
 	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
-	
-	$(window).scroll(function(){
-	    d.dialog('close');
-	});
-	$(window).click(function(){
-	    d.dialog('close');
-	});
-	d.mouseenter(function(){
-	    $(window).off('click');
-	});
-	d.mouseleave(function(){
-	    $(window).click(function(){
-		d.dialog('close');
-	    });
-	});
+        $('#'+r).click(function(){
+            d.dialog('open');
+            $(window).resize(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+            $(window).scroll(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+        });
+        $('#'+r).hover(function(){$(this).css('opacity','1.0')}
+                       , function(){$(this).css('opacity','0.4')});
 
 	// really irritating when the dialog steals focus
 	if(autoOpen){
@@ -182,10 +200,14 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	var detail = JSON.parse(data.data);
 	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
+	if(typeof(detail) != "object")
+	    detail = {};
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = request.data.key;
 	detail.url = data.url;
+	detail.tcstat = rdc.tcstat;
+	detail.id = data.id;
 
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
@@ -248,10 +270,14 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 	var detail = JSON.parse(data.data);
 	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
+	if(typeof(detail) != "object")
+	    detail = {};
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = key;
 	detail.url = data.url;
+	detail.tcstat = rdc.tcstat;
+	detail.id = data.id;
 
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);

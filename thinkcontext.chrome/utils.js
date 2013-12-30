@@ -174,10 +174,14 @@ if(typeof(tc) == 'undefined'){
 	var detail = JSON.parse(data.data);
 	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
+	if(typeof(detail) != "object")
+	    detail = {};
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = request.data.key;
 	detail.url = data.url;
+	detail.tcstat = rdc.tcstat;
+	detail.id = data.id;
 
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
@@ -239,11 +243,14 @@ if(typeof(tc) == 'undefined'){
 	var detail = JSON.parse(data.data);
 	var rdc = JSON.parse(data.template_data);
 	r = tc.random();
+	if(typeof(detail) != "object")
+	    detail = {};
 	detail.did = 'd'+r;
 	detail.r = r;
 	detail.key = key;
 	detail.url = data.url;
-
+	detail.tcstat = rdc.tcstat;
+	detail.id = data.id;
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
 

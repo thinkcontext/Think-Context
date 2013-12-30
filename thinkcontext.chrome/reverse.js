@@ -1,5 +1,4 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
-    console.log('reverse',document.webkitHidden);
 
     tc.reverse = {};
     

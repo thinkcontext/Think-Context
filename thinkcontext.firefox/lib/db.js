@@ -4,20 +4,11 @@ var ss = require("simple-storage");
 var timer = require("timer");
 
 var prefSet = require("simple-prefs");
-var opt_roc, opt_bechdel, opt_green, opt_rush, opt_hotel, opt_bcorp, opt_popd;
-
-function setPrefs(){
-    opt_bechdel = prefSet.prefs.opt_bechdel;
-    opt_green = prefSet.prefs.opt_green;
-    opt_rush = prefSet.prefs.opt_rush;
-    opt_hotel = prefSet.prefs.opt_hotel;
-    opt_bcorp = prefSet.prefs.opt_bcorp;
-    opt_roc = prefSet.prefs.opt_roc;
-    opt_popd = prefSet.prefs.opt_popd;
-}
-
 function onPrefChange(prefName) {  
-    setPrefs();
+    console.log("onPrefChange",prefName);
+    for(var t in tc.tables){
+	tc.removeLocalTableVersion(t);
+    }
     tc.loadAllTables();
 }
 prefSet.on('opt_bechdel', onPrefChange);
@@ -55,7 +46,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.09'
+	    , version: '0.10'
 	}
 	, place: {
 	    fields: {
@@ -65,7 +56,7 @@ tc = {
 		, siteid: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.08'
+	    , version: '0.09'
 	}
 	, place_data: {
 	    fields: {
@@ -74,7 +65,7 @@ tc = {
 		, type: 'text'
 	    }
 	    , opt: 'opt_hotel'
-	    , version: '0.09'
+	    , version: '0.10'
 	}
 	, template: {
 	    fields: {
@@ -82,7 +73,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.04'
+	    , version: '0.05'
 	}
     }
     
@@ -123,6 +114,7 @@ tc = {
     }
 
     , checkLocalTableVersion: function(t){
+	console.log('checkLocalTableVersion',ss.storage[t + 'version'],tc.tables[t].version);
 	return ss.storage[t + 'version'] == tc.tables[t].version;
     }
     , setLocalTableVersion: function(t){
@@ -174,6 +166,7 @@ tc = {
     }
     
     , loadAllTables: function(){
+	console.log("loadAllTables");
 	if(tc.optVal('opt_hotel') == false)
 	    sql.execute("delete from results where func like 'hotel%'");
 	if(tc.optVal('opt_bechdel') == false)
@@ -196,12 +189,14 @@ tc = {
 		}
 	    } else {
 		var delTxt = "delete from " + t;
+		console.log(delTxt);
 		tc.removeLocalTableVersion(t);
 		sql.execute(delTxt);
 	    }
 	}
     }
     , checkNoTable: function(table){
+	console.log("checkNoTable",table);
 	sql.execute("select count(*) from " + table
 		    ,{}
 		    , tc.onSuccess
@@ -219,21 +214,22 @@ tc = {
     }
     
     , updateTable: function(table){
+	console.log('update table',table);
 	var query;
 	var resClause = '';
 	var resArr = [];
 	if(table == 'results'){
-	    if(tc.opt_green == false)
+	    if(tc.optVal('opt_green') == false)
 		resArr.push("greenResult");
-	    if(tc.opt_bcorp == false)
+	    if(tc.optVal('opt_bcorp') == false)
 		resArr.push("bcorp");
-	    if(tc.opt_bechdel == false)
+	    if(tc.optVal('opt_bechdel') == false)
 		resArr.push("bechdel");
-	    if(tc.opt_rush == false)
+	    if(tc.optVal('opt_rush') == false)
 		resArr.push("rushBoycott");
-	    if(tc.opt_roc == false)
+	    if(tc.optVal('opt_roc') == false)
 		resArr.push("roc");
-	    if(tc.opt_hotel == false){
+	    if(tc.optVal('opt_hotel') == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
 		resArr.push("hotelrisky");
@@ -279,6 +275,8 @@ tc = {
 	}
 
 	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
+
+	console.log(query);
 	var insReq = Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -313,21 +311,23 @@ tc = {
     }
     
     , loadTable: function(table){
+	console.log("loadTable",table);
+	console.log("opt_bechdel",tc.optVal('opt_bechdel'));
 	var query;
 	var resClause = '';
 	var resArr = [];
 	if(table == 'results'){
-	    if(tc.opt_green == false)
+	    if(tc.optVal('opt_green') == false)
 		resArr.push("greenResult");
-	    if(tc.opt_bcorp == false)
+	    if(tc.optVal('opt_bcorp') == false)
 		resArr.push("bcorp");
-	    if(tc.opt_bechdel == false)
+	    if(tc.optVal('opt_bechdel') == false)
 		resArr.push("bechdel");
-	    if(tc.opt_rush == false)
+	    if(tc.optVal('opt_rush') == false)
 		resArr.push("rushBoycott");
-	    if(tc.opt_roc == false)
+	    if(tc.optVal('opt_roc') == false)
 		resArr.push("roc");
-	    if(tc.opt_hotel == false){
+	    if(tc.optVal('opt_hotel') == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
 		resArr.push("hotelrisky");
