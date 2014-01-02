@@ -12,7 +12,7 @@ function save_options() {
 	    val = 0;
 	}
 	bgPage.tc.removeLocalTableVersion('results');
-	if(i == 'opt_hotel' or i == 'opt_roc'){
+	if(i == 'opt_hotel' || i == 'opt_roc'){
 	    bgPage.tc.removeLocalTableVersion('place');
 	    bgPage.tc.removeLocalTableVersion('place_data');	    
 	}
