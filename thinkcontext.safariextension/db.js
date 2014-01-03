@@ -386,7 +386,7 @@ or ? like '%.' || key";
     , lookupPlace: function(key,request,callback){
 	tc.db.transaction(
 	    function(tx){
-		var selTxt = "SELECT pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
+		var selTxt = "SELECT pd.id, pd.type, pd.data, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
 		console.log(selTxt);
 		tx.executeSql(selTxt
 			      , [key,request.type]
