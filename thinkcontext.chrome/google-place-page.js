@@ -1,13 +1,4 @@
 tc.registerResponse('place', tc.resultPop);
-		    // function(request){
-		    // 	var data = request.data;
-		    // 	var icon, title, blurb, rdc, tcstat = 'gsp';
-		    // 	var z = tc.random();
-		    // 	var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-		    // 	rdc = JSON.parse(data.template_data);
-		    // 	new EJS({text:rdc.template}).update("z"+z,data);
-		    // 	tc.popDialog(rdc.title, revDiv, 'z'+z,true,rdc.icon,'other');
-		    // });
 
 tc.googlePlaceExamine = function(){
 

@@ -168,10 +168,12 @@ if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/
 
     tc.onResponse = function(e){
 	var request = e.message;
+	//console.log('onResponse',request);
 	tc.responses[request.kind](request);
     }
 
     tc.sendMessage = function(request){
+	//console.log('sendMessage',request);
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 

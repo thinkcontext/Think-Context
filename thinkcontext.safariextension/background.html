@@ -6,12 +6,18 @@
     <script src="bg-utils.js" type="text/javascript"></script>
     <script src="db.js" type="text/javascript"></script>
     <script>
-      var tcversion = '0.93';
+      var tcversion = '0.96';
     function onRequest(e) {
         var request = e.message;
 	var key = request.key;
         var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};	        var data;
 	switch(request.kind){
+        case 'optionsChange':
+            optionsChange(e.message);
+            break;
+	case 'restoreOptions':
+	    restoreOptions(callback);
+	    break;
 	case 'link': 
 	    tc.lookupResult(key, request, callback);
 	    break;
@@ -35,6 +41,32 @@ tc.connectSubvDB();
 safari.application.addEventListener("message",onRequest);
 setInterval(tc.updateAllTables, 10870000);
 
+var checkOpts = [ 'opt_rush','opt_green','opt_hotel', 'opt_bechdel', 'opt_bcorp', 'opt_roc' ];
+
+function optionsChange(message){
+    console.log('optionsChange',message);
+    if(message.reResults == 1){
+	tc.removeLocalTableVersion('results');
+    }
+    if(message.rePlace){
+	tc.removeLocalTableVersion('place');
+	tc.removeLocalTableVersion('place_data');	    
+    }
+    for(var i in checkOpts){
+	localStorage[checkOpts[i]] = message.opts[checkOpts[i]];
+    }
+    tc.loadAllTables();
+}
+
+function restoreOptions(callback){
+    var opts = {};
+    for(var i in checkOpts){
+	opts[checkOpts[i]] = localStorage[checkOpts[i]];
+    }
+    console.log(opts);
+    callback({kind: 'restoreOptions',opts:opts});
+}
+
 function openOptions(){
     var t = safari.application.activeBrowserWindow.openTab('foreground');
     t.url = safari.extension.baseURI + "options.html";
@@ -55,7 +87,7 @@ if(!(localStorage.getItem('tcversion') == tcversion)){
     if(localStorage.getItem('resultsversion')){
         tc.simpleSql("drop table reverse");
         tc.simpleSql("drop table source");    
-        tc.openUpdate();
+        openUpdate();
       } else {
         openInstall();
     }

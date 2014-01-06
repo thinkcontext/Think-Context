@@ -43,7 +43,7 @@ function restore_options() {
     }
     val = localStorage['opt_popd'];
     if(val != null){
-	$("[name='popD'] option[value='" + val + "'").map(
+	$("[name='popD'] option[value='" + val + "']").map(
 	    function(){
 		this.selected = true;
 	    });

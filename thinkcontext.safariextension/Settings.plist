@@ -6,7 +6,7 @@
 		<key>Key</key>
 		<string>options</string>
 		<key>Title</key>
-		<string>Check for thinkContext  options</string>
+		<string>Click for thinkContext  options</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>

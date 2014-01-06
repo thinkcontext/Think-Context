@@ -1,15 +1,6 @@
 if (window.top === window) {
     if(document.baseURI.search("^http(s)?://plus.google.com/") >= 0){
-	tc.registerResponse('place', 
-			    function(request){
-				var data = request.data;
-				var icon, title, blurb, rdc, tcstat = 'gsp';
-				var z = tc.random();
-				var revDiv = $('<div>',{id:"z"+z}).appendTo('body');
-				rdc = tc.resultDialogConfig["hotel"+data.type];
-				new EJS({text:rdc.template}).update("z"+z,data);
-				tc.popDialog(rdc.title, revDiv, 'z'+z,true,rdc.icon,'other');
-			    });
+	tc.registerResponse('place', tc.resultPop);
 
 	tc.googlePlaceExamine = function(){
 
