@@ -338,12 +338,14 @@ tc = {
 	if(r.rows.length > 0){
 	    request.data = r.rows.item(0);
 	    if(request.pop){
+		console.log('opt_popD',tc.optVal('opt_popD'));
 		switch(tc.optVal('opt_popD')){
 		case 'never':
 		    request.popD = false;
 		    break;
 		case 'every':
 		    request.popD = true;
+		    break;
 		case 'session':
 		    if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
 			request.popD = true;

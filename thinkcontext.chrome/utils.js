@@ -23,10 +23,6 @@ if(typeof(tc) == 'undefined'){
 	}
     );
 
-    tc.iconDir = chrome.extension.getURL("icons");
-    tc.icons = { trackback32: tc.iconDir + "/trackback-32.png"
-	       };
-
     tc.insertPrev = function(n,icon, r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
 	    var resDiv = $('<div>'
@@ -142,6 +138,7 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.onResponse = function(request){
+	console.log(request);
 	tc.responses[request.kind](request);
     }
 

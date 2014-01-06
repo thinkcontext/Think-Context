@@ -18,7 +18,7 @@ function save_options() {
 	}
     }
     
-    argOpts['opt_popd'] = $("[name='popD']").val();
+    argOpts['opt_popD'] = $("[name='popD']").val();
     safari.self.tab.dispatchMessage('optionsChange',{kind: 'optionsChange', opts: argOpts, reResults: reResults, rePlace: rePlace});
     // Update status to let user know options were saved.
     var status = document.getElementById("status");
@@ -30,17 +30,18 @@ function save_options() {
 
 
 // Restores select box state to saved value from localStorage.
-function restore_options() {
+function restore_options(message) {
+    console.log("restore_options",message);
     var val;
     for(var i in checkOpts){
-	val = localStorage[checkOpts[i]];
-	if(val == 1 || val == null)
-	    val = true;
-	else 
+	val = message.opts[checkOpts[i]];
+	if(val == 0)
 	    val = false;
+	else 
+	    val = true;
 	document.getElementById(checkOpts[i]).checked = val;
     }
-    val = localStorage['opt_popd'];
+    val = message.opts['opt_popD'];
     if(val != null){
 	$("[name='popD'] option[value='" + val + "']").map(
 	    function(){
@@ -50,9 +51,10 @@ function restore_options() {
 }
 safari.self.addEventListener(
     "message"
-    , function(message){ 
+    , function(e){
+	var message = e.message;
 	if(message.kind == 'restoreOptions'){ 
-	    restore_options(); 
+	    restore_options(message); 
 	}
     });
     

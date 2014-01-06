@@ -342,6 +342,7 @@ tc = {
 		    break;
 		case 'every':
 		    request.popD = true;
+		    break;
 		case 'session':
 		    if(! sessionStorage.getItem('tcPopD_' + request.data.key)){
 			request.popD = true;

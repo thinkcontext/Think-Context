@@ -19,7 +19,7 @@ function save_options() {
 	localStorage[checkOpts[i]] = val;
     }
     
-    localStorage['opt_popd'] = $("[name='popD']").val();
+    localStorage['opt_popD'] = $("[name='popD']").val();
     // Update status to let user know options were saved.
     var status = document.getElementById("status");
     status.innerHTML = "Options Saved.";
@@ -41,7 +41,7 @@ function restore_options() {
 	    val = false;
 	document.getElementById(checkOpts[i]).checked = val;
     }
-    val = localStorage['opt_popd'];
+    val = localStorage['opt_popD'];
     if(val != null){
 	$("[name='popD'] option[value='" + val + "']").map(
 	    function(){

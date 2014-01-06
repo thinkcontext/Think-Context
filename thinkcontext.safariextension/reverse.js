@@ -6,9 +6,9 @@ if (window.top === window) {
 	  || document.domain.match('google.com$')
 	  || document.domain.match('facebook.com$')
 	  || document.domain.match('twitter.com$')
+	  || document.baseURI.match(/^safari-extension/)
 	 ) || document.domain == 'news.google.com'
       ){    
-	
 	tc.registerResponse('link',
 			    function(request){
 				if(request.pop == 1){

@@ -1,4 +1,4 @@
-if (window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 ) {
+if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
     var tc = {};
     tc.dialogs = [];
     tc.responses = {};

@@ -10,7 +10,8 @@
     function onRequest(e) {
         var request = e.message;
 	var key = request.key;
-        var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};	        var data;
+        var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};
+        var data;
 	switch(request.kind){
         case 'optionsChange':
             optionsChange(e.message);
@@ -44,7 +45,6 @@ setInterval(tc.updateAllTables, 10870000);
 var checkOpts = [ 'opt_rush','opt_green','opt_hotel', 'opt_bechdel', 'opt_bcorp', 'opt_roc' ];
 
 function optionsChange(message){
-    console.log('optionsChange',message);
     if(message.reResults == 1){
 	tc.removeLocalTableVersion('results');
     }
@@ -55,6 +55,8 @@ function optionsChange(message){
     for(var i in checkOpts){
 	localStorage[checkOpts[i]] = message.opts[checkOpts[i]];
     }
+    localStorage['opt_popD'] = message.opts['opt_popD'];
+
     tc.loadAllTables();
 }
 
@@ -63,7 +65,7 @@ function restoreOptions(callback){
     for(var i in checkOpts){
 	opts[checkOpts[i]] = localStorage[checkOpts[i]];
     }
-    console.log(opts);
+    opts['opt_popD'] = localStorage['opt_popD'];
     callback({kind: 'restoreOptions',opts:opts});
 }
 
