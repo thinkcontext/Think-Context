@@ -43,7 +43,7 @@ if(window.top === window) {
 
 		//     ad links
 		
-		tc.searchLinkExam('div.ads-container li.ads-ad:has(h3) div.ads-visurl cite'
+		tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
 				  ,'google-search'
 				  , function(x){return x.parentElement.children[0]}
 				  , function(x){ return x.textContent});
