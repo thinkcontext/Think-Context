@@ -31,7 +31,6 @@ function save_options() {
 
 // Restores select box state to saved value from localStorage.
 function restore_options(message) {
-    console.log("restore_options",message);
     var val;
     for(var i in checkOpts){
 	val = message.opts[checkOpts[i]];

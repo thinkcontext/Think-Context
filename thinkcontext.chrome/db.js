@@ -42,7 +42,7 @@ tc = {
 	}
     }
 
-    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
+    , dataUrl: 'http://data2.thinkcontext.org/tc0096.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;
@@ -338,7 +338,6 @@ tc = {
 	if(r.rows.length > 0){
 	    request.data = r.rows.item(0);
 	    if(request.pop){
-		console.log('opt_popD',tc.optVal('opt_popD'));
 		switch(tc.optVal('opt_popD')){
 		case 'never':
 		    request.popD = false;

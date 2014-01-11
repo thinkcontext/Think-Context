@@ -1,4 +1,3 @@
-console.log(document.domain);
 tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
@@ -24,7 +23,6 @@ if(document.domain.match('adsonar.com')){
 } else if(document.domain.match('msn.com')){
     $('a.AdDisplayUrl').not('a[sid]').map(
 	function(){
-	    console.log(this);
 	    tc.iframe.sendReq(this);
 	});
 // } else if(document.baseURI.match('ad.doubleclick.net/adi')){

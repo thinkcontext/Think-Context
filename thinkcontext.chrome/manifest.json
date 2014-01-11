@@ -16,9 +16,6 @@
     		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
-		    ,"*://bitly.com/*"
-		    ,"*://bit.ly/*"
-		    ,"*://goo.gl/*"
         	   ],
     "background": {"scripts": ["jquery-2.0.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [

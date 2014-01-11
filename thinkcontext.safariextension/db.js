@@ -41,7 +41,7 @@ tc = {
 	}
     }
 
-    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
+    , dataUrl: 'http://data2.thinkcontext.org/tc0096.php?'
 
     , tableFieldsLength: function(t){
 	var i = 0;

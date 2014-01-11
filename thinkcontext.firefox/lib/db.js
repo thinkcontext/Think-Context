@@ -5,7 +5,6 @@ var timer = require("timer");
 
 var prefSet = require("simple-prefs");
 function onPrefChange(prefName) {  
-    console.log("onPrefChange",prefName);
     for(var t in tc.tables){
 	tc.removeLocalTableVersion(t);
     }
@@ -77,7 +76,7 @@ tc = {
 	}
     }
     
-    , dataUrl: 'http://www.data.thinkcontext.org/tcdev.php?'
+    , dataUrl: 'http://data2.thinkcontext.org/tc0096.php?'
 
     , optVal: function(o){ return prefSet.prefs[o]; }
 
@@ -114,7 +113,6 @@ tc = {
     }
 
     , checkLocalTableVersion: function(t){
-	console.log('checkLocalTableVersion',ss.storage[t + 'version'],tc.tables[t].version);
 	return ss.storage[t + 'version'] == tc.tables[t].version;
     }
     , setLocalTableVersion: function(t){
@@ -166,7 +164,6 @@ tc = {
     }
     
     , loadAllTables: function(){
-	console.log("loadAllTables");
 	if(tc.optVal('opt_hotel') == false)
 	    sql.execute("delete from results where func like 'hotel%'");
 	if(tc.optVal('opt_bechdel') == false)
@@ -189,14 +186,12 @@ tc = {
 		}
 	    } else {
 		var delTxt = "delete from " + t;
-		console.log(delTxt);
 		tc.removeLocalTableVersion(t);
 		sql.execute(delTxt);
 	    }
 	}
     }
     , checkNoTable: function(table){
-	console.log("checkNoTable",table);
 	sql.execute("select count(*) from " + table
 		    ,{}
 		    , tc.onSuccess
@@ -214,7 +209,6 @@ tc = {
     }
     
     , updateTable: function(table){
-	console.log('update table',table);
 	var query;
 	var resClause = '';
 	var resArr = [];
@@ -276,7 +270,6 @@ tc = {
 
 	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 
-	console.log(query);
 	var insReq = Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -311,8 +304,6 @@ tc = {
     }
     
     , loadTable: function(table){
-	console.log("loadTable",table);
-	console.log("opt_bechdel",tc.optVal('opt_bechdel'));
 	var query;
 	var resClause = '';
 	var resArr = [];

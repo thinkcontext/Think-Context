@@ -150,7 +150,6 @@ pageMod.PageMod({
 	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
 	    var key = request.key;
-	    console.log(request.key);
 	    var data;
 	    switch(request.kind){
 	    case 'resource':

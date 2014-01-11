@@ -28,7 +28,6 @@ if (window.top === window) {
 	$("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	    function(){
 		if(!this.textContent.match(' ')){
-		    console.log(this.textContent);
 		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({'kind': 'link'
@@ -40,7 +39,6 @@ if (window.top === window) {
 	$("a[href*='shlinks.industrybrains.com']").not('a[sid]').map(
 	    function(){
 		if(!this.textContent.match(' ')){
-		    console.log('industrybrains: ' + this.textContent);
 		    var sid = "gs" + tc.random();
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({'kind': 'link'
@@ -50,19 +48,19 @@ if (window.top === window) {
 	    });
 
 
-	$("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").map(
-	    function(){
-		var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
-		if(m && m.length == 3)
-		    console.log('doubleclick param ' + m[2])
-	    });
+	// $("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").map(
+	//     function(){
+	// 	var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
+	// 	if(m && m.length == 3)
+	// 	    console.log('doubleclick param ' + m[2])
+	//     });
 
-	$("object[flashvars*='click=http%3A%2F%2Fad.doubleclick.net']").map(
-	    function(){
-		var m = this.attributes.flashvars.textContent.match(/exitEvents=[^\&]*url%253Ahttp%25253A%2F%2F([^\%]+)/);
-		if(m && m.length == 2)
-		    console.log('doubleclick object ' + m[1]);
-	    });
+	// $("object[flashvars*='click=http%3A%2F%2Fad.doubleclick.net']").map(
+	//     function(){
+	// 	var m = this.attributes.flashvars.textContent.match(/exitEvents=[^\&]*url%253Ahttp%25253A%2F%2F([^\%]+)/);
+	// 	if(m && m.length == 2)
+	// 	    console.log('doubleclick object ' + m[1]);
+	//     });
 	safari.self.addEventListener("message",tc.onResponse, false);
 	
     }

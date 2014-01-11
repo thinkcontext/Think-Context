@@ -99,7 +99,6 @@ if (window.frameElement === null){
 
     tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
 	var d;
-	console.log("autoOpen", autoOpen);
 	if(tc.popD == null){	
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
@@ -238,7 +237,6 @@ if (window.frameElement === null){
     }
 
     tc.resultPrevResponse = function(request){
-	console.log("resultPrevResponse",request.sid, request.key);
 	$("[sid=" + request.sid +"]").map(function(){
 	    tc.resultPrev(this,request.key,request.data);});
     };
