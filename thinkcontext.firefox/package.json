@@ -24,7 +24,7 @@
 	, {
     	    "name": "opt_hotel"
 	    , "title": "Enable Union Hotels"
-	    , "description": "Using the Union Hotel Guide put out by UNITE HERE this feature will show you which hotels have union workers and which are involved involved in a labor dispute."
+	    , "description": "Using the Union Hotel Guide put out by UNITE HERE this feature will show you which hotels have union workers and which are involved in a labor dispute."
 	    , "type": "bool"
 	    , "value": true
 	}
