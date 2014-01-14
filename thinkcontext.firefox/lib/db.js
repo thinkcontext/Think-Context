@@ -122,7 +122,14 @@ tc = {
 	ss.storage[t + 'version'] = null;
     }
     , checkLocalDeleteTime: function(t){
-	return ss.storage[t + 'deletetime'];
+	var s;
+	if(! (s = ss.storage[t + 'deletetime'])){
+	    s = 0;
+	}
+	return s;
+    }
+    , checkLocalDeleteTime: function(t){
+	return 
     }
     , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
@@ -138,7 +145,11 @@ tc = {
     }
 
     , checkLocalAddTime: function(t){
-	return ss.storage[t + 'addtime'];
+	var s;
+	if(! (s = ss.storage[t + 'addtime'])){
+	    s = 0;
+	}
+	return s;
     }
     , setLocalAddTime: function(t){
 	ss.storage[t + 'addtime'] = tc.roundNowDownHour();

@@ -93,7 +93,11 @@ tc = {
 	localStorage.removeItem(t + 'version');
     }
     , checkLocalDeleteTime: function(t){
-	return localStorage.getItem(t + 'deletetime');
+	var s;
+	if(! (s = localStorage.getItem(t + 'deletetime'))){
+	    s = 0;
+	}
+	return s;
     }
     , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
@@ -108,7 +112,11 @@ tc = {
 	localStorage.setItem(t + 'deletetime', tc.roundNowDownHour());
     }
     , checkLocalAddTime: function(t){
-	return localStorage.getItem(t + 'addtime');
+	var s;
+	if(! (s = localStorage.getItem(t + 'addtime'))){
+	    s = 0;
+	}
+	return s;
     }
     , setLocalAddTime: function(t){
 	localStorage.setItem(t + 'addtime', tc.roundNowDownHour());

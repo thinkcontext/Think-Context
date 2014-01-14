@@ -1,6 +1,6 @@
 {
     "name": "Think Context",
-    "version": "0.96",
+    "version": "0.97",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
@@ -15,6 +15,7 @@
     		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
+		    ,"tabs"
         	   ],
     "background": {"scripts": ["jquery-2.0.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
