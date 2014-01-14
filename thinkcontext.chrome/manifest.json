@@ -39,6 +39,14 @@
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
 	 }
+	,{  "matches": ["*://mail.google.com/*"],
+	    "css": ["jquery-ui.css"],
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-mail.js"]
+	 }
+	,{  "matches": ["*://maps.google.com/*"],
+	    "css": ["jquery-ui.css"],
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-maps.js"]
+	 }
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
@@ -54,6 +62,7 @@
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://*/*"],
 	    "exclude_globs": ["*://mail.google.com/*"
+			      ,"*://maps.google.com/*"
 			      ,"*://www.google.com/*"
 			      ,"*://www.bing.com/search*"
 			      ,"*://www.bing.com/"
