@@ -26,11 +26,6 @@
 	}
 	, {
 	    "css": ["jquery-ui.css"],
-	    "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
-	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","twitter.js"]
-	}
-	, {
-	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
 	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
 	}

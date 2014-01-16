@@ -4,5 +4,5 @@
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
 		  , "http://tcdata.iriscouch.com/*"]
- , "background": {"scripts": ["pouchdb-1.1.0.js","background.js"]}
+ , "background": {"scripts": ["pouchdb-nightly.js","background.js"]}
 }
