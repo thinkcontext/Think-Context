@@ -1,6 +1,5 @@
 if(typeof(tc) == 'undefined'){
     tc = {};
-    tc.dialogs = [];
     tc.responses = {};
     tc.popD = null;
 
@@ -14,14 +13,32 @@ if(typeof(tc) == 'undefined'){
 
     chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse){
-	    if(request.kind == 'tcPopD')
-		if(tc.popD.dialog('isOpen')){
-		    tc.popD.dialog('close');
+	    if(request.kind == 'tcPopD'){
+		console.log(tc.popD);
+		var pd = tc.popD.data('overlay');
+		console.log(pd);
+		if(pd.isOpened()){
+		    pd.close();
 		} else {
-		    tc.popD.dialog('open');
+		    pd.load();
 		}
+	    }
 	}
     );
+
+    tc.insertImgAd = function(n,icon,r,title,theDiv){
+	console.log('insertImgAd',n);
+	var offsetLeft = n.offsetLeft, offsetTop = n.offsetTop + 10;
+	var resDiv = $('<div>'
+		       , { id: r
+			   , subv: true
+			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; zIndex: 100000001' })
+	    .append($('<img>', { src: icon}))[0];
+	resDiv.style.offsetLeft = offsetLeft;
+	resDiv.style.offsetTop = offsetTop;
+	$('body').append(resDiv);
+
+    };
 
     tc.insertPrev = function(n,icon, r,title,theDiv){
 	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
@@ -36,27 +53,21 @@ if(typeof(tc) == 'undefined'){
 	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
-	var d;
-
+    tc.popDialog = function(request){
+	var r = tc.random(), z = 'd' + r;
+ 	var rdc = JSON.parse(request.data.template_data);
+	var title = rdc.title, icon = rdc.icon, kind = 'result';
+	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
 	if(tc.popD == null){	
-	    d = $('<div>',{id:'tcPopD'})
+	    d = $('<div>',{id:'tcPopD', class: 'tcOverlay'})
 		.append($('<div>',{id:'tcResults'}))
-		.append($('<div>',{id:'tcOther'}))
-		.dialog(
-		    { zIndex: 100000001
-		      ,title: 'thinkContext: ' + title
-		      , position: [window.innerWidth - 350
-				   , 10 ]
-		      , close: function(){
-			  $(window).unbind('resize');
-			  $(window).unbind('scroll');
-		      }
-		      , height: 150
-		      , autoOpen: false
-		    });     
+		.append($('<div>',{id:'tcOther'}));
+	    d.overlay({oneInstance: false
+		       , left: window.innerWidth - 350
+		       , top: 10});
 	    tc.popD = d;
-	}
+	    $('body').append(d);
+	} 
 	d = tc.popD;
 	switch(kind){
 	case 'result':
@@ -65,32 +76,28 @@ if(typeof(tc) == 'undefined'){
 	default:
 	    $('#tcOther',d).append(revDiv);
 	}
-	if(autoOpen){
-	    d.dialog('open');
+	if(request.popD){
+	    d.load();
 	}
 	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
-	
 	$(window).scroll(function(){
-	    d.dialog('close');
-	});
-	$(window).click(function(){
-	    d.dialog('close');
+	    d.data("overlay").close();
 	});
 	d.mouseenter(function(){
 	    $(window).off('click');
 	});
 	d.mouseleave(function(){
 	    $(window).click(function(){
-		d.dialog('close');
+		d.data("overlay").close();
 	    });
 	});
 
 	// really irritating when the dialog steals focus
-	if(autoOpen){
+	if(request.popD){
 	    document.activeElement.blur();
 	}
     }
@@ -98,6 +105,7 @@ if(typeof(tc) == 'undefined'){
     tc.sigURL = function(url){
 	// turn a url into some sort of canonicalized version
 	// unfortunately this varies by site so this will be an imperfect exercise
+	if(!url) return;
 	var ret = url;
 	var matches;
 	var yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
@@ -109,7 +117,7 @@ if(typeof(tc) == 'undefined'){
 	} else {
 	    ret = ret.split('?')[0].split('#')[0];	      
 	}
-	return ret;
+	return ret.replace(/https?:\/\//,'').replace(/\/$/,'').replace(/\s+/g,'').toLowerCase();
     }
 
     tc.htmlDecode = function(value){ 
@@ -117,26 +125,23 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.iconDialog = function(title,body,iconId){
-	var d = body.dialog(
-	    {autoOpen: false
-	     , title:  'thinkContext: ' + title
-	     , height: 150
-	     , zIndex: 10000000
-	    }); 
+	body.overlay({fixed: false
+		      , oneInstance: false});
+	var d = body.data('overlay');
 	$("div#"+iconId ).hover(
 	    function(event){ 
-		d.dialog('option','position',[event.clientX - 15, event.clientY - 15]); 
-		d.dialog('open'); 
-		$('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
+		d.load();		
+		body.css({left: event.pageX - 15, top:event.pageY - 15});
+		body.mouseleave(function(e){ d.close(); });
+		$(window).scroll(function(e){ d.close(); });
 		return false;}
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
 	 		    , 'key': this.attributes['tcstat'].value});
 	});
-	tc.dialogs.push(d);
     }
-
+    
     tc.onResponse = function(request){
 	tc.responses[request.kind](request);
     }
@@ -145,46 +150,8 @@ if(typeof(tc) == 'undefined'){
 	chrome.extension.sendRequest(request, tc.onResponse);
     }
 
-    tc.closeAllDialogs = function(){
-	for(var d in tc.dialogs){
-	    tc.dialogs[d].dialog('close');
-	}
-    }
-
-    tc.googlePlaces = function(request){ 
-	var data = request.data;
-	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
-	for(var r in data){
-	    d = data[r];
-	    ra = tc.random();
-	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
-	    rdc = JSON.parse(data.template_data);
-	    h = new EJS({text: rdc.template}).render();
-	    $("#d"+ra).append(h);
-	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
-	}
-    }
-
-    tc.resultPop = function(request){
-	var data = request.data;
-	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	if(typeof(detail) != "object")
-	    detail = {};
-	detail.did = 'd'+r;
-	detail.r = r;
-	detail.key = request.data.key;
-	detail.url = data.url;
-	detail.tcstat = rdc.tcstat;
-	detail.id = data.id;
-
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r,detail);
-	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
-    }
-
     tc.resultPrevResponse = function(request){
+	console.log("resultPrevResponse",request);
 	$("[sid=" + request.sid +"]").map(function(){
 	    tc.resultPrev(this,request.key,request.data);});
     };
@@ -203,9 +170,13 @@ if(typeof(tc) == 'undefined'){
 		if(placer)
 		    target = placer(this);
 		this.setAttribute('tcLink','tcLink');
+		if(!target){
+		    // don't know where to put it so return after we set tcLink
+		    return;
+		}
 		var sid = "gs" + tc.random();
 		target.setAttribute("sid",sid);
-		var url = tc.sigURL(href).replace(/https?:\/\//,'').replace(/\/$/,'').toLowerCase();
+		var url = tc.sigURL(href);
 		tc.sendMessage({kind: 'link'
 				,source: source
      				, sid: sid
@@ -235,10 +206,9 @@ if(typeof(tc) == 'undefined'){
 	);
     };
 
-    tc.resultPrev = function(n,key,data){
+
+    tc.renderTemplate = function(data,r,key,rdc){
 	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
 	if(typeof(detail) != "object")
 	    detail = {};
 	detail.did = 'd'+r;
@@ -247,29 +217,23 @@ if(typeof(tc) == 'undefined'){
 	detail.url = data.url;
 	detail.tcstat = rdc.tcstat;
 	detail.id = data.id;
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	var d = $("<div>",{id: "d"+r, class: "tcOverlay"}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
-
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
-    }
-
-    tc.place = function(n, cid,data){
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r);
+	return d;
 	
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
+    };
+
+    tc.resultPrev = function(n,key,data){
+	var r = tc.random();
+ 	var rdc = JSON.parse(data.template_data);
+	var d = tc.renderTemplate(data,r,key,rdc);
+
+	if(data.subtype == 'imgad'){
+	    console.log('imgad');
+	    tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+	} else {
+	    tc.insertPrev(n, rdc.icon, r, rdc.title, d);
+	}
     }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}

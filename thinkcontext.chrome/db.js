@@ -171,7 +171,7 @@ tc = {
     }
     
     , checkNoTable: function(table){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		tx.executeSql("select count(*) from " + table
 			      ,[]
@@ -294,9 +294,7 @@ tc = {
 	if(resArr.length > 0){
 	    resClause = "&ex=" + resArr.join(',');
 	}
-// fix me for release
-//	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
-	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + new Date().getTime()  +"&tab=" + table + resClause);
+	query = encodeURI(tc.dataUrl + "da=0" + "&te=" + tc.roundNowDownHour() +"&tab=" + table + resClause);
 	$.get(query,{},function(data){
 	    var dataArray = CSVToArray(data);
 	    var len = tc.tableFieldsLength(table);
@@ -375,7 +373,7 @@ tc = {
     }
 
     , lookupResult: function(key, request, callback){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "\
 SELECT r.*, t.data template_data FROM results r \
@@ -394,7 +392,7 @@ or ? like '%.' || key";
 	);
     }
     , lookupPlace: function(key,request,callback){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "SELECT pd.id, pd.type, pd.data, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
 		tx.executeSql(selTxt
@@ -411,7 +409,7 @@ or ? like '%.' || key";
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 	
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
 		tx.executeSql(selTxt

@@ -4,7 +4,7 @@ tc.iframe.sendReq = function(j){
     j.setAttribute("sid",sid);
     tc.sendMessage({'kind': 'link'
      		    , 'sid': sid
-     		    , 'key': tc.sigURL(j.textContent).replace(/https?:\/\//,'').replace(/\/$/,'') });
+     		    , 'key': tc.sigURL(j.textContent) });
     
 };
 

@@ -12,7 +12,7 @@ tc.facebook.examine = function(){
 	    this.setAttribute("sid",sid);
 	    tc.sendMessage({kind: 'link'
      			    , sid: sid
-     			    , key: tc.sigURL(this.textContent).replace(/https?:\/\//,'').replace(/\/$/,'').toLowerCase() });
+     			    , key: tc.sigURL(this.textContent)});
 	    
 	});}
 

@@ -1,4 +1,4 @@
-tc.registerResponse('place', tc.resultPop);
+tc.registerResponse('place', tc.popDialog);
 
 tc.googlePlaceExamine = function(){
 

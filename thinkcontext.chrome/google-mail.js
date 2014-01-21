@@ -11,10 +11,9 @@ $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	if(m && m[1]){
 	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
-	    console.log(m[1]);
 	    tc.sendMessage({'kind': 'link'
      			    , 'sid': sid
-     			    , 'key': tc.sigURL(m[1]).replace(/https?:\/\//,'').replace(/\/$/,'') });
+     			    , 'key': tc.sigURL(m[1]) });
 	}
     });
 }

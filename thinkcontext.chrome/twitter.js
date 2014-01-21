@@ -1,3 +1,5 @@
+// $("a.account-group")
+
 tc.registerResponse('link'
 		    ,function(request){
 			$("[sid=" + request.sid +"]").map(function(){
@@ -13,7 +15,7 @@ tc.registerResponse('urlresolve',
 				this.setAttribute("sid",sid);
 				tc.sendMessage({'kind': 'link'
      						, 'sid': sid
-     						, 'key': tc.sigURL(response.url).replace(/https?:\/\//,'').replace(/\/$/,'') });
+     						, 'key': tc.sigURL(response.url) });
 			    });
 		    });
 
@@ -33,7 +35,7 @@ function expandURL() {
 		    this.setAttribute("sid",sid);
 		    tc.sendMessage({'kind': 'link'
      				    , 'sid': sid
-     				    , 'key': tc.sigURL(this.href).replace(/https?:\/\//,'').replace(/\/$/,'') });
+     				    , 'key': tc.sigURL(this.href) });
 		    
 		}
 	    }
