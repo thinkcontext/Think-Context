@@ -1,12 +1,19 @@
 tc.googleSearch = {};
+var $observerSummaryRoot
 
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
    ||document.location.href.search('.*www.google.com/#') >= 0
    ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
   ){
-    
+    $observerSummaryRoot = $("div#rcnt");    
+    tc.googleSearch.observe = function(){
+	$observerSummaryRoot.mutationSummary("connect"
+					     , summaryCallback
+					     , [{ all:true }]);
+    }
     tc.googleSearch.doit = function(){
+	console.log("doit search");
 	
 	//     ad links
 	tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
@@ -34,7 +41,15 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     }
 }else if(document.location.hostname == 'www.google.com' && document.location.pathname == '/maps/preview'){
     // this is the new google maps interface
+
+    $observerSummaryRoot = $("div#cards");
+    tc.googleSearch.observe = function(){
+	$observerSummaryRoot.mutationSummary("connect"
+					     , summaryCallback
+					     , [{ element: 'div.cards-entity-url' }]);
+    }
     tc.googleSearch.doit = function(){
+	console.log("doit map");
 	tc.searchLinkExam("div.cards-entity-url a"
 			  , 'google-search'
 			  , function(x){
@@ -50,5 +65,19 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 			  }
 			  , function(x){return x.textContent});		
     }
+    
 }
-window.setInterval(tc.googleSearch.doit,750);
+
+
+function summaryCallback(summaries){
+    tc.googleSearch.doit();
+    $observerSummaryRoot.mutationSummary("disconnect");
+    doOb();
+}
+
+function doOb(){
+    tc.googleSearch.doit();
+    window.setTimeout(tc.googleSearch.observe,750);
+}
+
+doOb();

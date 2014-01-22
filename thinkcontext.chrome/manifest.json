@@ -17,41 +17,41 @@
 		    ,"*://goodsearch.com/*"
 		    ,"tabs"
         	   ],
-    "background": {"scripts": ["jquery-1.7.2.min.js","bg-utils.js","db.js","background.js"]},
+    "background": {"scripts": ["jquery-2.0.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
 	{
 	    "css": ["tc.css"],
 	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
 	    "css": ["tc.css"],
 	    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
 	}
 
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["tc.css"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","utils.js","google-place-page.js"]
 	 }
 	,{  "matches": ["*://mail.google.com/*"],
 	    "css": ["tc.css"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","utils.js","google-mail.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","utils.js","google-mail.js"]
 	 }
 	,{  "matches": ["*://maps.google.com/*"],
 	    "css": ["tc.css"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","google-maps.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","google-maps.js"]
 	 }
 	,{
 	    "css": ["tc.css"],
 	    "matches": ["*://www.bing.com/search*"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","bing-search.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bing-search.js"]
 	}
 	,{
 	    "all_frames": true,
 	    "css": ["tc.css"],
 	    "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","yahoo-search.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","yahoo-search.js"]
 	}
 	,{
 	    "css": ["tc.css"],
@@ -67,7 +67,7 @@
 			      ,"http://*.yahoo.com/*"
 			      ,"https://*.yahoo.com/*"
 			     ] ,
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
 	}
 	,{
 	    "all_frames": true,
@@ -78,7 +78,7 @@
 			,"http://*.overture.com/*"
 			,"http://ad.doubleclick.net/adi/*"
 		       ],
-	    "js": ["jquery-1.7.2.min.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
     ]
 }

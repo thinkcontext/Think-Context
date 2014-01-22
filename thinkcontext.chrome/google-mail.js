@@ -5,17 +5,28 @@ tc.registerResponse('link'
 		    });
 
 function pageExamine(){
-$("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
-    function(){
-	var m = this.href.match(/adurl=(http[^\&\"]+)/)
-	if(m && m[1]){
-	    var sid = "gs" + tc.random();
-	    this.setAttribute("sid",sid);
-	    tc.sendMessage({'kind': 'link'
-     			    , 'sid': sid
-     			    , 'key': tc.sigURL(m[1]) });
-	}
-    });
+    console.log('pageExamine');
+    $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
+	function(){
+	    var m = this.href.match(/adurl=(http[^\&\"]+)/)
+	    if(m && m[1]){
+		var sid = "gs" + tc.random();
+		this.setAttribute("sid",sid);
+		tc.sendMessage({'kind': 'link'
+     				, 'sid': sid
+     				, 'key': tc.sigURL(m[1]) });
+	    }
+	});
 }
 pageExamine();
-window.setInterval(pageExamine,750);
+
+function summaryCallback(summaries){
+    pageExamine();
+}
+
+var $observerSummaryRoot = $("div#\\:2");
+$observerSummaryRoot.mutationSummary("connect"
+				     , summaryCallback
+				     , [{ element:"div.aBD" }]);
+
+

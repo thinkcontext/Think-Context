@@ -6,7 +6,7 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
     tc.registerResponse('link',
 			function(request){
 			    if(request.pop == 1){
-				tc.popDialog(request);
+				tc.popDialog(request);				
 			    } else {
 				tc.resultPrevResponse(request);
 			    }
@@ -86,7 +86,6 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
     	});
     }
 
-    doit();
-    window.setTimeout(doit,750);
+    window.setTimeout(doit,500);
     
 }

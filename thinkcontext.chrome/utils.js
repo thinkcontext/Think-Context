@@ -151,7 +151,6 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.resultPrevResponse = function(request){
-	console.log("resultPrevResponse",request);
 	$("[sid=" + request.sid +"]").map(function(){
 	    tc.resultPrev(this,request.key,request.data);});
     };
@@ -227,11 +226,10 @@ if(typeof(tc) == 'undefined'){
 	var r = tc.random();
  	var rdc = JSON.parse(data.template_data);
 	var d = tc.renderTemplate(data,r,key,rdc);
-
-	if(data.subtype == 'imgad'){
-	    console.log('imgad');
-	    tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
-	} else {
+        if(data.subtype == 'imgad'){
+            console.log('imgad');
+            tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+        } else {
 	    tc.insertPrev(n, rdc.icon, r, rdc.title, d);
 	}
     }
