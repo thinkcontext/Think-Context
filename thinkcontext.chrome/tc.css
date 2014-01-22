@@ -4,3 +4,7 @@
     z-index: 1000001;
     background-color: rgb(236, 234, 223);
 }
+
+.tcIconOverlay {
+    display: none;
+}

@@ -26,31 +26,31 @@ if(typeof(tc) == 'undefined'){
 	}
     );
 
-    tc.insertImgAd = function(n,icon,r,title,theDiv){
-	console.log('insertImgAd',n);
-	var offsetLeft = n.offsetLeft, offsetTop = n.offsetTop + 10;
-	var resDiv = $('<div>'
-		       , { id: r
-			   , subv: true
-			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; zIndex: 100000001' })
-	    .append($('<img>', { src: icon}))[0];
-	resDiv.style.offsetLeft = offsetLeft;
-	resDiv.style.offsetTop = offsetTop;
-	$('body').append(resDiv);
+    // tc.insertImgAd = function(n,icon,r,title,theDiv){
+    // 	console.log('insertImgAd',n);
+    // 	var offsetLeft = n.offsetLeft, offsetTop = n.offsetTop + 10;
+    // 	var resDiv = $('<div>'
+    // 		       , { id: r
+    // 			   , subv: true
+    // 			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; zIndex: 100000001' })
+    // 	    .append($('<img>', { src: icon}))[0];
+    // 	resDiv.style.offsetLeft = offsetLeft;
+    // 	resDiv.style.offsetTop = offsetTop;
+    // 	$('body').append(resDiv);
 
-    };
+    // };
 
     tc.insertPrev = function(n,icon, r,title,theDiv){
-	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	    var resDiv = $('<div>'
-			   , { id: r
-			       , subv: true
-			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-		.append($('<img>', { src: icon}))[0];
-	    n.parentNode.insertBefore(resDiv,n);
-	    n.style.display = "inline";
-	    tc.iconDialog(title,theDiv,r);
-	}
+    	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
+    	    var resDiv = $('<div>'
+    			   , { id: r
+    			       , subv: true
+    			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+    		.append($('<img>', { src: icon}))[0];
+    	    n.parentNode.insertBefore(resDiv,n);
+    	    n.style.display = "inline";
+    	    tc.iconDialog(title,theDiv,r);
+    	}
     };
 
     tc.popDialog = function(request){
@@ -64,7 +64,8 @@ if(typeof(tc) == 'undefined'){
 		.append($('<div>',{id:'tcOther'}));
 	    d.overlay({oneInstance: false
 		       , left: window.innerWidth - 350
-		       , top: 10});
+		       , top: 10
+		      });
 	    tc.popD = d;
 	    $('body').append(d);
 	} 
@@ -125,13 +126,14 @@ if(typeof(tc) == 'undefined'){
     }
 
     tc.iconDialog = function(title,body,iconId){
+	body.addClass('tcIconOverlay');
 	body.overlay({fixed: false
 		      , oneInstance: false});
 	var d = body.data('overlay');
 	$("div#"+iconId ).hover(
 	    function(event){ 
 		d.load();		
-		body.css({left: event.pageX - 15, top:event.pageY - 15});
+		body.css({left: event.pageX - 15, top:event.pageY - 15,display: 'inline'});
 		body.mouseleave(function(e){ d.close(); });
 		$(window).scroll(function(e){ d.close(); });
 		return false;}
@@ -226,12 +228,12 @@ if(typeof(tc) == 'undefined'){
 	var r = tc.random();
  	var rdc = JSON.parse(data.template_data);
 	var d = tc.renderTemplate(data,r,key,rdc);
-        if(data.subtype == 'imgad'){
-            console.log('imgad');
-            tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
-        } else {
+        // if(data.subtype == 'imgad'){
+        //     console.log('imgad');
+        //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+        // } else {
 	    tc.insertPrev(n, rdc.icon, r, rdc.title, d);
-	}
+//	}
     }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}

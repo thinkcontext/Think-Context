@@ -41,49 +41,50 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	    }
 	});
 
-    $("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").not('a[sid]').map(
-    	function(){
-	    var sid = "gs" + tc.random();
-	    this.setAttribute("sid",sid);
-    	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
-    	    if(m && m.length == 3){
-    		console.log('doubleclick param ' + m[2]);
-		tc.sendMessage({kind: 'link'
-				, subtype: 'imgad'
-				, sid: sid
-				, key: tc.sigURL(m[2])});
+    // $("object param[value*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']").not('a[sid]').map(
+    // 	function(){
+    // 	    console.log(this);
+    // 	    var sid = "gs" + tc.random();
+    // 	    this.setAttribute("sid",sid);
+    // 	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
+    // 	    if(m && m.length == 3){
+    // 		console.log('doubleclick param ' + m[2]);
+    // 		tc.sendMessage({kind: 'link'
+    // 				, subtype: 'imgad'
+    // 				, sid: sid
+    // 				, key: tc.sigURL(m[2])});
 				
 						 
-	    }
-    	});
+    // 	    }
+    // 	});
 
-    $("a[href*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']:has(img)").not('a[sid]').map(
-    	function(){
-	    var sid = "gs" + tc.random();
-	    this.setAttribute("sid",sid);
-    	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
-    	    if(m && m.length == 3){
-    		console.log('doubleclick param ' + m[2]);
-		tc.sendMessage({kind: 'link'
-				, subtype: 'imgad'
-				, sid: sid
-				, key: tc.sigURL(m[2])});
+    // $("a[href*='adurl%3Dhttp%253A%252F%252Fad.doubleclick.net/click']:has(img)").not('a[sid]').map(
+    // 	function(){
+    // 	    var sid = "gs" + tc.random();
+    // 	    this.setAttribute("sid",sid);
+    // 	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
+    // 	    if(m && m.length == 3){
+    // 		console.log('doubleclick param ' + m[2]);
+    // 		tc.sendMessage({kind: 'link'
+    // 				, subtype: 'imgad'
+    // 				, sid: sid
+    // 				, key: tc.sigURL(m[2])});
 				
 						 
-	    }
-    	});
+    // 	    }
+    // 	});
 
-    $("object[flashvars*='click=http%3A%2F%2Fad.doubleclick.net']").not('a[sid]').map(
-    	function(){
-    	    var m = this.attributes.flashvars.textContent.match(/exitEvents=[^\&]*url%253Ahttp%25253A%2F%2F([^\%]+)/);
-    	    if(m && m.length == 2){
-    		console.log('doubleclick object ' + m[1]);
-		tc.sendMessage({kind: 'link'
-				, subtype: 'imgad'
-				, sid: sid
-				, key: tc.sigURL(m[2])});		
-	    }
-    	});
+    // $("object[flashvars*='click=http%3A%2F%2Fad.doubleclick.net']").not('a[sid]').map(
+    // 	function(){
+    // 	    var m = this.attributes.flashvars.textContent.match(/exitEvents=[^\&]*url%253Ahttp%25253A%2F%2F([^\%]+)/);
+    // 	    if(m && m.length == 2){
+    // 		console.log('doubleclick object ' + m[1]);
+    // 		tc.sendMessage({kind: 'link'
+    // 				, subtype: 'imgad'
+    // 				, sid: sid
+    // 				, key: tc.sigURL(m[2])});		
+    // 	    }
+    // 	});
     }
 
     window.setTimeout(doit,500);

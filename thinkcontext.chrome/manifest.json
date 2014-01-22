@@ -76,7 +76,7 @@
 			,"http://*.msn.com/*"
 			,"http://*.doubleclick.net/pagead/*"
 			,"http://*.overture.com/*"
-			,"http://ad.doubleclick.net/adi/*"
+			,"*://ad.doubleclick.net/adi/*"
 		       ],
 	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
