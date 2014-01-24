@@ -60,6 +60,8 @@ if(typeof(tc) == 'undefined'){
 	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
 	if(tc.popD == null){	
 	    d = $('<div>',{id:'tcPopD', class: 'tcOverlay'})
+	        .append($('<div>',{class: 'tcOverlayTitlebar'})
+			.append(rdc.title))
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcOther'}));
 	    d.overlay({oneInstance: false

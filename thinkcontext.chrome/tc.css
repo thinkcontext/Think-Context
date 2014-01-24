@@ -3,8 +3,20 @@
     width: 300px;
     z-index: 1000001;
     background-color: rgb(236, 234, 223);
+    font-family: 'Trebuchet MS', Tahoma, Verdana, Arial, sans-serif;
+    font-size: 12px;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+    text-align: left;
 }
 
 .tcIconOverlay {
     display: none;
+}
+
+.tcOverlayTitlebar {
+    font-size: 14px;
+    background-color: rgb(255, 255, 255);
 }

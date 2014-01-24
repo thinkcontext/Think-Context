@@ -155,6 +155,8 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'bcorp'");
 	if(tc.optVal('opt_roc') == 0)
 	    tc.simpleSql("delete from results where func = 'roc'");
+	if(tc.optVal('opt_hrc') == 0)
+	    tc.simpleSql("delete from results where func = 'hrc'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -203,6 +205,8 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == 0)
+		resArr.push("hrc");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -285,6 +289,8 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == 0)
+		resArr.push("hrc");
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
