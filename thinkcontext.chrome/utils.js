@@ -53,15 +53,19 @@ if(typeof(tc) == 'undefined'){
     	}
     };
 
+    tc.createOverlay = function(title){
+	return $('<div>',{id:'tcPopD', class: 'tcOverlay'})
+	    .append($('<div>',{class: 'tcOverlayTitlebar'})
+		    .append(title));
+    };
+
     tc.popDialog = function(request){
 	var r = tc.random(), z = 'd' + r;
  	var rdc = JSON.parse(request.data.template_data);
 	var title = rdc.title, icon = rdc.icon, kind = 'result';
 	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
 	if(tc.popD == null){	
-	    d = $('<div>',{id:'tcPopD', class: 'tcOverlay'})
-	        .append($('<div>',{class: 'tcOverlayTitlebar'})
-			.append(rdc.title))
+	    d = tc.createOverlay(rdc.title))
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcOther'}));
 	    d.overlay({oneInstance: false
