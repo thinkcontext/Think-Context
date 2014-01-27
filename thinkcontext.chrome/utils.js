@@ -11,21 +11,21 @@ if(typeof(tc) == 'undefined'){
 	tc.responses[kind] = func;
     }
 
-    chrome.extension.onMessage.addListener(
-	function(request, sender, sendResponse){
-	    if(request.kind == 'tcPopD'){
-		console.log(tc.popD);
-		var pd = tc.popD.data('overlay');
-		console.log(pd);
-		if(pd.isOpened()){
-		    pd.close();
-		} else {
-		    pd.load();
+    if(window.top === window){
+	chrome.extension.onMessage.addListener(
+	    function(request, sender, sendResponse){
+		if(request.kind == 'tcPopD'){
+		    var pd = tc.popD.data('overlay');
+		    if(pd.isOpened()){
+			pd.close();
+		    } else {
+			tc.popD.css('left', window.innerWidth - 350);
+			pd.load();
+		    }
 		}
 	    }
-	}
-    );
-
+	);
+    }
     // tc.insertImgAd = function(n,icon,r,title,theDiv){
     // 	console.log('insertImgAd',n);
     // 	var offsetLeft = n.offsetLeft, offsetTop = n.offsetTop + 10;
@@ -40,40 +40,51 @@ if(typeof(tc) == 'undefined'){
 
     // };
 
-    tc.insertPrev = function(n,icon, r,title,theDiv){
+    tc.insertPrev = function(n,icon, r,title,theDiv,score){
+	console.log(score);
     	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
     	    var resDiv = $('<div>'
     			   , { id: r
     			       , subv: true
     			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-    		.append($('<img>', { src: icon}))[0];
-    	    n.parentNode.insertBefore(resDiv,n);
+    		.append($('<img>', { src: icon}));
+	    if(score){
+		resDiv.append(score);
+	    }	    
+	    resDiv.insertBefore(n);
     	    n.style.display = "inline";
     	    tc.iconDialog(title,theDiv,r);
     	}
     };
 
-    tc.createOverlay = function(title){
-	return $('<div>',{id:'tcPopD', class: 'tcOverlay'})
+    tc.createOverlay = function(id,title,contents,hidden){
+	var d = $('<div>',{id:id, class: 'tcOverlay'})
 	    .append($('<div>',{class: 'tcOverlayTitlebar'})
-		    .append(title));
+		    .append($('<div>',{class: 'tcTitleText'})
+			    .append('thinkContext: ' + title)))
+	    .append($('<div>',{class: 'tcContents'})
+		    .append(contents));
+	if(hidden){
+	    d.css('display','none');
+	}
+	$('body').append(d);
+	d.overlay({oneInstance: false
+		   , fixed: false
+		   , top: 10});
+	return d;
     };
 
     tc.popDialog = function(request){
 	var r = tc.random(), z = 'd' + r;
- 	var rdc = JSON.parse(request.data.template_data);
+ 	var rdc = request.data.template_data;
 	var title = rdc.title, icon = rdc.icon, kind = 'result';
 	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
 	if(tc.popD == null){	
-	    d = tc.createOverlay(rdc.title))
-		.append($('<div>',{id:'tcResults'}))
-		.append($('<div>',{id:'tcOther'}));
-	    d.overlay({oneInstance: false
-		       , left: window.innerWidth - 350
-		       , top: 10
-		      });
+	    d = tc.createOverlay('tcPopD',rdc.title
+				 ,$('<div>')
+				 .append($('<div>',{id:'tcResults'}))
+				 .append($('<div>',{id:'tcOther'})));
 	    tc.popD = d;
-	    $('body').append(d);
 	} 
 	d = tc.popD;
 	switch(kind){
@@ -127,14 +138,7 @@ if(typeof(tc) == 'undefined'){
 	return ret.replace(/https?:\/\//,'').replace(/\/$/,'').replace(/\s+/g,'').toLowerCase();
     }
 
-    tc.htmlDecode = function(value){ 
-	return $('<div/>').html(value).text(); 
-    }
-
     tc.iconDialog = function(title,body,iconId){
-	body.addClass('tcIconOverlay');
-	body.overlay({fixed: false
-		      , oneInstance: false});
 	var d = body.data('overlay');
 	$("div#"+iconId ).hover(
 	    function(event){ 
@@ -151,6 +155,10 @@ if(typeof(tc) == 'undefined'){
     }
     
     tc.onResponse = function(request){
+	if(request.data.data)
+	    request.data.data = JSON.parse(request.data.data);
+	if(request.data.template_data)
+	    request.data.template_data = JSON.parse(request.data.template_data);
 	tc.responses[request.kind](request);
     }
 
@@ -215,7 +223,7 @@ if(typeof(tc) == 'undefined'){
 
 
     tc.renderTemplate = function(data,r,key,rdc){
-	var detail = JSON.parse(data.data);
+	var detail = data.data;
 	if(typeof(detail) != "object")
 	    detail = {};
 	detail.did = 'd'+r;
@@ -224,22 +232,28 @@ if(typeof(tc) == 'undefined'){
 	detail.url = data.url;
 	detail.tcstat = rdc.tcstat;
 	detail.id = data.id;
-	var d = $("<div>",{id: "d"+r, class: "tcOverlay"}).appendTo('body');
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
 	return d;
 	
     };
 
     tc.resultPrev = function(n,key,data){
+	console.log(data);
 	var r = tc.random();
- 	var rdc = JSON.parse(data.template_data);
-	var d = tc.renderTemplate(data,r,key,rdc);
+ 	var rdc = data.template_data;
+	
+	var d = tc.createOverlay(r
+				 ,rdc.title
+				 ,tc.renderTemplate(data,r,key,rdc)
+				 ,true);
         // if(data.subtype == 'imgad'){
         //     console.log('imgad');
         //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
         // } else {
-	    tc.insertPrev(n, rdc.icon, r, rdc.title, d);
-//	}
+	console.log(data);
+	    tc.insertPrev(n, rdc.icon, r, rdc.title, d, data.data.score);
+	// }
     }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}

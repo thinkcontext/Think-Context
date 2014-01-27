@@ -10,7 +10,7 @@
     "icons": {
 	"128": "icons/tc-128.png"
     },
-    "page_action": { "default_title": "thinkContext" },
+    "page_action": { "default_title": "thinkContext - Click for more info" },
     "permissions": ["*://www.google.com/*"
     		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
@@ -76,10 +76,6 @@
 			,"http://*.msn.com/*"
 			,"http://*.doubleclick.net/pagead/*"
 			,"http://*.overture.com/*"
-			,"*://ad.doubleclick.net/adi/*"
-			,"http://*.advertising.com/*"
-			,"https://*.advertising.com/*"
-			,"http://*.interclick.com/*"
 		       ],
 	    "js": ["jquery-2.0.3.min.js","jquery-migrate-1.2.1.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery.tools.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
