@@ -4,5 +4,7 @@
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
 		  , "http://tcdata.iriscouch.com/*"]
- , "background": {"scripts": ["ydn.db-0.8.2.js"]}
+ , "background": {"scripts": ["jquery-2.0.3.min.js"
+			      ,"ydn.db-0.8.2.js"
+			      ,"background.js"]}
 }
