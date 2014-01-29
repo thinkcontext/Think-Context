@@ -1,23 +1,26 @@
-var tc = {
-    schema: { 
+function Ext(){
+    this.schema = { 
 	stores: [
 	    {
 		name: 'thing'
 		, keyPath: '_id'
 		, indexes: [
-		    { keyPath: 'handles'
+		    { name: 'handles'
+		      , keyPath: 'handles'
 		      , multiEntry: true
 		    }
 		]
 	    }
 	]
-	, version: 7
-    }
-    , dbName: 'tc'
-    , db: new ydn.db.Storage(this.dbName,this.schema)
-    , dataUrl: 'http://127.0.0.1:5984/tc/_design/think/_view'
-    
-    , load: function(){
+	, version: 9
+    };
+    this.dbName = 'tc';
+    this.db = new ydn.db.Storage(this.dbName,this.schema);
+    this.dataUrl = 'http://127.0.0.1:5984/tc/_design/think/_view';
+}    
+
+Ext.prototype = {
+    load: function(){
 	var _self = this;
 	console.log('load');
 	$.getJSON(this.dataUrl + '/dataByCampaign'
@@ -35,4 +38,15 @@ var tc = {
 		      }
 		  });
     }
-};
+
+    , update: function(){
+	
+    }
+
+    , fetch: function(request){
+
+    }
+}
+
+var tc = new Ext();
+

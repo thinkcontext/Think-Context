@@ -40,17 +40,13 @@ if(typeof(tc) == 'undefined'){
 
     // };
 
-    tc.insertPrev = function(n,icon, r,title,theDiv,score){
-	console.log(score);
+    tc.insertPrev = function(n,icon, r,title,theDiv){
     	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
     	    var resDiv = $('<div>'
     			   , { id: r
     			       , subv: true
     			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
     		.append($('<img>', { src: icon}));
-	    if(score){
-		resDiv.append(score);
-	    }	    
 	    resDiv.insertBefore(n);
     	    n.style.display = "inline";
     	    tc.iconDialog(title,theDiv,r);
@@ -256,8 +252,7 @@ if(typeof(tc) == 'undefined'){
         //     console.log('imgad');
         //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
         // } else {
-	console.log(data);
-	    tc.insertPrev(n, rdc.icon, r, rdc.title, d, data.data.score);
+	tc.insertPrev(n, rdc.icon, r, rdc.title, d);
 	// }
     }
 

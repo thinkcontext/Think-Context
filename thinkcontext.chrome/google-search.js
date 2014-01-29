@@ -13,8 +13,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 					     , [{ all:true }]);
     }
     tc.googleSearch.doit = function(){
-	console.log("doit search");
-	
 	//     ad links
 	tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,'google-search'
@@ -49,7 +47,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 					     , [{ element: 'div.cards-entity-url' }]);
     }
     tc.googleSearch.doit = function(){
-	console.log("doit map");
 	tc.searchLinkExam("div.cards-entity-url a"
 			  , 'google-search'
 			  , function(x){
@@ -70,7 +67,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 
 function summaryCallback(summaries){
-    tc.googleSearch.doit();
+//    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
