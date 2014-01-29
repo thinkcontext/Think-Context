@@ -142,8 +142,13 @@ if(typeof(tc) == 'undefined'){
 	var d = body.data('overlay');
 	$("div#"+iconId ).hover(
 	    function(event){ 
-		d.load();		
-		body.css({left: event.pageX - 15, top:event.pageY - 15,display: 'inline'});
+		d.load();
+		var l = event.pageX - 15, t = event.pageY - 15, viewportWidth = $(window).width(), viewportHeight = $(window).height();
+		if(l + 300 > viewportWidth)
+		    l = viewportWidth - 300;
+		if(t + 150 > viewportHeight)
+		    t = viewportHeight - 150;
+		body.css({left: l , top: t,display: 'inline'});
 		body.mouseleave(function(e){ d.close(); });
 		$(window).scroll(function(e){ d.close(); });
 		return false;}
