@@ -79,7 +79,8 @@ if(typeof(tc) == 'undefined'){
 	    d = tc.createOverlay('tcPopD',rdc.title
 				 ,$('<div>')
 				 .append($('<div>',{id:'tcResults'}))
-				 .append($('<div>',{id:'tcOther'})));
+				 .append($('<div>',{id:'tcOther'}))
+				 , true);
 	    tc.popD = d;
 	} 
 	d = tc.popD;
@@ -92,6 +93,8 @@ if(typeof(tc) == 'undefined'){
 	}
 	if(request.popD){
 	    d.load();
+	    tc.popD.css('left', window.innerWidth - 350);
+	    tc.popD.css('top', '10px');
 	}
 	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){

@@ -10,7 +10,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     tc.googleSearch.observe = function(){
 	$observerSummaryRoot.mutationSummary("connect"
 					     , summaryCallback
-					     , [{ all:true }]);
+					     , [{ characterData:true }]);
     }
     tc.googleSearch.doit = function(){
 	//     ad links
