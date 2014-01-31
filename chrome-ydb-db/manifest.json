@@ -7,4 +7,23 @@
  , "background": {"scripts": ["jquery-2.0.3.min.js"
 			      ,"ydn.db-0.8.2.js"
 			      ,"background.js"]}
+ , "content_scripts": [
+     { "matches": ["http://*.washingtonpost.com/*"
+		   ,"http://*.nytimes.com/*"
+		   ,"http://online.wsj.com/*"
+		   ,"http://new.yahoo.com/*"
+		   ,"http://*.cnn.com/*"
+		   ,"http://*.boston.com/*"
+		   ,"http://*.npr.org/*"
+		   ,"http://*.foxnews.com/*"
+		   ,"http://*.huffingtonpost.com/*"
+		   ,"http://*.usatoday.com/*"
+		   ,"http://*.abcnews.go.com/*"
+		   ,"http://*.latimes.com/*"
+		   ,"http://*.nbcnews.com/*"
+		   ,"http://news.msn.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","congress.js"]
+     }
+ ]
 }
