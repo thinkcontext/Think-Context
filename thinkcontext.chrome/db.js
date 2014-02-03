@@ -341,7 +341,7 @@ tc = {
     }
     , onLookupSuccess: function(tx, r, request, callback){
 	if(r.rows.length > 0){
-	    request.data = r.rows.item(0);;
+	    request.data = r.rows.item(0);
 	    callback(request);
 	}
     }

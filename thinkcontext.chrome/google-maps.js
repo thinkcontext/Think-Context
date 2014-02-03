@@ -1,4 +1,3 @@
-console.log('google-maps');
 tc.googleMaps = {};
 tc.googleMaps.doit = function(){
 

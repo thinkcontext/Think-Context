@@ -1,0 +1,39 @@
+.tcOverlay { 
+    height: 150px;
+    width: 300px;
+    z-index: 1000001;
+    background-color: rgb(236, 234, 223);
+    font-family: 'Trebuchet MS', Tahoma, Verdana, Arial, sans-serif;
+    font-size: 12px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    text-align: left;
+    overflow:scroll;
+}
+
+.tcIconOverlay {
+    display: none;
+}
+
+.tcOverlayTitlebar {
+    font-size: 14px;
+    background-color: rgb(255, 255, 255);
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;    
+    font-weight: bold;
+}
+
+.tcContents {
+    padding-bottom: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;    
+}
+
+.tcContents a:link {
+    text-decoration: underline;
+}

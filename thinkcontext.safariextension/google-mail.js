@@ -1,0 +1,34 @@
+if (window.top === window && document.domain == 'mail.google.com') {
+    tc.registerResponse('link'
+			,function(request){
+			    $("[sid=" + request.sid +"]").map(function(){
+				tc.resultPrev(this,request.key,request.data);})
+			});
+
+    function pageExamine(){
+	console.log('pageExamine');
+	$("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
+	    function(){
+		var m = this.href.match(/adurl=(http[^\&\"]+)/)
+		if(m && m[1]){
+		    var sid = "gs" + tc.random();
+		    this.setAttribute("sid",sid);
+		    tc.sendMessage({'kind': 'link'
+     				    , 'sid': sid
+     				    , 'key': tc.sigURL(m[1]) });
+		}
+	    });
+    }
+    pageExamine();
+
+    function summaryCallback(summaries){
+	pageExamine();
+    }
+
+    var $observerSummaryRoot = $("div#\\:2");
+    $observerSummaryRoot.mutationSummary("connect"
+					 , summaryCallback
+					 , [{ element:"div.aBD" }]);
+
+    safari.self.addEventListener("message",tc.onResponse, false);
+}
