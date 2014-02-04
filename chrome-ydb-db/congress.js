@@ -24,20 +24,13 @@
 // <strong>Rep. Paul Ryan</strong>, R-Wis abc
 // <strong>Rep. Joe Wilson </strong> nbc
 
-function uniqueArray(a) {
-    return a.reduce(function(p, c) {
-        if (p.indexOf(c) < 0) p.push(c);
-        return p;
-    }, []);
-};
+tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
 
-var congressRegexp = /((Rep|Sen)([^\s]*)) ([A-Z][a-zA-Z\'\-]+ ([A-Z]\. )?[A-Z][a-zA-Z\'\-]+)/g;
+var cRe = new RegExp(tc.congressPattern,'g');
+var cs = tc.uniqueArray(document.body.textContent.match(cRe));
 
-
-cs = uniqueArray(document.body.textContent.match(congressRegexp));
-
-var cong, cons, tn, cm, range, nn;
-
+var cong, cons, tn, cm, range, nn, tcid, mArray, name;
+console.log(cs);
 for(var q in cs){
     cong = cs[q];
     
@@ -60,11 +53,23 @@ for(var q in cs){
 			// if it contains the text we are looking for 
 			// create the range and surround the text
 			nn = document.createElement('span');
+			tcid = tc.random();
+			var cRe = new RegExp(tc.congressPattern,'g');
+			mArray = cRe.exec(cong);
+			name = mArray[4];
+			if(mArray[5])
+			    name = name.replace(mArray[5],'');
+			nn.setAttribute('tcid',tcid);
 			nn.style.backgroundColor = 'yellow';
 			range = document.createRange();
 			range.setStart(tn,cm.index);
 			range.setEnd(tn,cm.index + cong.length);
 			range.surroundContents(nn);
+			tc.sendMessage({
+			    kind: 'congress'
+			    , tcid: tcid
+			    , name: name
+			});
 		    }
 		}
 	    }
