@@ -39,30 +39,36 @@ Ext.prototype = {
 		      }
 		  });
     }
-
     , update: function(){
 	
     }
-
-    , fetch: function(request){
-
+    , lookup: function(handle,request,callback){
+	var req = tc.db.from('thing').where('handles','=',handle);
+	req.list(1).done(
+	    function(results){
+		if(results.length > 0)
+		    callback(results);
+	    });
     }
-
-    , lookupCongress: function(request,callback){
-	tc.db.from('thing').where('handles','=',request.handle).list(1).done(callback);
-    }
-
 }
 
 var tc = new Ext();
 
 function onRequest(request, sender, callback) {
     console.log(request);
+    var handle;
     switch(request.kind){
     case 'congress':
-	tc.lookupCongress(request,callback);
+	if(request.name && request.name.length > 4)
+	    handle = 'name:' + request.name.toLowerCase().replace(/\s/,'');
 	break;
     }
+    if(handle){
+	console.log('handle',handle);
+	tc.lookup(handle,request,callback);
+    } else {
+	console.log("couldn't get a handle",request);
+    }   
 }
 
 chrome.extension.onRequest.addListener(onRequest);
