@@ -24,7 +24,7 @@ Ext.prototype = {
     load: function(){
 	var _self = this;
 	console.log('load');
-	$.getJSON(this.dataUrl + '/dataByCampaign'
+	$.getJSON(this.dataUrl + '/dataByCampaignAction'
 		  ,function(data){
 		      console.log(data);
 		      var req, rows = data.rows.map(function(x){return x.value;});		      
@@ -46,8 +46,15 @@ Ext.prototype = {
 	var req = tc.db.from('thing').where('handles','=',handle);
 	req.list(1).done(
 	    function(results){
-		if(results.length > 0)
+		if(results.length > 0){
+		    for(var i in results){
+			for(var j in results[i].campaigns){
+			    console.log(i,j);
+			    //add action
+			}
+		    }
 		    callback(results);
+		}
 	    });
     }
 }
