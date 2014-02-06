@@ -10,18 +10,41 @@ function Ext(){
 		      , keyPath: 'handles'
 		      , multiEntry: true
 		    }
+		    , { name: 'type'
+			, keyPath: 'type'
+		      }
 		]
 	    }
 	]
-	, version: 9
+	, version: 10
     };
     this.dbName = 'tc';
     this.db = new ydn.db.Storage(this.dbName,this.schema);
     this.dataUrl = 'http://127.0.0.1:5984/tc/_design/think/_view';
+    this.actions = {};
+    this.getActions();
+    this.campaigns = {};
+    // get campaigns
+    // get actions
+
 } 
 
 Ext.prototype = {
-    load: function(){
+
+    getActions: function(){
+	var _self = this;
+	var req = this.db.from('thing').where('type','=','action');
+	req.list(100).done(
+	    function(results){
+		var action;
+		for(var i in results){
+		    action = results[i]._id
+		    _self.actions[action] = results[i];
+		}
+	    });
+    }
+
+    , load: function(){
 	var _self = this;
 	console.log('load');
 	$.getJSON(this.dataUrl + '/dataByCampaignAction'
@@ -43,18 +66,19 @@ Ext.prototype = {
 	
     }
     , lookup: function(handle,request,callback){
+	var _self = this;
 	var req = tc.db.from('thing').where('handles','=',handle);
+	var campaign;
 	req.list(1).done(
 	    function(results){
-		if(results.length > 0){
-		    for(var i in results){
-			for(var j in results[i].campaigns){
-			    console.log(i,j);
-			    //add action
-			}
+		for(var i in results){
+		    for(var j in results[i].campaigns){
+			campaign = results[i].campaigns[j];
+			console.log(campaign);
+			campaign.action = _self.actions[campaign.action];
 		    }
-		    callback(results);
 		}
+		callback(results);
 	    });
     }
 }
