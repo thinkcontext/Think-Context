@@ -1,4 +1,5 @@
 if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
+    console.log('reverse');
     tc.reverse = {};
     
     tc.registerResponse('link',
@@ -27,7 +28,7 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 		}
 	    });
 	
-	$("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
+	$("li > h4 > a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	    function(){
 		var m = this.href.match(/adurl=(http[^\&\"]+)/)
 		var sid = "gs" + tc.random();
@@ -37,6 +38,16 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
      				    , sid: sid
      				    , key: tc.sigURL(m[1]) });
 		}
+	    });
+
+	$("div.adsonarAd > a.displayUrl").not('a[sid]').map(
+	    function(){
+		console.log("adsonar text",this);
+		var sid = "gs" + tc.random();
+		this.setAttribute("sid",sid);
+		tc.sendMessage({'kind': 'link'
+     				, 'sid': sid
+     				, 'key': tc.sigURL(this.textContent) });
 	    });
 	
 	// $("object param[name='flashvars'][value*='2mdn.net']").not('a[sid]').map(

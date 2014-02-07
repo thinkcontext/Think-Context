@@ -29,6 +29,7 @@
 			<array>
 				<string>jquery-2.0.3.min.js</string>
 				<string>jquery-migrate-1.2.1.min.js</string>
+				<string>mutation-summary.js</string>
 				<string>jquery.mutation-summary.js</string>
 				<string>ejs_production.js</string>
 				<string>utils.js</string>
@@ -45,7 +46,7 @@
 		</dict>
 		<key>Stylesheets</key>
 		<array>
-			<string>jquery-ui.css</string>
+			<string>tc.css</string>
 		</array>
 	</dict>
 	<key>Description</key>

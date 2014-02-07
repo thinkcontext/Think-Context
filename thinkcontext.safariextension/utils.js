@@ -167,7 +167,8 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	});
     }
     
-    tc.onResponse = function(request){
+    tc.onResponse = function(message){
+	var request = message.message;
 	if(request.data.data)
 	    request.data.data = JSON.parse(request.data.data);
 	if(request.data.template_data)
@@ -248,7 +249,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     };
 
     tc.resultPrev = function(n,key,data){
-	console.log(data);
 	var r = tc.random();
  	var rdc = data.template_data;
 	

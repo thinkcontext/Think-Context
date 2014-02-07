@@ -1,11 +1,11 @@
+console.log('iframe');
 tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
     j.setAttribute("sid",sid);
     tc.sendMessage({'kind': 'link'
      		    , 'sid': sid
-     		    , 'key': tc.sigURL(j.textContent) });
-    
+     		    , 'key': tc.sigURL(j.textContent) });    
 };
 
 tc.registerResponse('link',
