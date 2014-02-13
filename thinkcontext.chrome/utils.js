@@ -142,16 +142,13 @@ if(typeof(tc) == 'undefined'){
 	var d = body.data('overlay');
 	$("div#"+iconId ).hover(
 	    function(event){ 
-		console.log(event);
 		d.load();
 		var l = event.pageX - 15, t = event.pageY - 15, viewportWidth = $(window).width(), viewportHeight = $(window).height();
-		console.log(l,t,viewportWidth,viewportHeight,window.innerWidth,window.innerHeight);
 		// document.body.clientHeight?
 		// if(l + 300 > viewportWidth)
 		//     l = viewportWidth - 300;
 		// if(t + 150 > viewportHeight)
 		//     t = viewportHeight - 150;
-		console.log(l,t);
 		body.css({left: l , top: t,display: 'inline'});
 		body.mouseleave(function(e){ d.close(); });
 		$(window).scroll(function(e){ d.close(); });
@@ -248,7 +245,6 @@ if(typeof(tc) == 'undefined'){
     };
 
     tc.resultPrev = function(n,key,data){
-	console.log('resultPrev',n);
 	var r = tc.random();
  	var rdc = data.template_data;
 	
@@ -256,7 +252,6 @@ if(typeof(tc) == 'undefined'){
 				 ,rdc.title
 				 ,tc.renderTemplate(data,r,key,rdc)
 				 ,true);
-	console.log(d);
         // if(data.subtype == 'imgad'){
         //     console.log('imgad');
         //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
