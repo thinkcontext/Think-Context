@@ -1,4 +1,23 @@
 tc.facebook = {};
+var $observerSummaryRoot = $("div#pagelet_ego_pane");
+
+function summaryCallback(summaries){
+    $observerSummaryRoot.mutationSummary("disconnect");
+    console.log('disconnect');
+    doOb();
+}
+
+function doOb(){
+    tc.facebook.examine();
+    window.setTimeout(tc.facebook.observe,750);
+}
+
+tc.facebook.observe = function(){
+    console.log('observe');
+    $observerSummaryRoot.mutationSummary("connect"
+					 , summaryCallback
+					 , [{ characterData:true }]);
+}
 
 tc.registerResponse('link', function(request){
     $("[sid=" + request.sid +"]").map(function(){
@@ -17,13 +36,6 @@ tc.facebook.examine = function(){
 	    
 	});}
 
-tc.facebook.examine();
+doOb();
 
-function summaryCallback(summaries){
-    tc.facebook.examine();
-}
 
-var $observerSummaryRoot = $("div.ego_column");
-$observerSummaryRoot.mutationSummary("connect"
-				     , summaryCallback
-				     , [{ element: "div.ego_unit" }]);

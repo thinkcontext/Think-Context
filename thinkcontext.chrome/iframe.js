@@ -1,4 +1,3 @@
-console.log('iframe');
 tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
@@ -50,7 +49,7 @@ if(document.domain.match('adsonar.com')){
 // 	    console.log(this);
 // 	});
 } else if(document.baseURI.match('doubleclick.net/pagead')){
-    $("span.adus").not('a[sid]').map(
+    $("a.rhurl[href*='googleadservices.com/pagead']").not('a[sid]').map(
 	function(){
 	    tc.iframe.sendReq(this);
 	});
@@ -87,5 +86,4 @@ if(document.domain.match('adsonar.com')){
 // 		console.log(m[1]);
 // 	    }	
 // 	});
-// }
-
+}
