@@ -3,7 +3,6 @@ var $observerSummaryRoot = $("div#pagelet_ego_pane");
 
 function summaryCallback(summaries){
     $observerSummaryRoot.mutationSummary("disconnect");
-    console.log('disconnect');
     doOb();
 }
 
@@ -13,7 +12,6 @@ function doOb(){
 }
 
 tc.facebook.observe = function(){
-    console.log('observe');
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
 					 , [{ characterData:true }]);
@@ -25,7 +23,6 @@ tc.registerResponse('link', function(request){
 });
 
 tc.facebook.examine = function(){
-    console.log('examine');
     $('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) > div[title] > div:nth-child(2)').not('[sid]').map(
 	function(){
 	    var sid = "gs" + tc.random();

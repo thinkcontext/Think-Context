@@ -1,5 +1,4 @@
 if(typeof(tc) == 'undefined'){
-    console.log('utils');
     tc = {};
     tc.responses = {};
     tc.popD = null;

@@ -5,7 +5,6 @@ tc.registerResponse('link'
 		    });
 
 function pageExamine(){
-    console.log('pageExamine');
     $("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
 	function(){
 	    var m = this.href.match(/adurl=(http[^\&\"]+)/)

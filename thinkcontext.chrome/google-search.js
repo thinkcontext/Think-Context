@@ -8,13 +8,11 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
   ){
     $observerSummaryRoot = $("div#rcnt");    
     tc.googleSearch.observe = function(){
-	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
 					     , summaryCallback
 					     , [{ characterData:true }]);
     }
     tc.googleSearch.doit = function(){
-	console.log('doit');
 	//     ad links
 	tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,'google-search'
@@ -39,18 +37,16 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	    
 
     }
-}else if(document.location.hostname == 'www.google.com' && document.location.pathname == '/maps/preview'){
+}else if(document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps/') == 0){
     // this is the new google maps interface
 
     $observerSummaryRoot = $("div#cards");
     tc.googleSearch.observe = function(){
-	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
 					     , summaryCallback
 					     , [{ element: 'div.cards-entity-url' }]);
     }
     tc.googleSearch.doit = function(){
-	console.log('doit');
 	tc.searchLinkExam("div.cards-entity-url a"
 			  , 'google-search'
 			  , function(x){
@@ -71,7 +67,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 
 function summaryCallback(summaries){
-    console.log('disconnect');
 //    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();

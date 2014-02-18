@@ -67,22 +67,29 @@ Ext.prototype = {
     }
     , lookup: function(handle,request,callback){
 	var _self = this;
-	var req = tc.db.from('thing').where('handles','=',handle);
+	var req ;
 	var campaign;
 	if(request.kind == 'domain'){
+	    console.log(handle);
+	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
 		    for(var i in results){
-			console.log('path',results[i].path);
-			for(var j in results[i].campaigns){
-			    campaign = results[i].campaigns[j];
-			    console.log(campaign);
-			    campaign.action = _self.actions[campaign.action];
+			for(var k in results[i].handles){
+			    if(results[i].handles.search(handle) == 0){
+				for(var j in results[i].campaigns){
+				    campaign = results[i].campaigns[j];
+				    console.log(campaign);
+				    campaign.action = _self.actions[campaign.action];
+				}
+				callback(results);
+				return;
+			    }
 			}
 		    }
-		    callback(results);
 		});
 	} else {
+	    req = tc.db.from('thing').where('handles','=',handle);
 	    req.list(1).done(
 		function(results){
 		    results = results[0];

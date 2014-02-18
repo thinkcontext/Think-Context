@@ -49,10 +49,11 @@ if(document.domain.match('adsonar.com')){
 // 	    console.log(this);
 // 	});
 } else if(document.baseURI.match('doubleclick.net/pagead')){
-    $("a.rhurl[href*='googleadservices.com/pagead']").not('a[sid]').map(
-	function(){
-	    tc.iframe.sendReq(this);
-	});
+    window.setTimeout(function(){
+	$("a.rhurl[href*='googleadservices.com/pagead']").not('a[sid]').map(
+	    function(){
+		tc.iframe.sendReq(this);
+	    })}, 500);
 } else if(document.domain.match('overture.com')){
     $("div.clsURL").not('a[sid]').map(
 	function(){
