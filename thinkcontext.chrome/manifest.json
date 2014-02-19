@@ -33,11 +33,11 @@
 
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-place-page.js"]
 	 }
 	,{  "matches": ["*://mail.google.com/*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-mail.js"]
+	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-mail.js"]
 	 }
 	,{  "matches": ["*://maps.google.com/*"],
 	    "css": ["jquery-ui.css"],
