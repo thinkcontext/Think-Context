@@ -74,8 +74,8 @@ function summaryCallback(summaries){
 
 function doOb(){
     tc.googleSearch.doit();
-    window.setTimeout(tc.googleSearch.doit(),1000);    
-    window.setTimeout(tc.googleSearch.observe(),500);
+    window.setTimeout(tc.googleSearch.doit,1000);    
+    window.setTimeout(tc.googleSearch.observe,500);
 }
 
 doOb();

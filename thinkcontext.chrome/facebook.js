@@ -1,5 +1,5 @@
 tc.facebook = {};
-var $observerSummaryRoot = $("div#pagelet_ego_pane");
+var $observerSummaryRoot = $("body");
 
 function summaryCallback(summaries){
     $observerSummaryRoot.mutationSummary("disconnect");
@@ -8,13 +8,14 @@ function summaryCallback(summaries){
 
 function doOb(){
     tc.facebook.examine();
-    window.setTimeout(tc.facebook.observe,750);
+    window.setTimeout(tc.facebook.observe,500);
+    window.setTimeout(tc.facebook.examine,1000);
 }
 
 tc.facebook.observe = function(){
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
-					 , [{ characterData:true }]);
+					 , [{ element:"div" }]);
 }
 
 tc.registerResponse('link', function(request){
@@ -23,7 +24,7 @@ tc.registerResponse('link', function(request){
 });
 
 tc.facebook.examine = function(){
-    $('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) > div[title] > div:nth-child(2)').not('[sid]').map(
+    $('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) div[title] > div:nth-child(2)').not('[sid]').map(
 	function(){
 	    var sid = "gs" + tc.random();
 	    this.setAttribute("sid",sid);
