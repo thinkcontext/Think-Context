@@ -29,15 +29,14 @@ function examine(){
     var arr = tc.uniqueArray(
 	$('a.js-user-profile-link').not('[tcid]').map(
 	    function(){
-		this.tcid = 1;
+		this.tcid = 1;	
 		if(m = this.href.match(/https?:\/\/twitter\.com\/(\w+)$/)){
 		    return m[1]
 		}
 	    }).toArray());
     for(var i in arr){
 	var th = arr[i];
-	console.log('twitter handle',th);
-	
+	console.log('twitter handle',th);	
 	tc.sendMessage({
 	    kind: 'twitter'
 	    , origTwitter: th

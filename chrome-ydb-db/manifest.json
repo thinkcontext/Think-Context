@@ -13,6 +13,46 @@
 		  ]
        ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","twitter.js"]
      }
+     , { "matches": ["http://*.yelp.com/*"
+       		  ,"https://*.yelp.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","yelp.js"]
+     }
+     , { "matches": ["http://*.tripadvisor.com/*"
+       		  ,"https://*.tripadvisor.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","tripadvisor.js"]
+     }
+     , { "matches": ["http://*.imdb.com/*"
+       		  ,"https://*.imdb.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","imdb.js"]
+     }
+     , { "matches": ["http://*.hotels.com/*"
+       		  ,"https://*.hotels.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","hcom.js"]
+     }
+     , { "matches": ["http://*.orbitz.com/*"
+       		  ,"https://*.orbitz.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","orbitz.js"]
+     }
+     , { "matches": ["http://*.expedia.com/*"
+       		  ,"https://*.expedia.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","expedia.js"]
+     }
+     , { "matches": ["http://*.kayak.com/*"
+       		  ,"https://*.kayak.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","kayak.js"]
+     }
+     , { "matches": ["http://*.priceline.com/*"
+       		  ,"https://*.priceline.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","priceline.js"]
+     }
      ,	{ "matches": ["http://*.washingtonpost.com/*"
 		   ,"http://*.nytimes.com/*"
 		   ,"http://online.wsj.com/*"
