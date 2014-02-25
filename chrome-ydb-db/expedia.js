@@ -1,3 +1,4 @@
+tc.popSend();
 if(document.location.pathname == '/Hotel-Search'){
     $("article.hotel > a[href*='.h']").not('[tcid]').map(
 	function(){

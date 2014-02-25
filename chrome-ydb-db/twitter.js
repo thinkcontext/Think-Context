@@ -1,5 +1,6 @@
 console.log('twitter');
 
+tc.popSend();
 var $observerSummaryRoot = $("div#page-container");
 
 function summaryCallback(summaries){
@@ -26,6 +27,7 @@ function observe(){
 
 function examine(){
     console.log('examine');
+    tc.simpleHandleExamine("div.profile-card-inner[data-screen-name]");
     var arr = tc.uniqueArray(
 	$('a.js-user-profile-link').not('[tcid]').map(
 	    function(){

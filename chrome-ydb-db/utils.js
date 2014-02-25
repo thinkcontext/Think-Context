@@ -9,7 +9,7 @@ tc.sendMessage = function(request){
 }
 
 tc.urlHandle = function(url){
-    console.log('urlHandle',url);
+    //    console.log('urlHandle',url);
     url = url.trim();
     if(!url.match('^https?://\w'))
 	return null;
@@ -26,7 +26,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'tripadvisor.com' && (m = path.match('_Review-(g[0-9]+-d[0-9]+)'))){
 	this.kind = 'tripadvisor';
 	this.hval = m[1];
-    } else if(domain == 'facebook.com' && ((m = path.match('pages.*/([0-9]{5,20})')) || (m = path.match('^([^\?/]+)')))){
+    } else if(domain == 'facebook.com' && ((m = path.match('pages.*/([0-9]{5,20})')) || (m = path.match('^([^\?/\#]+)')))){
 	this.kind = 'facebook';
 	this.hval = m[1];
     } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
@@ -62,21 +62,36 @@ tc.urlHandle = function(url){
 	this.handle = this.kind + tc.handleSeperator + this.hval;
 }
 
+tc.popSend = function(){
+    var url = document.baseURI;
+    $("link[rel='canonical']").map(
+	function(){ 
+	    if(this.href)
+		url = this.href;
+	});
+    console.log(url);
+    var h = new tc.urlHandle(url);
+    if(h){
+	tc.sendMessage({
+	    kind: h.kind
+	    , handle: h.handle
+	    , pop: 1
+	});	    
+    }	
+}
+
 tc.simpleHandleExamine = function(selector){
-    console.log('simpleHandleExamine');
     $(selector).not('[tcid],img,div').map(
 	function(){
-//	    if(this.children.length == 0){ // we only want text links
-		var h = new tc.urlHandle(this.href);
-		if(h){
-		    var r = tc.random();
-		    this.tcid = r;
-		    tc.sendMessage({
-			kind: h.kind
-			, tcid: r
-			, handle: h.handle});
-		}
-//	    }
+	    var h = new tc.urlHandle(this.href);
+	    if(h){
+		var r = tc.random();
+		this.tcid = r;
+		tc.sendMessage({
+		    kind: h.kind
+		    , tcid: r
+		    , handle: h.handle});
+	    }
 	});
 }
 
