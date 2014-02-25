@@ -64,9 +64,9 @@ tc.urlHandle = function(url){
 
 tc.simpleHandleExamine = function(selector){
     console.log('simpleHandleExamine');
-    $(selector).not('[tcid]').map(
+    $(selector).not('[tcid],img,div').map(
 	function(){
-	    if(this.children.length == 0){ // we only want text links
+//	    if(this.children.length == 0){ // we only want text links
 		var h = new tc.urlHandle(this.href);
 		if(h){
 		    var r = tc.random();
@@ -76,7 +76,7 @@ tc.simpleHandleExamine = function(selector){
 			, tcid: r
 			, handle: h.handle});
 		}
-	    }
+//	    }
 	});
 }
 
