@@ -5,7 +5,7 @@ $('a',$("span:contains('Suggested Post')").parent()).not('[tcid]').map(
 	var h = new UrlHandle(this.href);
 	if(h){
 	    var r = tc.random();
-	    this.tcid = r;
+	    this.setAttribute('tcid',r);
 	    tc.sendMessage({
 		kind: h.kind
 		, tcid: r

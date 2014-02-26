@@ -5,7 +5,7 @@ if(document.location.pathname == '/Hotel-Search'){
 	    var h = new tc.urlHandle(this.href);
 	    if(h){
 		var r = tc.random();
-		this.tcid = r;
+		this.setAttribute('tcid', r);
 		tc.sendMessage({
 		    kind: h.kind
 		    , tcid: r
