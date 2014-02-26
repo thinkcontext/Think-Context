@@ -27,6 +27,8 @@
 tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
 
 var cRe = new RegExp(tc.congressPattern,'g');
+
+// make a list of candidate matches
 var cs = tc.uniqueArray(document.body.textContent.match(cRe));
 
 var cong, cons, tn, cm, range, nn, tcid, mArray, name;
@@ -34,7 +36,7 @@ console.log(cs);
 for(var q in cs){
     cong = cs[q];
     
-    // find all nodes that contain a congress string
+    // find all nodes that contain a candidate string
     cons = $.makeArray($("*:not('body,head,script,a,html'):contains("+cong+")"));
     
     for(var i in cons){
@@ -59,6 +61,8 @@ for(var q in cs){
 			name = mArray[4];
 			if(mArray[5])
 			    name = name.replace(mArray[5],'');
+			name = name.toLowerCase().replace(' ','');
+
 			nn.setAttribute('tcid',tcid);
 			nn.style.backgroundColor = 'yellow';
 			range = document.createRange();
@@ -68,7 +72,7 @@ for(var q in cs){
 			tc.sendMessage({
 			    kind: 'congress'
 			    , tcid: tcid
-			    , name: name
+			    , handle: 'name:' + name
 			});
 		    }
 		}

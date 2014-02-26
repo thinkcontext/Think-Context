@@ -1,2 +1,2 @@
 tc.popSend();
-tc.simpleHandleExamine("a[href*='title/tt']");
+tc.handleExamine("a[href*='title/tt']",'imdb');

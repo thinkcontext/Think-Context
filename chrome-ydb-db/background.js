@@ -26,7 +26,6 @@ function Ext(){
     this.campaigns = {};
     // get campaigns
     // get actions
-
 } 
 
 Ext.prototype = {
@@ -92,32 +91,27 @@ Ext.prototype = {
 	    req = tc.db.from('thing').where('handles','=',handle);
 	    req.list(1).done(
 		function(results){
-		    results = results[0];
-		    for(var j in results.campaigns){
-			campaign = results.campaigns[j];
-			console.log(campaign);
-			campaign.action = _self.actions[campaign.action];
+		    if(results = results[0]){
+			for(var j in results.campaigns){
+			    campaign = results.campaigns[j];
+			    console.log(campaign);
+			    campaign.action = _self.actions[campaign.action];
+			}
+			callback(results);
 		    }
-		    callback(results);
 		});
 	}
     }
+    
 }
 
 var tc = new Ext();
 
 function onRequest(request, sender, callback) {
     console.log(request);
-    var handle;
-    switch(request.kind){
-    case 'congress':
-	if(request.name && request.name.length > 4)
-	    handle = 'name:' + request.name.toLowerCase().replace(/\s/,'');
-	break;
-    }
-    if(handle){
-	console.log('handle',handle);
-	tc.lookup(handle,request,callback);
+    if(request.handle){
+	console.log('handle',request.handle);
+	tc.lookup(request.handle,request,callback);
     } else {
 	console.log("couldn't get a handle",request);
     }   

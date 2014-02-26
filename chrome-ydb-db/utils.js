@@ -1,4 +1,11 @@
 var tc = {};
+tc.urlRegExp = new RegExp(
+    "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
+
+tc.urlValidate = function(url){
+    return tc.urlRegExp.test(url);
+}
+
 tc.handleSeperator = ':';
 tc.onResponse = function(request){
     console.log('onResponse',request);
@@ -8,8 +15,66 @@ tc.sendMessage = function(request){
     chrome.extension.sendRequest(request, tc.onResponse);
 }
 
+tc.popSend = function(){
+    var url = document.baseURI;
+    $("link[rel='canonical']").map(
+	function(){ 
+	    if(this.href)
+		url = this.href;
+	});
+    var h = new tc.urlHandle(url);
+    if(h){
+	tc.sendMessage({
+	    kind: h.kind
+	    , handle: h.handle
+	    , pop: 1
+	});	    
+    }	
+}
+
+tc.handleExamine = function(selector,kind,getval,placer){
+    $(selector).not('[tcid],img,div').map(
+	function(){
+	    var target = this, href = this.href, h;
+	    if(getval)
+		href = getval(this);
+	    if(placer)
+		target = placer(this);
+	    if(this != target)
+		this.setAttribute('tcid',1);
+	    var r = tc.random();	    
+	    target.setAttribute('tcid',r);
+	    if(kind && kind == 'urlfrag')
+		h = tc.fragHandle(href);
+	    else
+		h = new tc.urlHandle(href);
+	    if(h && (kind == null || kind == 'urlfrag' || kind == h.kind)){
+		tc.sendMessage({
+		    kind: h.kind
+		    , tcid: r
+		    , handle: h.handle});
+	    }
+	});
+}
+
+tc.uniqueArray = function(a) {
+    return a.reduce(function(p, c) {
+        if (p.indexOf(c) < 0) p.push(c);
+        return p;
+    }, []);
+};
+tc.random = function(){return Math.floor(Math.random() * 100000);}
+
+tc.fragHandle = function(frag){
+    var m,h;
+    if(m = frag.match(/\w[\w\.\-\_]+\w[\w\.\-\_\/]+/)){
+	h = new tc.urlHandle('http://' + m[0]);
+	return h;
+    }
+}
+
 tc.urlHandle = function(url){
-    //    console.log('urlHandle',url);
+    //console.log('urlHandle',url);
     url = url.trim();
     if(!url.match('^https?://\w'))
 	return null;
@@ -59,46 +124,5 @@ tc.urlHandle = function(url){
     }
 	      
     if(this.kind && this.hval)
-	this.handle = this.kind + tc.handleSeperator + this.hval;
+	this.handle = this.kind + ':' + this.hval;
 }
-
-tc.popSend = function(){
-    var url = document.baseURI;
-    $("link[rel='canonical']").map(
-	function(){ 
-	    if(this.href)
-		url = this.href;
-	});
-    console.log(url);
-    var h = new tc.urlHandle(url);
-    if(h){
-	tc.sendMessage({
-	    kind: h.kind
-	    , handle: h.handle
-	    , pop: 1
-	});	    
-    }	
-}
-
-tc.simpleHandleExamine = function(selector){
-    $(selector).not('[tcid],img,div').map(
-	function(){
-	    var h = new tc.urlHandle(this.href);
-	    if(h){
-		var r = tc.random();
-		this.setAttribute('tcid',r);
-		tc.sendMessage({
-		    kind: h.kind
-		    , tcid: r
-		    , handle: h.handle});
-	    }
-	});
-}
-
-tc.uniqueArray = function(a) {
-    return a.reduce(function(p, c) {
-        if (p.indexOf(c) < 0) p.push(c);
-        return p;
-    }, []);
-};
-tc.random = function(){return Math.floor(Math.random() * 100000);}

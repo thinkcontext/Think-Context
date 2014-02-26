@@ -9,16 +9,23 @@
 			      ,"background.js"]}
  , "content_scripts": [
      { "matches": ["http://*.twitter.com/*"
-       		  ,"https://*.twitter.com/*"
+       		   ,"https://*.twitter.com/*"
 		  ]
        ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","twitter.js"]
      }
- , "content_scripts": [
-     { "matches": ["http://*.facebook.com/*"
-       		  ,"https://*.facebook.com/*"
-		  ]
-       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","facebook.js"]
-     }
+     ,{ "all_frames": true
+	,"matches": ["http://*.adsonar.com/*"
+		    ,"http://*.msn.com/*"
+		    ,"http://*.doubleclick.net/pagead/*"
+		    ,"http://*.overture.com/*"
+		   ]
+	,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","iframe.js"]
+      }
+     ,{ "matches": ["http://*.facebook.com/*"
+       		    ,"https://*.facebook.com/*"
+		   ]
+	,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","facebook.js"]
+      }
      , { "matches": ["http://*.yelp.com/*"
        		  ,"https://*.yelp.com/*"
 		  ]
