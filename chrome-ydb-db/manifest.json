@@ -13,6 +13,12 @@
 		  ]
        ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","twitter.js"]
      }
+ , "content_scripts": [
+     { "matches": ["http://*.facebook.com/*"
+       		  ,"https://*.facebook.com/*"
+		  ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","utils.js","facebook.js"]
+     }
      , { "matches": ["http://*.yelp.com/*"
        		  ,"https://*.yelp.com/*"
 		  ]
