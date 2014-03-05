@@ -11,7 +11,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.10'
+	    , version: '0.11'
 	}
 	, place: {
 	    fields: {
@@ -38,7 +38,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.05'
+	    , version: '0.06'
 	}
     }
 
@@ -156,7 +156,7 @@ tc = {
 	if(tc.optVal('opt_roc') == 0)
 	    tc.simpleSql("delete from results where func = 'roc'");
 	if(tc.optVal('opt_hrc') == 0)
-	    tc.simpleSql("delete from results where func = 'hrc'");
+	    tc.simpleSql("delete from results where func like 'hrc%'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -205,8 +205,11 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
-	    if(tc.optVal('opt_hrc') == 0)
+	    if(tc.optVal('opt_hrc') == 0){
 		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -289,8 +292,11 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
-	    if(tc.optVal('opt_hrc') == 0)
+	    if(tc.optVal('opt_hrc') == 0){
 		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
