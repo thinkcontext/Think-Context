@@ -41,7 +41,7 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 
 	$("div.adsonarAd > a.displayUrl").not('a[sid]').map(
 	    function(){
-		console.log("adsonar text",this);
+		//console.log("adsonar text",this);
 		var sid = "gs" + tc.random();
 		this.setAttribute("sid",sid);
 		tc.sendMessage({'kind': 'link'

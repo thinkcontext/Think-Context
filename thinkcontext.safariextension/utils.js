@@ -11,7 +11,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	tc.responses[kind] = func;
     }
 
-    if(window.top === window){
+//    if(window.top === window){
 	safari.self.addEventListener(
 	    "message"
 	    ,function(e){
@@ -23,7 +23,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 		    }				     
 	    }
 	    , false);
-    }
+//    }
     tc.iconDir = safari.extension.baseURI + "icons";
     tc.icons = { infoI : tc.iconDir + "/infoI.png"
 		 ,greenG : tc.iconDir + "/greenG.png"
@@ -62,36 +62,32 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     	}
     };
 
-    tc.createOverlay = function(id,title,contents,hidden){
-	var d = $('<div>',{id:id, class: 'tcOverlay'})
-	    .append($('<div>',{class: 'tcOverlayTitlebar'})
-		    .append($('<div>',{class: 'tcTitleText'})
-			    .append('thinkContext: ' + title)))
-	    .append($('<div>',{class: 'tcContents'})
-		    .append(contents));
-	if(hidden){
-	    d.css('display','none');
-	}
-	$('body').append(d);
-	d.overlay({oneInstance: false
-		   , fixed: false
-		   , top: 10});
-	return d;
-    };
-
     tc.popDialog = function(request){
+	var d;
 	var r = tc.random(), z = 'd' + r;
  	var rdc = request.data.template_data;
 	var title = rdc.title, icon = rdc.icon, kind = 'result';
 	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
+	var autoOpen = request.popD;
+
 	if(tc.popD == null){	
-	    d = tc.createOverlay('tcPopD',rdc.title
-				 ,$('<div>')
-				 .append($('<div>',{id:'tcResults'}))
-				 .append($('<div>',{id:'tcOther'}))
-				 , true);
+	    d = $('<div>',{id:'tcPopD'})
+		.append($('<div>',{id:'tcResults'}))
+		.append($('<div>',{id:'tcOther'}))
+		.dialog(
+		    { zIndex: 100000001
+		      ,title: 'thinkContext: ' + title
+		      , position: [window.innerWidth - 350
+				   , 10 ]
+		      , close: function(){
+			  $(window).unbind('resize');
+			  $(window).unbind('scroll');
+		      }
+		      , height: 150
+		      , autoOpen: false
+		    });     
 	    tc.popD = d;
-	} 
+	}
 	d = tc.popD;
 	switch(kind){
 	case 'result':
@@ -100,30 +96,32 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	default:
 	    $('#tcOther',d).append(revDiv);
 	}
-	if(request.popD){
-	    d.load();
-	    tc.popD.css('left', window.innerWidth - 350);
-	    tc.popD.css('top', '10px');
+	if(autoOpen){
+	    d.dialog('open');
 	}
 	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
+
 	$(window).scroll(function(){
-	    d.data("overlay").close();
+	    d.dialog('close');
+	});
+	$(window).click(function(){
+	    d.dialog('close');
 	});
 	d.mouseenter(function(){
 	    $(window).off('click');
 	});
 	d.mouseleave(function(){
 	    $(window).click(function(){
-		d.data("overlay").close();
+		d.dialog('close');
 	    });
 	});
 
 	// really irritating when the dialog steals focus
-	if(request.popD){
+	if(autoOpen){
 	    document.activeElement.blur();
 	}
     }
@@ -147,18 +145,17 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     }
 
     tc.iconDialog = function(title,body,iconId){
-	var d = body.data('overlay');
+	var d = body.dialog(
+	    {autoOpen: false
+	     , title:  'thinkContext: ' + title
+	     , height: 150
+	     , zIndex: 10000000
+	    }); 
 	$("div#"+iconId ).hover(
 	    function(event){ 
-		d.load();
-		var l = event.pageX - 15, t = event.pageY - 15, viewportWidth = $(window).width(), viewportHeight = $(window).height();
-		if(l + 300 > viewportWidth)
-		    l = viewportWidth - 300;
-		if(t + 150 > viewportHeight)
-		    t = viewportHeight - 150;
-		body.css({left: l , top: t,display: 'inline'});
-		body.mouseleave(function(e){ d.close(); });
-		$(window).scroll(function(e){ d.close(); });
+		d.dialog('option','position',[event.clientX - 15, event.clientY - 15]); 
+		d.dialog('open'); 
+		$('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
 		return false;}
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
@@ -231,7 +228,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	);
     };
 
-
     tc.renderTemplate = function(data,r,key,rdc){
 	var detail = data.data;
 	if(typeof(detail) != "object")
@@ -252,10 +248,8 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	var r = tc.random();
  	var rdc = data.template_data;
 	
-	var d = tc.createOverlay(r
-				 ,rdc.title
-				 ,tc.renderTemplate(data,r,key,rdc)
-				 ,true);
+	var d = tc.renderTemplate(data,r,key,rdc)
+
         // if(data.subtype == 'imgad'){
         //     console.log('imgad');
         //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);

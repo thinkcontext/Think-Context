@@ -219,7 +219,6 @@ if(typeof(tc) == 'undefined'){
 	);
     };
 
-
     tc.renderTemplate = function(data,r,key,rdc){
 	var detail = data.data;
 	if(typeof(detail) != "object")
