@@ -222,11 +222,11 @@ tc = {
 	}
 
 	var dateClause = '';
-	var secs;
-
-	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
+	var secs=tc.checkLocalDeleteTime(table);
+	if(secs == null){
+	    secs = 0;
 	}
+	dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 
 	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 

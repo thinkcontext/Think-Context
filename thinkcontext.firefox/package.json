@@ -14,6 +14,12 @@
 	    , "type": "bool"
 	    , "value": true
 	}
+	, {"name": "opt_hrc"
+	   , "title": "Human Rights Campaign Corporate Equality Index"
+	   , "description": "Rates companies on corporate policies and practices pertinent to lesbian, gay, bisexual and transgender employees."
+	    , "type": "bool"
+	    , "value": true	   
+	  }
 	, {
 	    "name": "opt_roc"
 	    , "title": "Restaurant Opportunities Center (ROC)"

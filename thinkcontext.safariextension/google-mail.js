@@ -1,34 +1,32 @@
 if (window.top === window && document.domain == 'mail.google.com') {
-    tc.registerResponse('link'
-			,function(request){
-			    $("[sid=" + request.sid +"]").map(function(){
-				tc.resultPrev(this,request.key,request.data);})
-			});
+    tc.gmail = {};
 
-    function pageExamine(){
-	console.log('pageExamine');
-	$("a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
-	    function(){
-		var m = this.href.match(/adurl=(http[^\&\"]+)/)
-		if(m && m[1]){
-		    var sid = "gs" + tc.random();
-		    this.setAttribute("sid",sid);
-		    tc.sendMessage({'kind': 'link'
-     				    , 'sid': sid
-     				    , 'key': tc.sigURL(m[1]) });
-		}
-	    });
+    tc.gmail.pageExamine = function(){
+	tc.searchLinkExam("a[href*='googleadservices.com/pagead/aclk'].vd, div.aBD a.mr"
+			  , 'gmail'
+			  , null
+			  , function(x){return x.textContent});		
     }
-    pageExamine();
 
+    var $observerSummaryRoot = $("body");
     function summaryCallback(summaries){
-	pageExamine();
+	$observerSummaryRoot.mutationSummary("disconnect");
+	doOb();
     }
 
-    var $observerSummaryRoot = $("div#\\:2");
-    $observerSummaryRoot.mutationSummary("connect"
-					 , summaryCallback
-					 , [{ element:"div.aBD" }]);
+    function doOb(){
+	tc.gmail.pageExamine();
+	window.setTimeout(tc.gmail.pageExamine,1000);    
+	window.setTimeout(tc.gmail.observe,500);
+    }
 
+    tc.gmail.observe = function(){
+	$observerSummaryRoot.mutationSummary("connect"
+					     , summaryCallback
+					     , [{element: 'div.adC'}]
+					    );
+    }
+
+    doOb();
     safari.self.addEventListener("message",tc.onResponse, false);
 }

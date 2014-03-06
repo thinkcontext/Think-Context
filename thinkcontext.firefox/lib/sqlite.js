@@ -122,6 +122,7 @@ exports.connect = function connect(database) {
 exports.execute = function execute(statement) {
     if(arguments.length == 1) {
         try {
+	    console.error('executeSimpleSQL',statement);
             connection.executeSimpleSQL(statement);
         }
         catch(e) {

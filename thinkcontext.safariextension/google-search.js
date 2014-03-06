@@ -38,7 +38,7 @@ if(window.top === window) {
 	    
 
 	}
-    }else if(document.location.hostname == 'www.google.com' && document.location.pathname == '/maps/preview'){
+    }else if(document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps/') == 0){
 	// this is the new google maps interface
 
 	$observerSummaryRoot = $("div#cards");
@@ -75,7 +75,8 @@ if(window.top === window) {
 
     function doOb(){
 	tc.googleSearch.doit();
-	window.setTimeout(tc.googleSearch.observe,750);
+	window.setTimeout(tc.googleSearch.doit,1000);    
+	window.setTimeout(tc.googleSearch.observe,500);
     }
 
     doOb();
