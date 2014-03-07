@@ -1,5 +1,5 @@
 if (window.frameElement === null){
-console.log('google-search');
+console.error('google-search');
 tc.googleSearch = {};
 var $observerSummaryRoot
 

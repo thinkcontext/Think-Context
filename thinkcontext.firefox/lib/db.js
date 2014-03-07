@@ -129,7 +129,6 @@ tc = {
 	if(! (s = ss.storage[t + 'deletetime'])){
 	    s = 0;
 	}
-	console.log('checklocaldeletetime',s);
 	return s;
     }
     , roundNowDownHour: function(){
@@ -526,8 +525,8 @@ function getReverseHost(url){
 }
 
 tc.connectDB();
-//tc.loadAllTables();
-timer.setTimeout(tc.updateAllTables,10000); // do at idle?
+tc.loadAllTables();
+timer.setTimeout(tc.updateAllTables,100000); // do at idle?
 //timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;

@@ -11,6 +11,14 @@ if (window.frameElement === null){
 	self.postMessage(request);
     }
 
+    tc.onResponse = function(request){
+	if(request.data.data)
+	    request.data.data = JSON.parse(request.data.data);
+	if(request.data.template_data)
+	    request.data.template_data = JSON.parse(request.data.template_data);
+	tc.responses[request.kind](request);
+    }
+
     tc.registerResponse = function(kind, func){
 	tc.responses[kind] = func;
     }
@@ -42,9 +50,6 @@ if (window.frameElement === null){
 			});
 
     tc.sendMessage({'kind': 'resource'});
-    tc.onResponse = function(request){
-	tc.responses[request.kind](request);
-    }
     
     tc.activeateResponses = function(){
 	self.on('message',tc.onResponse);
@@ -239,11 +244,8 @@ if (window.frameElement === null){
 
     tc.resultPrev = function(n,key,data){
 	var r = tc.random();
-	console.log(data);
  	var rdc = data.template_data;
-	
-	var d = tc.renderTemplate(data,r,key,rdc)
-
+	var d = tc.renderTemplate(data,r,key,rdc);
         // if(data.subtype == 'imgad'){
         //     console.log('imgad');
         //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
