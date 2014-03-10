@@ -58,6 +58,7 @@ function queryAsync(statement, parameters, success) {
 
     let query = connection.createStatement(statement);
     for(var p in parameters){
+	console.error(parameters[p]);
     	query.params[p] = parameters[p];
     }
     query.executeAsync({
@@ -108,7 +109,7 @@ exports.executeMany = function executeMany(txt, params, success, fail){
 				, handleError: function(error){            console.error(error.name+' - '+error.message + ' ' + txt); 	    console.error(connection.lastErrorString); fail(); }
 			    , handleResult: function(resultSet){} });   
     }    catch(e){
-	console.error('executeMany: ' + txt);
+	//	console.error('executeMany: ' + txt);
         console.error(e.name+' - '+e.message);
     }
 }
@@ -123,7 +124,7 @@ exports.connect = function connect(database) {
 exports.execute = function execute(statement) {
     if(arguments.length == 1) {
         try {
-	    console.error('executeSimpleSQL',statement);
+	    //console.error('executeSimpleSQL',statement);
             connection.executeSimpleSQL(statement);
         }
         catch(e) {

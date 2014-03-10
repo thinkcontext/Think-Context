@@ -3,6 +3,7 @@ tc.facebook = {};
 var $observerSummaryRoot = $("body");
 
 function summaryCallback(summaries){
+    console.error('disconnect');
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
@@ -14,9 +15,11 @@ function doOb(){
 }
 
 tc.facebook.observe = function(){
+    console.error('observe');
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
-					 , [{ element:"div" }]);
+//					 , [{ element:"div" }]);
+					 , [{ characterData:true }]);
 }
 
 tc.registerResponse('link', function(request){
@@ -25,6 +28,7 @@ tc.registerResponse('link', function(request){
 });
 
 tc.facebook.examine = function(){
+    console.error('examine');
     $('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) div[title] > div:nth-child(2)').not('[sid]').map(
 	function(){
 	    var sid = "gs" + tc.random();
