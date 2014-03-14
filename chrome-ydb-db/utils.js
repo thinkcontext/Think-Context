@@ -1,4 +1,7 @@
 var tc = {};
+tc.responses = {};
+tc.popD = null;
+
 tc.urlRegExp = new RegExp(
     "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
 
@@ -7,6 +10,23 @@ tc.urlValidate = function(url){
 }
 
 tc.handleSeperator = ':';
+
+tc.registerResponse = function(kind, func){
+    tc.responses[kind] = func;
+}
+
+//    if(window.top === window){
+chrome.extension.onMessage.addListener(
+    function(request, sender, sendResponse){
+	if(request.kind == 'tcPopD')
+	    if(tc.popD.dialog('isOpen')){
+		tc.popD.dialog('close');
+	    } else {
+		tc.popD.dialog('open');
+	    }
+    }
+);
+
 tc.onResponse = function(request){
     console.log('onResponse',request);
 }
@@ -44,11 +64,11 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		this.setAttribute('tcid',1);
 	    var r = tc.random();	    
 	    target.setAttribute('tcid',r);
-	    if(kind && kind == 'urlfrag')
+	    if(kind && kind == 'urlfrag'){
 		h = tc.fragHandle(href);
-	    else
+	    }else
 		h = new tc.urlHandle(href);
-	    if(h && (kind == null || kind == 'urlfrag' || kind == h.kind)){
+	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
 		tc.sendMessage({
 		    kind: h.kind
 		    , tcid: r
@@ -56,6 +76,137 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	    }
 	});
 }
+
+    tc.insertPrev = function(n,icon, r,title,theDiv){
+    	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
+    	    var resDiv = $('<div>'
+    			   , { id: r
+    			       , subv: true
+    			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+    		.append($('<img>', { src: icon}));
+	    resDiv.insertBefore(n);
+    	    n.style.display = "inline";
+    	    tc.iconDialog(title,theDiv,r);
+    	}
+    };
+
+    tc.popDialog = function(request){
+	var d;
+	var r = tc.random(), z = 'd' + r;
+ 	var rdc = request.data.template_data;
+	var title = rdc.title, icon = rdc.icon, kind = 'result';
+	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
+	var autoOpen = request.popD;
+
+	if(tc.popD == null){	
+	    d = $('<div>',{id:'tcPopD'})
+		.append($('<div>',{id:'tcResults'}))
+		.append($('<div>',{id:'tcOther'}))
+		.dialog(
+		    { zIndex: 100000001
+		      ,title: 'thinkContext: ' + title
+		      , position: [window.innerWidth - 350
+				   , 10 ]
+		      , close: function(){
+			  $(window).unbind('resize');
+			  $(window).unbind('scroll');
+		      }
+		      , height: 150
+		      , autoOpen: false
+		    });     
+	    tc.popD = d;
+	}
+	d = tc.popD;
+	switch(kind){
+	case 'result':
+	    $('#tcResults',d).append(revDiv);
+	    break;
+	default:
+	    $('#tcOther',d).append(revDiv);
+	}
+	if(autoOpen){
+	    d.dialog('open');
+	}
+	tc.sendMessage({kind:'pageA',icon:icon});
+	$('div#' + z + ' a[tcstat]').click(function(){
+	    tc.sendMessage({kind: 'sendstat'
+	 		    , key: this.attributes['tcstat'].value});
+	});
+
+	$(window).scroll(function(){
+	    d.dialog('close');
+	});
+	$(window).click(function(){
+	    d.dialog('close');
+	});
+	d.mouseenter(function(){
+	    $(window).off('click');
+	});
+	d.mouseleave(function(){
+	    $(window).click(function(){
+		d.dialog('close');
+	    });
+	});
+
+	// really irritating when the dialog steals focus
+	if(autoOpen){
+	    document.activeElement.blur();
+	}
+    }
+
+    tc.iconDialog = function(title,body,iconId){
+	var d = body.dialog(
+	    {autoOpen: false
+	     , title:  'thinkContext: ' + title
+	     , height: 150
+	     , zIndex: 10000000
+	    }); 
+	$("div#"+iconId ).hover(
+	    function(event){ 
+		d.dialog('option','position',[event.clientX - 15, event.clientY - 15]); 
+		d.dialog('open'); 
+		$('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
+		return false;}
+	);
+	$('div#d' + iconId+' a[tcstat]').click(function(){
+	    tc.sendMessage({'kind': 'sendstat'
+	 		    , 'key': this.attributes['tcstat'].value});
+	});
+    }
+    
+    tc.resultPrevResponse = function(request){
+	$("[sid=" + request.sid +"]").map(function(){
+	    tc.resultPrev(this,request.key,request.data);});
+    };
+    tc.renderTemplate = function(data,r,key,rdc){
+	var detail = data.data;
+	if(typeof(detail) != "object")
+	    detail = {};
+	detail.did = 'd'+r;
+	detail.r = r;
+	detail.key = key;
+	detail.url = data.url;
+	detail.tcstat = rdc.tcstat;
+	detail.id = data.id;
+	var d = $("<div>",{id: "d"+r}).appendTo('body');
+	new EJS({text: rdc.template}).update("d"+r,detail);
+	return d;
+	
+    };
+
+    tc.resultPrev = function(n,key,data){
+	var r = tc.random();
+ 	var rdc = data.template_data;
+	
+	var d = tc.renderTemplate(data,r,key,rdc)
+
+        // if(data.subtype == 'imgad'){
+        //     console.log('imgad');
+        //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+        // } else {
+	tc.insertPrev(n, rdc.icon, r, rdc.title, d);
+	// }
+    }
 
 tc.uniqueArray = function(a) {
     return a.reduce(function(p, c) {
@@ -67,8 +218,9 @@ tc.random = function(){return Math.floor(Math.random() * 100000);}
 
 tc.fragHandle = function(frag){
     var m,h;
-    if(m = frag.match(/\w[\w\.\-\_]+\w[\w\.\-\_\/]+/)){
-	h = new tc.urlHandle('http://' + m[0]);
+    frag = frag.replace(/^https?:\/\//,'');
+    if(m = frag.match(/(https?:\/\/)?(\w[\w\.\-\_]+\w[\w\.\-\_\/]+)/)){
+	h = new tc.urlHandle('http://' + m[2]);
 	return h;
     }
 }
@@ -76,7 +228,7 @@ tc.fragHandle = function(frag){
 tc.urlHandle = function(url){
     //console.log('urlHandle',url);
     url = url.trim();
-    if(!url.match('^https?://\w'))
+    if(!url.match(/^https?:\/\/\w/))
 	return null;
     this.url = url;
     var m, sp = url.split('/');
@@ -122,7 +274,9 @@ tc.urlHandle = function(url){
 	this.kind = 'domain';
 	this.hval = domain + '/' + path;
     }
-	      
+
     if(this.kind && this.hval)
 	this.handle = this.kind + ':' + this.hval;
+    else 
+	this = null;
 }

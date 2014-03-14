@@ -73,15 +73,18 @@ Ext.prototype = {
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
+		    console.log(results,handle);
 		    for(var i in results){
 			for(var k in results[i].handles){
-			    if(results[i].handles.search(handle) == 0){
+			    console.log(k, results[i].handles,results[i].handles[k].indexOf(handle));
+			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
 				    campaign = results[i].campaigns[j];
 				    console.log(campaign);
 				    campaign.action = _self.actions[campaign.action];
 				}
-				callback(results);
+				request['results'] = results;
+				callback(request);
 				return;
 			    }
 			}

@@ -15,6 +15,12 @@ tc.reverse.doit = function(){
 		     ,function(x){ return x.textContent;}
 		    );
 
+    tc.handleExamine("[itemtype='http://schema.org/Organization'] [itemprop='url']"
+		     ,'urlfrag'
+		     ,function(x){ console.log(x.href); return x.href; }
+		     ,function(x){ console.log(x.parentElement); return x.parentElement; });
+
+
     // $("object param[name='flashvars'][value*='2mdn.net']").not('a[sid]').map(
     //     function(){
     // 	if(m = this.value.match(/link\%253D(http[^\&]+)/) && m[1]){
