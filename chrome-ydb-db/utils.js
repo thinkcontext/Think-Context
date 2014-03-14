@@ -29,6 +29,7 @@ chrome.extension.onMessage.addListener(
 
 tc.onResponse = function(request){
     console.log('onResponse',request);
+    tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
     console.log('sendMessage',request);
@@ -52,7 +53,12 @@ tc.popSend = function(){
     }	
 }
 
+tc.onLink = function(request){
+    
+}
+
 tc.handleExamine = function(selector,kind,getval,placer){
+    tc.registerResponse('link',onLink);
     $(selector).not('[tcid],img,div').map(
 	function(){
 	    var target = this, href = this.href, h;
