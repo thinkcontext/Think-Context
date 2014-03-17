@@ -33,7 +33,7 @@
 
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-place-page.js"]
 	 }
 	,{  "matches": ["*://mail.google.com/*"],
 	    "css": ["jquery-ui.css"],
@@ -46,13 +46,13 @@
 	,{
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://www.bing.com/search*"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
 	}
 	,{
 	    "all_frames": true,
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
 	}
 	,{
 	    "css": ["jquery-ui.css"],
@@ -68,7 +68,7 @@
 			      ,"http://*.yahoo.com/*"
 			      ,"https://*.yahoo.com/*"
 			     ] ,
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","reverse.js"]
 	}
 	,{
 	    "all_frames": true,
@@ -78,7 +78,7 @@
 			,"http://*.doubleclick.net/pagead/*"
 			,"http://*.overture.com/*"
 		       ],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
     ]
 }

@@ -3,7 +3,7 @@ tc.facebook = {};
 var $observerSummaryRoot = $("body");
 
 function summaryCallback(summaries){
-    console.error('disconnect');
+//    console.error('disconnect');
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
@@ -18,8 +18,7 @@ tc.facebook.observe = function(){
     console.error('observe');
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
-//					 , [{ element:"div" }]);
-					 , [{ characterData:true }]);
+					 , [{ element:"div" }]);
 }
 
 tc.registerResponse('link', function(request){

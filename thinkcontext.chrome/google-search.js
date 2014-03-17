@@ -14,13 +14,13 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     }
     tc.googleSearch.doit = function(){
 	//     ad links
-	tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
+	tc.searchLinkExam('li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,'google-search'
 			  , function(x){return x.parentElement.children[0]}
 			  , function(x){ return x.textContent});
 	
 	//	result link	
-	tc.searchLinkExam("ol#rso > li.g div > h3 > a",'google-search');
+	tc.searchLinkExam("ol#rso li.g div > h3 > a",'google-search');
 
 	// right column info box
 	// tc.searchLinkExam("div#rhs_block div.kno-xs a.ab_button"

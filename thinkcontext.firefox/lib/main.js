@@ -245,9 +245,79 @@ pageMod.PageMod({
     contentScriptFile: [
 	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('facebook.js')],
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    var key = request.key;
+	    var data;
+	    switch(request.kind){
+	    case 'resource':
+		request.data = iconDir;
+		worker.postMessage(request);
+		break;
+	    case 'sendstat':
+		db.sendStat(request.key);
+		break;
+	    case 'link':
+		db.lookupResult(request, function(r){worker.postMessage(r)});
+		break;
+	    case 'urlresolve':
+		db.urlResolve(request, function(r){worker.postMessage(r)});
+		break;
+	    }
+	})}
+});
+pageMod.PageMod({
+    include: "*.maps.google.com",
+    attachTo: "top",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.3.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('google-maps.js')],
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    var key = request.key;
+	    var data;
+	    switch(request.kind){
+	    case 'resource':
+		request.data = iconDir;
+		worker.postMessage(request);
+		break;
+	    case 'sendstat':
+		db.sendStat(request.key);
+		break;
+	    case 'link':
+		db.lookupResult(request, function(r){worker.postMessage(r)});
+		break;
+	    case 'urlresolve':
+		db.urlResolve(request, function(r){worker.postMessage(r)});
+		break;
+	    }
+	})}
+});
+pageMod.PageMod({
+    include: "*.mail.google.com",
+    attachTo: "top",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.3.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('google-mail.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
@@ -285,7 +355,7 @@ pageMod.PageMod({
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
-	,data.url('facebook.js')],
+	,data.url('iframe.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;
