@@ -1,4 +1,4 @@
-if(! document.domain.match('google.com$') || document.domain == 'news.google.com'){
+if(! document.domain.match('google.com$') ){
     tc.reverse = {};
     
     tc.registerResponse('link',
@@ -16,38 +16,22 @@ if(! document.domain.match('google.com$') || document.domain == 'news.google.com
 	 , key: tc.sigURL(document.baseURI)
 	});
     function doit(){
-	$("a[href*='shlinks.industrybrains.com']").not('a[sid]').map(
-	    function(){
-		var sid = "gs" + tc.random();
-		this.setAttribute("sid",sid);
-		if(!this.textContent.match(' ')){
-		    tc.sendMessage({'kind': 'link'
-     				    , 'sid': sid
-     				    , 'key': tc.sigURL(this.textContent) });
-		}
-	    });
-	
-	$("li > h4 > a[href*='googleadservices.com/pagead/aclk']").not('a[sid]').map(
-	    function(){
-		var m = this.href.match(/adurl=(http[^\&\"]+)/)
-		var sid = "gs" + tc.random();
-		this.setAttribute("sid",sid);
-		if(m && m[1]){
-		    tc.sendMessage({kind: 'link'
-     				    , sid: sid
-     				    , key: tc.sigURL(m[1]) });
-		}
-	    });
 
-	$("div.adsonarAd > a.displayUrl").not('a[sid]').map(
-	    function(){
-		//console.log("adsonar text",this);
-		var sid = "gs" + tc.random();
-		this.setAttribute("sid",sid);
-		tc.sendMessage({'kind': 'link'
-     				, 'sid': sid
-     				, 'key': tc.sigURL(this.textContent) });
-	    });
+	tc.searchLinkExam("a[href*='shlinks.industrybrains.com']"
+			  ,'link'
+			  ,null
+			  ,function(x){ return x.textContent});
+
+	//news.bbc.co.uk
+	tc.searchLinkExam("li > p > a[href*='googleadservices.com/pagead/aclk']"
+			  ,'link'
+			  ,null
+			  ,function(x){ return x.textContent});	
+	
+	tc.searchLinkExam("div.adsonarAd > a.displayUrl"
+			  ,'link'
+			  ,null
+			  ,function(x){ return x.textContent});	
 	
 	// $("object param[name='flashvars'][value*='2mdn.net']").not('a[sid]').map(
 	//     function(){

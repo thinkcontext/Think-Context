@@ -22,6 +22,7 @@ tc.registerResponse('link',
 		    }
 		   );
 
+// washingtonpost.com
 if(document.domain.match('adsonar.com')){
     $("p.lnk a").not('a[sid]').map(
 	function(){

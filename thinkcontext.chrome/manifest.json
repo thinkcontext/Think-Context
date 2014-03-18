@@ -22,7 +22,9 @@
     "content_scripts": [
 	{
 	    "css": ["jquery-ui.css"],
-	    "matches": ["*://www.google.com/*"],
+	    "matches": ["*://www.google.com/*"
+			,"*://maps.google.com/*"
+		       ],
 	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
@@ -38,10 +40,6 @@
 	,{  "matches": ["*://mail.google.com/*"],
 	    "css": ["jquery-ui.css"],
 	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-mail.js"]
-	 }
-	,{  "matches": ["*://maps.google.com/*"],
-	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-maps.js"]
 	 }
 	,{
 	    "css": ["jquery-ui.css"],

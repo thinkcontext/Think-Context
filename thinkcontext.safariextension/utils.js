@@ -180,9 +180,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     
     tc.searchLinkExam = function(selector,source,placer,getval){
 	tc.registerResponse('link', tc.resultPrevResponse);
-	// tc.registerResponse('yelp', tc.resultPrevResponse);
-	// tc.registerResponse('tripadvisor', tc.resultPrevResponse);
-	// tc.registerResponse('hcom', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(
 	    function(){
@@ -203,27 +200,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 				,source: source
      				, sid: sid
      				, key: url});
-		// if(url.match('tripadvisor\.com')){
-		//     tc.sendMessage({kind: 'tripadvisor'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.tripadvisor(url) });
-		// } else if(url.match('yelp.com')){
-		//     tc.sendMessage({kind: 'yelp'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.yelp(url) });	
-		// } else if(url.match('facebook\.com')){
-		//     tc.sendMessage({kind: 'facebook'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.facebook(url) });	
-		// } else if(url.match('://(www\.)?hotels\.com')){
-		//     tc.sendMessage({kind: 'hcom'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.hcom(url) });	
-		// }	
 	    }
 	);
     };

@@ -2,6 +2,7 @@ tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
     j.setAttribute("sid",sid);
+    console.log('iframe', j.textContent);
     tc.sendMessage({'kind': 'link'
      		    , 'sid': sid
      		    , 'key': tc.sigURL(j.textContent) });    
@@ -14,6 +15,7 @@ tc.registerResponse('link',
 		    }
 		   );
 
+// washingtonpost.com
 if(document.domain.match('adsonar.com')){
     $("p.lnk a").not('a[sid]').map(
 	function(){
