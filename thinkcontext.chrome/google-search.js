@@ -21,21 +21,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	
 	//	result link	
 	tc.searchLinkExam("ol#rso li.g div > h3 > a",'google-search');
-
-	// right column info box
-	// tc.searchLinkExam("div#rhs_block div.kno-xs a.ab_button"
-	// 		  ,'place'
-	// 		  , null
-	// 		  , function(x){
-	// 		      console.log(x.href);
-	// 		      if(m = x.href.match(/continue=https:\/\/plus.google.com\/([^\/]+)/)){
-	// 			  console.log(m);
-	// 			  return m[1]
-	// 		      }
-	// 		  }
-	// 		 );
-	    
-
     }
 }else if(document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps/') == 0){
     // this is the new google maps interface
