@@ -2,6 +2,7 @@ if (window.frameElement === null){
 tc.gmail = {};
 
 tc.gmail.pageExamine = function(){
+    //console.log('examine');
     tc.searchLinkExam("a[href*='googleadservices.com/pagead/aclk'].vd, div.aBD a.mr"
 		      , 'gmail'
 		      , null
@@ -10,6 +11,7 @@ tc.gmail.pageExamine = function(){
 
 var $observerSummaryRoot = $("body");
 function summaryCallback(summaries){
+    //console.log('disconnect');
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
@@ -21,9 +23,10 @@ function doOb(){
 }
 
 tc.gmail.observe = function(){
+    //console.log('observe');
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
-					 , [{element: 'div.adC'}]
+					 , [{element: 'div'}]
 					);
 }
 

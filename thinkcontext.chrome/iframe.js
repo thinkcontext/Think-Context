@@ -2,7 +2,7 @@ tc.iframe = {};
 tc.iframe.sendReq = function(j){
     var sid = "gs" + tc.random();
     j.setAttribute("sid",sid);
-    console.log('iframe', j.textContent);
+    //console.log('iframe', j.textContent);
     tc.sendMessage({'kind': 'link'
      		    , 'sid': sid
      		    , 'key': tc.sigURL(j.textContent) });    

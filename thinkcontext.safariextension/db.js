@@ -96,7 +96,7 @@ tc = {
     , checkLocalDeleteTime: function(t){
 	var s;
 	if(! (s = localStorage.getItem(t + 'deletetime'))){
-	    s = 0;
+	    s = 1;
 	}
 	return s;
     }
@@ -115,7 +115,7 @@ tc = {
     , checkLocalAddTime: function(t){
 	var s;
 	if(! (s = localStorage.getItem(t + 'addtime'))){
-	    s = 0;
+	    s = 1;
 	}
 	return s;
     }

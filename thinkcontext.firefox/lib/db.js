@@ -127,7 +127,7 @@ tc = {
     , checkLocalDeleteTime: function(t){
 	var s;
 	if(! (s = ss.storage[t + 'deletetime'])){
-	    s = 0;
+	    s = 1;
 	}
 	return s;
     }
@@ -147,7 +147,7 @@ tc = {
     , checkLocalAddTime: function(t){
 	var s;
 	if(! (s = ss.storage[t + 'addtime'])){
-	    s = 0;
+	    s = 1;
 	}
 	return s;
     }

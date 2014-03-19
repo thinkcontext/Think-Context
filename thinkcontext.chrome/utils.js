@@ -171,9 +171,6 @@ if(typeof(tc) == 'undefined'){
     
     tc.searchLinkExam = function(selector,source,placer,getval){
 	tc.registerResponse('link', tc.resultPrevResponse);
-	// tc.registerResponse('yelp', tc.resultPrevResponse);
-	// tc.registerResponse('tripadvisor', tc.resultPrevResponse);
-	// tc.registerResponse('hcom', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(
 	    function(){
@@ -190,6 +187,7 @@ if(typeof(tc) == 'undefined'){
 		var sid = "gs" + tc.random();
 		target.setAttribute("sid",sid);
 		var url = tc.sigURL(href);
+		//console.log('searchLinkExam',url);
 		tc.sendMessage({kind: 'link'
 				,source: source
      				, sid: sid
