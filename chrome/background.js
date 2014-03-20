@@ -24,8 +24,8 @@ function Ext(){
     this.actions = {};
     this.getActions();
     this.campaigns = {};
+    console.log(this.actions);
     // get campaigns
-    // get actions
 } 
 
 Ext.prototype = {
@@ -68,7 +68,7 @@ Ext.prototype = {
 	var _self = this;
 	var req ;
 	var campaign;
-	if(request.kind == 'domain'){
+	if(request.handle.match(/^domain:/)){
 	    console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
@@ -80,10 +80,12 @@ Ext.prototype = {
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
 				    campaign = results[i].campaigns[j];
-				    console.log(campaign);
+				    console.log(campaign.action);
 				    campaign.action = _self.actions[campaign.action];
+				    console.log(_self.actions,j,campaign.action);
 				}
 				request['results'] = results;
+				console.log(request);
 				callback(request);
 				return;
 			    }
@@ -94,13 +96,14 @@ Ext.prototype = {
 	    req = tc.db.from('thing').where('handles','=',handle);
 	    req.list(1).done(
 		function(results){
-		    if(results = results[0]){
-			for(var j in results.campaigns){
-			    campaign = results.campaigns[j];
-			    console.log(campaign);
+		    if(results[0]){
+			for(var j in results[0].campaigns){
+			    campaign = results[0].campaigns[j];
 			    campaign.action = _self.actions[campaign.action];
+			    
 			}
-			callback(results);
+			request['results'] = results;
+			callback(request);
 		    }
 		});
 	}
@@ -112,7 +115,10 @@ var tc = new Ext();
 
 function onRequest(request, sender, callback) {
     console.log(request);
-    if(request.handle){
+    if(request.kind == 'pageA'){
+	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	chrome.pageAction.show(sender.tab.id);
+    } else if(request.handle){
 	console.log('handle',request.handle);
 	tc.lookup(request.handle,request,callback);
     } else {
@@ -121,3 +127,7 @@ function onRequest(request, sender, callback) {
 }
 
 chrome.extension.onRequest.addListener(onRequest);
+chrome.pageAction.onClicked.addListener(
+    function(tab){
+	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
+    });

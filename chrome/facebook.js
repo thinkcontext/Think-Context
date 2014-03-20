@@ -1,24 +1,26 @@
 tc.popSend();
 
-$('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) div[title] > div:nth-child(2)').not('[sid]').map(
+$('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) div[title] > div:nth-child(2)').not('[tcid]').map(
     function(){
-	var sid = "gs" + tc.random();
-	this.setAttribute("sid",sid);
-	tc.sendMessage({kind: 'link'
-     			, sid: sid
-     			, key: tc.sigURL(this.textContent)});
+	var h = new tc.urlHandle(this.textContent);
+	if(h){
+	    var tcid = tc.random();
+	    this.setAttribute("tcid",tcid);
+	    tc.sendMessage({kind: 'link'
+     			    , tcid: tcid
+     			    , handle: h.handle});
+	}
 	
-    });}
-
+    });
 
 $('a',$("span:contains('Suggested Post')").parent()).not('[tcid]').map(
     function(){
-	var h = new UrlHandle(this.href);
+	var h = new tc.urlHandle(this.href);
 	if(h){
 	    var r = tc.random();
 	    this.setAttribute('tcid',r);
 	    tc.sendMessage({
-		kind: h.kind
+		kind: 'link'
 		, tcid: r
 		, handle: h.handle});	    
 	}

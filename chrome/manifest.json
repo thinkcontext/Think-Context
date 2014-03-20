@@ -4,6 +4,7 @@
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
 		  , "http://tcdata.iriscouch.com/*"]
+ , "page_action": { "default_title": "thinkContext - Click for more info" }
  , "background": {"scripts": ["jquery-2.0.3.min.js"
 			      ,"ydn.db-0.8.2.js"
 			      ,"background.js"]}

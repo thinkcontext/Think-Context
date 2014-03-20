@@ -1,6 +1,7 @@
 var tc = {};
 tc.responses = {};
 tc.popD = null;
+tc.defaultIcon = "";
 
 tc.urlRegExp = new RegExp(
     "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
@@ -37,6 +38,7 @@ tc.sendMessage = function(request){
 }
 
 tc.popSend = function(){
+    tc.registerResponse('pop',tc.onPop);
     var url = document.baseURI;
     $("link[rel='canonical']").map(
 	function(){ 
@@ -46,99 +48,38 @@ tc.popSend = function(){
     var h = new tc.urlHandle(url);
     if(h){
 	tc.sendMessage({
-	    kind: h.kind
+	    kind: 'pop'
 	    , handle: h.handle
-	    , pop: 1
 	});	    
     }	
 }
 
-tc.onLink = function(request){
-    if(request.tcid.length > 0)
-	$("[tcid="+request.tcid+"]").map(
-	    function(){
-		tc.resultPrev(this,request);
-	    });
-}
-
-tc.handleExamine = function(selector,kind,getval,placer){
-    tc.registerResponse('link',onLink);
-    $(selector).not('[tcid],img,div').map(
-	function(){
-	    var target = this, href = this.href, h;
-	    if(getval)
-		href = getval(this);
-	    if(placer)
-		target = placer(this);
-	    if(this != target)
-		this.setAttribute('tcid',1);
-	    var r = tc.random();	    
-	    target.setAttribute('tcid',r);
-	    if(kind && kind == 'urlfrag'){
-		h = tc.fragHandle(href);
-	    }else
-		h = new tc.urlHandle(href);
-	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
-		tc.sendMessage({
-		    kind: h.kind
-		    , tcid: r
-		    , handle: h.handle});
+tc.onPop = function(request){
+    console.log('onPop',request);
+    var autoOpen = true;
+    var dd = tc.renderResults(request.results,'tcpopd');
+    var d;
+    if(dd){
+	d = dd.dialog;
+	d.dialog({
+	    title: dd.title
+	    , zIndex: 100000001
+	    , position: [window.innerWidth - 350
+			 , 10 ]
+	    , close: function(){
+		$(window).unbind('resize');
+		$(window).unbind('scroll');
 	    }
-	});
-}
-
-    tc.insertPrev = function(n,icon, r,title,theDiv){
-    	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-    	    var resDiv = $('<div>'
-    			   , { id: r
-    			       , subv: true
-    			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-    		.append($('<img>', { src: icon}));
-	    resDiv.insertBefore(n);
-    	    n.style.display = "inline";
-    	    tc.iconDialog(title,theDiv,r);
-    	}
-    };
-
-    tc.popDialog = function(request){
-	var d;
-	var r = tc.random(), z = 'd' + r;
- 	var rdc = request.data.template_data;
-	var title = rdc.title, icon = rdc.icon, kind = 'result';
-	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
-	var autoOpen = request.popD;
-
-	if(tc.popD == null){	
-	    d = $('<div>',{id:'tcPopD'})
-		.append($('<div>',{id:'tcResults'}))
-		.append($('<div>',{id:'tcOther'}))
-		.dialog(
-		    { zIndex: 100000001
-		      ,title: 'thinkContext: ' + title
-		      , position: [window.innerWidth - 350
-				   , 10 ]
-		      , close: function(){
-			  $(window).unbind('resize');
-			  $(window).unbind('scroll');
-		      }
-		      , height: 150
-		      , autoOpen: false
-		    });     
-	    tc.popD = d;
-	}
-	d = tc.popD;
-	switch(kind){
-	case 'result':
-	    $('#tcResults',d).append(revDiv);
-	    break;
-	default:
-	    $('#tcOther',d).append(revDiv);
-	}
+	    , height: 150
+	    , autoOpen: false
+	});     
+	tc.popD = d;
+	
 	if(autoOpen){
 	    d.dialog('open');
 	}
-	tc.sendMessage({kind:'pageA',icon:icon});
-	$('div#' + z + ' a[tcstat]').click(function(){
+	tc.sendMessage({kind:'pageA',icon:dd.icon});
+	$('div#tcpopd a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
@@ -157,60 +98,109 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		d.dialog('close');
 	    });
 	});
-
+	
 	// really irritating when the dialog steals focus
 	if(autoOpen){
 	    document.activeElement.blur();
 	}
     }
+}
 
-    tc.iconDialog = function(title,body,iconId){
-	var d = body.dialog(
+tc.onLink = function(request){
+    console.log('onLink',request,request.tcid);
+    if(request.tcid > 0)
+	$("[tcid="+request.tcid+"]").map(
+	    function(){
+		console.log(this);
+		tc.insertPrev(this,request);
+	    });
+}
+
+tc.handleExamine = function(selector,kind,getval,placer){
+    tc.registerResponse('link',tc.onLink);
+    $(selector).not('[tcid],img,div').map(
+	function(){
+	    var target = this, href = this.href, h;
+	    if(getval)
+		href = getval(this);
+	    if(placer)
+		target = placer(this);
+	    if(this != target)
+		this.setAttribute('tcid',1);
+	    var r = tc.random();	    
+	    target.setAttribute('tcid',r);
+	    if(kind && kind == 'urlfrag'){
+		h = tc.fragHandle(href);
+	    }else
+		h = new tc.urlHandle(href);
+	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
+		tc.sendMessage({
+		    kind: 'link'
+		    , tcid: r
+		    , handle: h.handle});
+	    }
+	});
+}
+
+tc.insertPrev = function(n,request){
+    console.log('insertPrev',request);
+    var d;
+    var rid = tc.random(), iid = 'i' + rid;
+    var dd = tc.renderResults(request.results,rid);
+    if(dd && n.previousSibling && n.previousSibling.getAttribute && n.previousSibling.getAttribute('tc')){ 
+	d = dd.dialog;
+
+    	var resDiv = $('<span>'
+    		       , { id: iid
+    			   , tc: 'tc'
+    			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+    	    .append($('<img>', { src: dd.icon}));
+	resDiv.insertBefore(n);
+    	n.style.display = "inline";
+
+	d.dialog(
 	    {autoOpen: false
-	     , title:  'thinkContext: ' + title
+	     , title:  'thinkContext: ' + dd.title
 	     , height: 150
 	     , zIndex: 10000000
 	    }); 
-	$("div#"+iconId ).hover(
+	$("#"+iid ).hover(
 	    function(event){ 
 		d.dialog('option','position',[event.clientX - 15, event.clientY - 15]); 
 		d.dialog('open'); 
-		$('div:has(div#d'+iconId+')').mouseleave(function(e){ d.dialog('close'); });
+		$('div:has(#'+iid+')').mouseleave(function(e){ d.dialog('close'); });
 		return false;}
 	);
-	$('div#d' + iconId+' a[tcstat]').click(function(){
+	$('#' + iid +' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
 	 		    , 'key': this.attributes['tcstat'].value});
 	});
     }
+};
     
-tc.renderActions = function(request,rid){
-	var detail = data.data;
-	if(typeof(detail) != "object")
-	    detail = {};
-	detail.did = 'd'+r;
-	detail.r = r;
-	detail.key = key;
-	detail.url = data.url;
-	detail.tcstat = rdc.tcstat;
-	detail.id = data.id;
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r,detail);
-	return d;
-	
-    };
-
-    tc.resultPrev = function(n,request){
-	var r = tc.random();
-	var d = tc.renderActions(request,r)
-
-        // if(data.subtype == 'imgad'){
-        //     console.log('imgad');
-        //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
-        // } else {
-	tc.insertPrev(n, rdc.icon, r, rdc.title, d);
-	// }
+tc.renderResults = function(results,rid){
+    console.log('renderResults',results,rid);
+    var d = $("<div>",{id: rid,tc:'tc'}).appendTo('body');
+    console.log(d);
+    var result, campaign, c, icon, title;
+    for(var i in results){
+	result = results[i];
+	for(var j in result.campaigns){
+	    campaign = result.campaigns[j];
+	    console.log(campaign);
+	    if(icon){
+		icon = tc.defaultIcon;
+		title = tc.defaultTitle;
+	    } else {
+		icon = campaign.action.icon;
+		title = campaign.action.title;
+	    }
+	    $("<div>",{id: rid + j}).appendTo('div#' + rid);
+	    new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
+	}
     }
+    return {title:title,icon:icon,dialog:d};
+}
 
 tc.uniqueArray = function(a) {
     return a.reduce(function(p, c) {
@@ -230,7 +220,7 @@ tc.fragHandle = function(frag){
 }
 
 tc.urlHandle = function(url){
-    //console.log('urlHandle',url);
+    console.log('urlHandle',url);
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;
@@ -278,9 +268,9 @@ tc.urlHandle = function(url){
 	this.kind = 'domain';
 	this.hval = domain + '/' + path;
     }
-
+    console.log(this);
     if(this.kind && this.hval)
 	this.handle = this.kind + ':' + this.hval;
     else 
-	this = null;
+    	return null;
 }
