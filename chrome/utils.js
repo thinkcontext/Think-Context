@@ -184,7 +184,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	});
     }
     
-    tc.renderActions = function(data,r,key,rdc){
+tc.renderActions = function(request,rid){
 	var detail = data.data;
 	if(typeof(detail) != "object")
 	    detail = {};
@@ -200,11 +200,9 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	
     };
 
-    tc.resultPrev = function(n,key,data){
+    tc.resultPrev = function(n,request){
 	var r = tc.random();
- 	var rdc = data.template_data;
-	
-	var d = tc.renderActions(data,r,key,rdc)
+	var d = tc.renderActions(request,r)
 
         // if(data.subtype == 'imgad'){
         //     console.log('imgad');
