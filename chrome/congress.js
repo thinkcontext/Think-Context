@@ -24,6 +24,8 @@
 // <strong>Rep. Paul Ryan</strong>, R-Wis abc
 // <strong>Rep. Joe Wilson </strong> nbc
 
+tc.registerResponse('congress',tc.onLink);
+
 tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
 
 var cRe = new RegExp(tc.congressPattern,'g');
@@ -49,7 +51,7 @@ for(var q in cs){
 		//iterate over the child nodes to find the right one
 		tn = cons[i].childNodes[j];
 		//console.log(tn.data.trim().length, (cong.length * 3))
-		if(tn.nodeType == 3 && tn.data.trim().length > (cong.length * 3)){
+		if(tn.nodeType == 3 && tn.parentElement.textContent.trim().length > (cong.length * 3)){
 		    // is this a text node and is it long enough 
 		    if(cm = tn.data.match(cong)){
 			// if it contains the text we are looking for 
@@ -64,7 +66,7 @@ for(var q in cs){
 			name = name.toLowerCase().replace(' ','');
 
 			nn.setAttribute('tcid',tcid);
-			nn.style.backgroundColor = 'yellow';
+			//nn.style.backgroundColor = 'yellow'; //helps w/ debugging
 			range = document.createRange();
 			range.setStart(tn,cm.index);
 			range.setEnd(tn,cm.index + cong.length);

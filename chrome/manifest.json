@@ -130,7 +130,7 @@
 		      ,"http://*.nbcnews.com/*"
 		      ,"http://news.msn.com/*"
 		  ]
-       ,"js": ["jquery-2.0.3.min.js","utils.js","congress.js"]
+       ,"js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","congress.js"]
      }
  ]
 }
