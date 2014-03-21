@@ -1,7 +1,8 @@
 var tc = {};
 tc.responses = {};
 tc.popD = null;
-tc.defaultIcon = "";
+tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg==";
+tc.defaultTitle = "thinkContext";
 
 tc.urlRegExp = new RegExp(
     "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
@@ -143,11 +144,12 @@ tc.handleExamine = function(selector,kind,getval,placer){
 }
 
 tc.insertPrev = function(n,request){
-    console.log('insertPrev',request);
+    console.log('insertPrev',request,n);
     var d;
     var rid = tc.random(), iid = 'i' + rid;
     var dd = tc.renderResults(request.results,rid);
-    if(dd && n.previousSibling && n.previousSibling.getAttribute && n.previousSibling.getAttribute('tc')){ 
+    if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
+	console.log(dd);
 	d = dd.dialog;
 
     	var resDiv = $('<span>'
@@ -185,9 +187,10 @@ tc.renderResults = function(results,rid){
     var result, campaign, c, icon, title;
     for(var i in results){
 	result = results[i];
+	console.log(i,result);
 	for(var j in result.campaigns){
 	    campaign = result.campaigns[j];
-	    console.log(campaign);
+	    console.log(j,campaign);
 	    if(icon){
 		icon = tc.defaultIcon;
 		title = tc.defaultTitle;
@@ -196,6 +199,7 @@ tc.renderResults = function(results,rid){
 		title = campaign.action.title;
 	    }
 	    $("<div>",{id: rid + j}).appendTo('div#' + rid);
+	    console.log($('div#rid'));
 	    new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
 	}
     }
