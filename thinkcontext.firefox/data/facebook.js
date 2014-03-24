@@ -15,7 +15,7 @@ function doOb(){
 }
 
 tc.facebook.observe = function(){
-    console.error('observe');
+    //console.error('observe');
     $observerSummaryRoot.mutationSummary("connect"
 					 , summaryCallback
 					 , [{ element:"div" }]);
@@ -27,7 +27,7 @@ tc.registerResponse('link', function(request){
 });
 
 tc.facebook.examine = function(){
-    console.error('examine');
+    //console.error('examine');
     $('div.ego_unit > div:first-child > div:first-child > a:nth-child(2) div[title] > div:nth-child(2)').not('[sid]').map(
 	function(){
 	    var sid = "gs" + tc.random();

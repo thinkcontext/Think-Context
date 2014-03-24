@@ -78,8 +78,7 @@ tc = {
 	}
     }
     
-//    , dataUrl: 'http://data2.thinkcontext.org/tc0096.php?'
-    , dataUrl: 'http://data.thinkcontext.org/tcdev.php?'
+    , dataUrl: 'http://data2.thinkcontext.org/tc0096.php?'
 
     , optVal: function(o){ return prefSet.prefs[o]; }
 

@@ -18,7 +18,6 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 };
 
 if(s.loadReason == 'upgrade'){
-    db.deleteReverse();
     tabs.open(data.url('update.html'));
 } else if(s.loadReason == 'install'){
     tabs.open(data.url('install.html'));

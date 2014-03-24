@@ -58,7 +58,6 @@ function queryAsync(statement, parameters, success) {
 
     let query = connection.createStatement(statement);
     for(var p in parameters){
-	console.error(parameters[p]);
     	query.params[p] = parameters[p];
     }
     query.executeAsync({
@@ -81,8 +80,8 @@ function queryAsync(statement, parameters, success) {
         }
     });
     } catch(e){
-        console.error('executeAsync: ' + statement);
-        console.error(e.name+' - '+e.message);
+        //console.error('executeAsync: ' + statement);
+        //console.error(e.name+' - '+e.message);
     }
 }
 
@@ -106,11 +105,14 @@ exports.executeMany = function executeMany(txt, params, success, fail){
 				    if(reason == 0){ 
 					success() }
 				}
-				, handleError: function(error){            console.error(error.name+' - '+error.message + ' ' + txt); 	    console.error(connection.lastErrorString); fail(); }
+				, handleError: function(error){            
+				    //console.error(error.name+' - '+error.message + ' ' + txt); 	    
+				    //console.error(connection.lastErrorString); 
+				    fail(); }
 			    , handleResult: function(resultSet){} });   
     }    catch(e){
 	//	console.error('executeMany: ' + txt);
-        console.error(e.name+' - '+e.message);
+        //console.error(e.name+' - '+e.message);
     }
 }
 
@@ -128,7 +130,7 @@ exports.execute = function execute(statement) {
             connection.executeSimpleSQL(statement);
         }
         catch(e) {
-            console.error(e.name + ' - ' + e.message);
+            //console.error(e.name + ' - ' + e.message);
         }
     }
     else {
@@ -136,7 +138,7 @@ exports.execute = function execute(statement) {
             queryAsync(statement,execute.arguments[1],execute.arguments[2]);
         }
         catch(e) {
-            console.error(e.name + ' - ' + e.message);
+            //console.error(e.name + ' - ' + e.message);
         }
     }
 }
