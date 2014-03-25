@@ -1,4 +1,5 @@
 if(window.top === window && (document.location.host == 'www.google.com' || document.location.host == 'maps.google.com')) {
+console.log('google-search');
 tc.googleSearch = {};
     var $observerSummaryRoot;
 
@@ -9,6 +10,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
   ){
     $observerSummaryRoot = $("div#rcnt");    
     tc.googleSearch.observe = function(){
+	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
 					     , summaryCallback
 					     , [{ characterData:true }]);
@@ -30,6 +32,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 	$observerSummaryRoot = $("body");
 	tc.googleSearch.observe = function(){
+	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
 						 , summaryCallback
 						 , [{ element: 'div' }]);
@@ -66,6 +69,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 	$observerSummaryRoot = $("div#cards");
 	tc.googleSearch.observe = function(){
+	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
 						 , summaryCallback
 						 , [{ element: 'div.cards-entity-url' }]);
@@ -91,12 +95,14 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 }
 
 function summaryCallback(summaries){
+    console.log('disconnect');
 //    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
 
 function doOb(){
+    console.log('examine');
     tc.googleSearch.doit();
     window.setTimeout(tc.googleSearch.doit,1000);    
     window.setTimeout(tc.googleSearch.observe,500);

@@ -1,4 +1,5 @@
 if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
+    console.log('utils');
     var tc = {};
     tc.responses = {};
     tc.popD = null;
@@ -237,7 +238,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     tc.random = function(){return Math.floor(Math.random() * 100000);}
 
     tc.sendMessage = function(request){
-	//console.log('sendMessage',request);
+	console.log('sendMessage',request);
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 }
