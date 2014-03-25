@@ -1,6 +1,6 @@
 if(window.top === window && (document.location.host == 'www.google.com' || document.location.host == 'maps.google.com')) {
 tc.googleSearch = {};
-var $observerSummaryRoot
+    var $observerSummaryRoot;
 
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
@@ -88,8 +88,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	}
 	
     }
-}
-
 
 function summaryCallback(summaries){
 //    tc.googleSearch.doit();
@@ -107,3 +105,5 @@ doOb();
     safari.self.addEventListener("message",tc.onResponse, false);
 }
 
+doOb();
+}
