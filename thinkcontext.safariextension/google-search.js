@@ -88,6 +88,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	}
 	
     }
+}
 
 function summaryCallback(summaries){
 //    tc.googleSearch.doit();
@@ -103,7 +104,4 @@ function doOb(){
 
 doOb();
     safari.self.addEventListener("message",tc.onResponse, false);
-}
-
-doOb();
 }
