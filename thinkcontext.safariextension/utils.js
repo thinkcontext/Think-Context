@@ -180,6 +180,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     };
     
     tc.searchLinkExam = function(selector,source,placer,getval){
+	console.log("searchLinkExam");
 	tc.registerResponse('link', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(

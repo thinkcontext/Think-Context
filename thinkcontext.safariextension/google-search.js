@@ -16,6 +16,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     }
     tc.googleSearch.doit = function(){
 	//     ad links
+	console.log("search doit");
 	tc.searchLinkExam('li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,'google-search'
 			  , function(x){return x.parentElement.children[0]}
