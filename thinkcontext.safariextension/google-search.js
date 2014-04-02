@@ -1,14 +1,13 @@
 if(window.top === window && (document.location.host == 'www.google.com' || document.location.host == 'maps.google.com')) {
 console.log('google-search');
 tc.googleSearch = {};
-    var $observerSummaryRoot;
+    var	$observerSummaryRoot = $("body");
 
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
    ||document.location.href.search('.*www.google.com/#') >= 0
    ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
   ){
-    $observerSummaryRoot = $("div#rcnt");    
     tc.googleSearch.observe = function(){
 	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
@@ -30,7 +29,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     if(document.location.search.search('output=classic') >= 0){
 	// classic maps interface
 
-	$observerSummaryRoot = $("body");
 	tc.googleSearch.observe = function(){
 	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
