@@ -1,9 +1,11 @@
 if (window.top === window) {
     if(! /(bing\.com)|(google\.com)|(yahoo\.com)|(facebook\.com)|(twitter\.com)/.test(document.domain) && document.baseURI.search(/^safari-extension/) < 0){    
+	console.log('reverse');
     tc.reverse = {};
     
     tc.registerResponse('link',
 			function(request){
+			    console.log(request);
 			    if(request.pop == 1){
 				tc.popDialog(request);				
 			    } else {

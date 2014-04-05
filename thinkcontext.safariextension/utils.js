@@ -166,6 +166,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     }
     
     tc.onResponse = function(message){
+	console.log('onResponse',message,tc);
 	var request = message.message;
 	if(request.data.data)
 	    request.data.data = JSON.parse(request.data.data);
