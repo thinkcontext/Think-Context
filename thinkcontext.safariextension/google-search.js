@@ -1,7 +1,7 @@
 if(window.top === window && (document.location.host == 'www.google.com' || document.location.host == 'maps.google.com')) {
 console.log('google-search');
 tc.googleSearch = {};
-    var	$observerSummaryRoot = $("body");
+    var	$observerSummaryRoot = $("html");
 
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
