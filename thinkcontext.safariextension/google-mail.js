@@ -13,10 +13,10 @@ var $observerSummaryRoot = $("body");
 tc.gmail.summaryCallback = function(summaries){
     //console.log('disconnect');
     $observerSummaryRoot.mutationSummary("disconnect");
-    doOb();
+    tc.gmail.doOb();
 }
 
-function doOb(){
+tc.gmail.doOb = function(){
     tc.gmail.pageExamine();
     window.setTimeout(tc.gmail.pageExamine,1000);    
     window.setTimeout(tc.gmail.observe,500);
@@ -30,6 +30,6 @@ tc.gmail.observe = function(){
 					);
 }
 
-doOb();
+tc.gmail.doOb();
     safari.self.addEventListener("message",tc.onResponse, false);
 }

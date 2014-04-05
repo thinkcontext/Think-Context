@@ -6,10 +6,10 @@ var $observerSummaryRoot = $("body");
 
 tc.facebook.summaryCallback = function(summaries){
     $observerSummaryRoot.mutationSummary("disconnect");
-    doOb();
+    tc.facebook.doOb();
 }
 
-function doOb(){
+tc.facebook.doOb = function(){
     tc.facebook.examine();
     window.setTimeout(tc.facebook.observe,500);
     window.setTimeout(tc.facebook.examine,1000);
@@ -37,7 +37,7 @@ tc.facebook.examine = function(){
 	    
 	});}
 
-doOb();
+tc.facebook.doOb();
 
 
 	safari.self.addEventListener("message",tc.onResponse, false);
