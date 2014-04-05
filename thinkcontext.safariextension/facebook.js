@@ -4,7 +4,7 @@ if (window.top === window) {
 tc.facebook = {};
 var $observerSummaryRoot = $("body");
 
-function summaryCallback(summaries){
+tc.facebook.summaryCallback = function(summaries){
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
 }
@@ -17,7 +17,7 @@ function doOb(){
 
 tc.facebook.observe = function(){
     $observerSummaryRoot.mutationSummary("connect"
-					 , summaryCallback
+					 , tc.facebook.summaryCallback
 					 , [{ element:"div" }]);
 }
 

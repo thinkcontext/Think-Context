@@ -10,7 +10,7 @@ tc.gmail.pageExamine = function(){
 }
 
 var $observerSummaryRoot = $("body");
-function summaryCallback(summaries){
+tc.gmail.summaryCallback = function(summaries){
     //console.log('disconnect');
     $observerSummaryRoot.mutationSummary("disconnect");
     doOb();
@@ -25,7 +25,7 @@ function doOb(){
 tc.gmail.observe = function(){
     //console.log('observe');
     $observerSummaryRoot.mutationSummary("connect"
-					 , summaryCallback
+					 , tc.gmail.summaryCallback
 					 , [{element: 'div'}]
 					);
 }

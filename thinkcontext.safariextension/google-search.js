@@ -11,7 +11,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     tc.googleSearch.observe = function(){
 	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
-					     , summaryCallback
+					     , tc.googleSearch.summaryCallback
 					     , [{ element:'div' }]);
     }
     tc.googleSearch.doit = function(){
@@ -33,7 +33,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	tc.googleSearch.observe = function(){
 	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
-						 , summaryCallback
+						 , tc.googleSearch.summaryCallback
 						 , [{ element: 'div' }]);
 	}
 	
@@ -70,7 +70,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	tc.googleSearch.observe = function(){
 	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
-						 , summaryCallback
+						 , tc.googleSearch.summaryCallback
 						 , [{ element: 'div.cards-entity-url' }]);
 	}
 	tc.googleSearch.doit = function(){
@@ -93,7 +93,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
     }
 }
 
-function summaryCallback(summaries){
+tc.googleSearch.summaryCallback = function(summaries){
     console.log('disconnect');
 //    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
