@@ -1,5 +1,5 @@
 if (window.top === window) {
-    if(document.baseURI.search("http://www.bing.com/search.*") >= 0){
+    if(document.baseURI.search("https?://www.bing.com/search.*") >= 0){
 // result link
 tc.searchLinkExam('ol#b_results li.b_algo h2 a','bing-search');
 

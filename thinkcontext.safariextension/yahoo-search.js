@@ -1,5 +1,8 @@
 //if window.top === window 
-    if(document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 ){
+console.log('yahoo',document.baseURI);
+
+    if(document.baseURI.search("https?://.*search.yahoo.com/.*") >= 0 ){
+
 tc.searchLinkExam('div#web > ol h3 > a'
 		  , 'yahoo-search');
 

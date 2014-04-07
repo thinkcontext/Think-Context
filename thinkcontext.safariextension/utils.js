@@ -72,6 +72,11 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	var autoOpen = request.popD;
 
 	if(tc.popD == null){	
+	    $('body').append($('<img>',
+			       { id: r
+				 ,src: icon
+				 ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
+	    
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcOther'}))
@@ -99,27 +104,40 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	}
 	if(autoOpen){
 	    d.dialog('open');
+	    $(window).scroll(function(){
+		d.dialog('close');
+	    });
+	    $(window).click(function(){
+		d.dialog('close');
+	    });
+	    d.mouseenter(function(){
+		$(window).off('click');
+	    });
+	    d.mouseleave(function(){
+		$(window).click(function(){
+		    d.dialog('close');
+		});
+	    });
 	}
-	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
 
-	$(window).scroll(function(){
-	    d.dialog('close');
-	});
-	$(window).click(function(){
-	    d.dialog('close');
-	});
-	d.mouseenter(function(){
-	    $(window).off('click');
-	});
-	d.mouseleave(function(){
-	    $(window).click(function(){
-		d.dialog('close');
-	    });
-	});
+
+	$('#'+r).click(function(){
+	    console.log("open",d);
+            d.dialog('open');
+            $(window).resize(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+            $(window).scroll(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+        });
+        $('#'+r).hover(function(){$(this).css('opacity','1.0')}
+                       , function(){$(this).css('opacity','0.4')});
+
 
 	// really irritating when the dialog steals focus
 	if(autoOpen){
