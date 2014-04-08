@@ -1,7 +1,6 @@
 if(window.top === window && (document.location.host == 'www.google.com' || document.location.host == 'maps.google.com')) {
-console.log('google-search');
 tc.googleSearch = {};
-    var	$observerSummaryRoot = $("html");
+    var	$observerSummaryRoot = $("body");
 
 if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||document.location.href.search('.*www.google.com/webhp') >= 0
@@ -9,14 +8,12 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
    ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
   ){
     tc.googleSearch.observe = function(){
-	console.log('observe');
 	$observerSummaryRoot.mutationSummary("connect"
 					     , tc.googleSearch.summaryCallback
 					     , [{ element:'div' }]);
     }
     tc.googleSearch.doit = function(){
 	//     ad links
-	console.log("search doit");
 	tc.searchLinkExam('li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,'google-search'
 			  , function(x){return x.parentElement.children[0]}
@@ -31,7 +28,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	// classic maps interface
 
 	tc.googleSearch.observe = function(){
-	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
 						 , tc.googleSearch.summaryCallback
 						 , [{ element: 'div' }]);
@@ -68,7 +64,6 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 
 	$observerSummaryRoot = $("div#cards");
 	tc.googleSearch.observe = function(){
-	    console.log('observe');
 	    $observerSummaryRoot.mutationSummary("connect"
 						 , tc.googleSearch.summaryCallback
 						 , [{ element: 'div.cards-entity-url' }]);
@@ -94,14 +89,12 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 }
 
 tc.googleSearch.summaryCallback = function(summaries){
-    console.log('disconnect');
 //    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
     tc.googleSearch.doOb();
 }
 
 tc.googleSearch.doOb = function(){
-    console.log('examine');
     tc.googleSearch.doit();
     window.setTimeout(tc.googleSearch.doit,1000);    
     window.setTimeout(tc.googleSearch.observe,500);

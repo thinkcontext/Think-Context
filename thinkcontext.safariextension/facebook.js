@@ -1,6 +1,5 @@
 if (window.top === window) {
     if(document.domain == 'facebook.com' || document.domain == 'www.facebook.com'){
-	console.log('facebook',document.domain,tc);	
 tc.facebook = {};
 var $observerSummaryRoot = $("body");
 

@@ -1,5 +1,5 @@
 if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
-    console.log('utils');
+    //console.log('utils');
     var tc = {};
     tc.responses = {};
     tc.popD = null;
@@ -126,7 +126,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 
 
 	$('#'+r).click(function(){
-	    console.log("open",d);
             d.dialog('open');
             $(window).resize(function(){
                 d.dialog({position:  [window.innerWidth - 350
@@ -184,7 +183,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     }
     
     tc.onResponse = function(message){
-	console.log('onResponse',message,tc);
 	var request = message.message;
 	if(request.data.data)
 	    request.data.data = JSON.parse(request.data.data);
@@ -199,7 +197,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     };
     
     tc.searchLinkExam = function(selector,source,placer,getval){
-	console.log("searchLinkExam");
 	tc.registerResponse('link', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(
@@ -258,7 +255,6 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     tc.random = function(){return Math.floor(Math.random() * 100000);}
 
     tc.sendMessage = function(request){
-	console.log('sendMessage',request);
 	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
     }
 }

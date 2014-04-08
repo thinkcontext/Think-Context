@@ -1,6 +1,4 @@
 //if window.top === window 
-console.log('yahoo',document.baseURI);
-
     if(document.baseURI.search("https?://.*search.yahoo.com/.*") >= 0 ){
 
 tc.searchLinkExam('div#web > ol h3 > a'
