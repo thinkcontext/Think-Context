@@ -1,3 +1,13 @@
+var window = require('./base64');
+var {mIndexedDB} = require('sdk/indexed-db');
+var time = require('sdk/timers');
+
+
+setTimeout = time.setTimeout;
+clearTimeout = time.clearTimeout;
+setInterval = time.setInterval;
+clearInterval = time.clearInterval;
+
 (function (name, definition, context) {if (typeof context['module'] !== 'undefined' && context['module']['exports']) {context['module']['exports'] = definition.apply(context);}else if (typeof context['define'] !== 'undefined' && context['define'] === 'function' && context['define']['amd']) {define(name, [], definition);}else {context[name] = definition();}})('ydn', function () {var l,q=this;
 function aa(a){var b=typeof a;if("object"==b)if(a){if(a instanceof Array)return"array";if(a instanceof Object)return b;var c=Object.prototype.toString.call(a);if("[object Window]"==c)return"object";if("[object Array]"==c||"number"==typeof a.length&&"undefined"!=typeof a.splice&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("splice"))return"array";if("[object Function]"==c||"undefined"!=typeof a.call&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("call"))return"function"}else return"null";else if("function"==
 b&&"undefined"==typeof a.call)return"object";return b}function r(a){return void 0!==a}function w(a){return"array"==aa(a)}function x(a){var b=aa(a);return"array"==b||"object"==b&&"number"==typeof a.length}function y(a){return"string"==typeof a}function ba(a){return"boolean"==typeof a}function C(a){return"number"==typeof a}function ca(a){return"function"==aa(a)}function D(a){var b=typeof a;return"object"==b&&null!=a||"function"==b}var da="closure_uid_"+(1E9*Math.random()>>>0),ea=0;
