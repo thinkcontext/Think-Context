@@ -30,11 +30,11 @@ chrome.extension.onMessage.addListener(
 );
 
 tc.onResponse = function(request){
-    console.log('onResponse',request);
+//    console.log('onResponse',request);
     tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
-    console.log('sendMessage',request);
+//    console.log('sendMessage',request);
     chrome.extension.sendRequest(request, tc.onResponse);
 }
 
@@ -56,7 +56,7 @@ tc.popSend = function(){
 }
 
 tc.onPop = function(request){
-    console.log('onPop',request);
+//    console.log('onPop',request);
     var autoOpen = true;
     var dd = tc.renderResults(request.results,'tcpopd');
     var d;
@@ -108,22 +108,24 @@ tc.onPop = function(request){
 }
 
 tc.onLink = function(request){
-    console.log('onLink',request,request.tcid);
+//    console.log('onLink',request,request.tcid);
     if(request.tcid > 0)
 	$("[tcid="+request.tcid+"]").map(
 	    function(){
-		console.log(this);
+//		console.log(this);
 		tc.insertPrev(this,request);
 	    });
 }
 
 tc.handleExamine = function(selector,kind,getval,placer){
     tc.registerResponse('link',tc.onLink);
-    $(selector).not('[tcid],img,div').map(
+    $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
 	    var target = this, href = this.href, h;
+	    console.log(this,href);
 	    if(getval)
 		href = getval(this);
+	    console.log('href',href);
 	    if(placer)
 		target = placer(this);
 	    if(this != target)
@@ -135,6 +137,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	    }else
 		h = new tc.urlHandle(href);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
+		console.log(h);
 		tc.sendMessage({
 		    kind: 'link'
 		    , tcid: r
@@ -144,12 +147,12 @@ tc.handleExamine = function(selector,kind,getval,placer){
 }
 
 tc.insertPrev = function(n,request){
-    console.log('insertPrev',request,n);
+//    console.log('insertPrev',request,n);
     var d;
     var rid = tc.random(), iid = 'i' + rid;
     var dd = tc.renderResults(request.results,rid);
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
-	console.log(dd);
+//	console.log(dd);
 	d = dd.dialog;
 
     	var resDiv = $('<span>'
@@ -181,16 +184,16 @@ tc.insertPrev = function(n,request){
 };
     
 tc.renderResults = function(results,rid){
-    console.log('renderResults',results,rid);
+//    console.log('renderResults',results,rid);
     var d = $("<div>",{id: rid,tc:'tc'}).appendTo('body');
-    console.log(d);
+//    console.log(d);
     var result, campaign, c, icon, title;
     for(var i in results){
 	result = results[i];
-	console.log(i,result);
+//	console.log(i,result);
 	for(var j in result.campaigns){
 	    campaign = result.campaigns[j];
-	    console.log(j,campaign);
+//	    console.log(j,campaign);
 	    if(icon){
 		icon = tc.defaultIcon;
 		title = tc.defaultTitle;
@@ -199,7 +202,7 @@ tc.renderResults = function(results,rid){
 		title = campaign.action.title;
 	    }
 	    $("<div>",{id: rid + j}).appendTo('div#' + rid);
-	    console.log($('div#rid'));
+//	    console.log($('div#rid'));
 	    new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
 	}
     }
@@ -269,11 +272,14 @@ tc.urlHandle = function(url){
     } else if(domain == 'plus.google.com' && ((m = path.match('^([0-9]+)')) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
 	this.hval = m[1];
+    } else if(domain == 'en.wikipedia.org' && (m = path.match(/\/wiki\/([\w]+)/))){
+	this.kind = 'wiki'
+	this.hval = m[1];
     } else {
 	this.kind = 'domain';
 	this.hval = domain + '/' + path;
     }
-    console.log(this);
+//    console.log(this);
     if(this.kind && this.hval)
 	this.handle = this.kind + ':' + this.hval;
     else 
