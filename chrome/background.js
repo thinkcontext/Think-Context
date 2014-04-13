@@ -24,8 +24,7 @@ function Ext(){
     this.actions = {};
     this.getActions();
     this.campaigns = {};
-//    console.log(this.actions);
-    // get campaigns
+    this.getCampaigns();
 } 
 
 Ext.prototype = {
@@ -37,8 +36,21 @@ Ext.prototype = {
 	    function(results){
 		var action;
 		for(var i in results){
-		    action = results[i]._id
+		    action = results[i].tid
 		    _self.actions[action] = results[i];
+		}
+	    });
+    }
+    , getCampaigns: function(){
+	var _self = this;
+	var req = this.db.from('thing').where('type','=','campaign');
+	req.list(100).done(
+	    function(results){
+		console.log('getCampaigns result',results);
+		var campaign;
+		for(var i in results){
+		    campaign = results[i].tid
+		    _self.campaigns[campaign] = results[i];
 		}
 	    });
     }
@@ -69,7 +81,7 @@ Ext.prototype = {
 	var req ;
 	var campaign;
 	if(request.handle.match(/^domain:/)){
-//	    console.log(handle);
+	    console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
@@ -85,7 +97,7 @@ Ext.prototype = {
 //				    console.log(_self.actions,j,campaign.action);
 				}
 				request['results'] = results;
-//				console.log(request);
+				console.log(request);
 				callback(request);
 				return;
 			    }
@@ -114,7 +126,7 @@ Ext.prototype = {
 var tc = new Ext();
 
 function onRequest(request, sender, callback) {
-//    console.log(request);
+    console.log(request);
     if(request.kind == 'pageA'){
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);

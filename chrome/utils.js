@@ -34,7 +34,7 @@ tc.onResponse = function(request){
     tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
-//    console.log('sendMessage',request);
+    console.log('sendMessage',request);
     chrome.extension.sendRequest(request, tc.onResponse);
 }
 
@@ -122,7 +122,6 @@ tc.handleExamine = function(selector,kind,getval,placer){
     $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
 	    var target = this, href = this.href, h;
-	    console.log(this,href);
 	    if(getval)
 		href = getval(this);
 	    console.log('href',href);
@@ -136,8 +135,8 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		h = tc.fragHandle(href);
 	    }else
 		h = new tc.urlHandle(href);
+	    console.log('send',h);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
-		console.log(h);
 		tc.sendMessage({
 		    kind: 'link'
 		    , tcid: r
@@ -247,7 +246,7 @@ tc.urlHandle = function(url){
 	this.hval = m[1];
     } else if(domain == 'facebook.com' && ((m = path.match('pages.*/([0-9]{5,20})')) || (m = path.match('^([^\?/\#]+)')))){
 	this.kind = 'facebook';
-	this.hval = m[1];
+	this.hval = m[1].toLowerCase();
     } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
 	this.kind = 'yelp';
 	this.hval = m[1];
