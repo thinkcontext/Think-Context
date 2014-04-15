@@ -1,6 +1,8 @@
 console.log('twitter');
 
 tc.popSend();
+var h = new tc.urlHandle(document.URL);
+console.log(h);
 var $observerSummaryRoot = $("div#page-container");
 
 function summaryCallback(summaries){
@@ -27,8 +29,8 @@ function examine(){
     console.log('examine');
     tc.handleExamine("div.profile-card-inner[data-screen-name]"
 		     ,'twitter'
-		     ,function(x){ console.log(x); return 'https://twitter.com/' + x.attributes['data-screen-name']; });
-    tc.handleExamine("a.js-user-profile-link",'twitter');
+		     ,function(x){ return 'https://twitter.com/' + x.attributes['data-screen-name']; });
+    tc.handleExamine("a.js-user-profile-link:not([href*='"+h.path+"']),a.twitter-atreply",'twitter');
 }
 
 doOb();

@@ -115,6 +115,7 @@ Ext.prototype = {
 			    
 			}
 			request['results'] = results;
+			console.log(request);
 			callback(request);
 		    }
 		});

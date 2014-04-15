@@ -16,9 +16,21 @@
 		   ]
       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","twitter.js"]
      }
+     , {
+	 "css": ["jquery-ui.css"],
+	 "matches": ["*://www.google.com/*"
+		     ,"*://maps.google.com/*"
+		    ],
+	 "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-search.js"]
+     }
      , { "css": ["jquery-ui.css"]
 	 , "matches": ["*://www.bing.com/search*"]
 	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
+       }
+     , { "all_frames": true,
+	 "css": ["jquery-ui.css"],
+	 "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
+	 "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
        }
      ,{ "all_frames": true
 	, "css": ["jquery-ui.css"]

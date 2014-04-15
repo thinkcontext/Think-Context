@@ -30,11 +30,11 @@ chrome.extension.onMessage.addListener(
 );
 
 tc.onResponse = function(request){
-//    console.log('onResponse',request);
+    //console.log('onResponse',request);
     tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
-    console.log('sendMessage',request);
+    //console.log('sendMessage',request);
     chrome.extension.sendRequest(request, tc.onResponse);
 }
 
@@ -124,7 +124,6 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	    var target = this, href = this.href, h;
 	    if(getval)
 		href = getval(this);
-	    console.log('href',href);
 	    if(placer)
 		target = placer(this);
 	    if(this != target)
@@ -135,7 +134,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		h = tc.fragHandle(href);
 	    }else
 		h = new tc.urlHandle(href);
-	    console.log('send',h);
+	    //console.log('send',h);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
 		tc.sendMessage({
 		    kind: 'link'
@@ -227,7 +226,7 @@ tc.fragHandle = function(frag){
 }
 
 tc.urlHandle = function(url){
-    console.log('urlHandle',url);
+    //console.log('urlHandle',url);
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;
@@ -238,37 +237,37 @@ tc.urlHandle = function(url){
     this.domain = domain;
     this.path = path;
     
-    if(domain == 'twitter.com' && (m = path.match('^(\w+)'))){
+    if(domain == 'twitter.com' && (m = path.match(/^(\w+)/))){
 	this.kind = 'twitter';
 	this.hval = m[1].toLowerCase();
-    } else if(domain == 'tripadvisor.com' && (m = path.match('_Review-(g[0-9]+-d[0-9]+)'))){
+    } else if(domain == 'tripadvisor.com' && (m = path.match(/_Review-(g[0-9]+-d[0-9]+)/))){
 	this.kind = 'tripadvisor';
 	this.hval = m[1];
-    } else if(domain == 'facebook.com' && ((m = path.match('pages.*/([0-9]{5,20})')) || (m = path.match('^([^\?/\#]+)')))){
+    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/^([^\?\/\#]+)/)))){
 	this.kind = 'facebook';
 	this.hval = m[1].toLowerCase();
     } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
 	this.kind = 'yelp';
 	this.hval = m[1];
-    } else if(domain == 'hotels.com' && (m = path.match('ho([0-9]+)'))){
+    } else if(domain == 'hotels.com' && (m = path.match(/ho([0-9]+)/))){
 	this.kind = 'hcom';
 	this.hval = m[1];
-    } else if(domain == 'orbitz.com' && (m = path.match('(h[0-9]+)'))){
+    } else if(domain == 'orbitz.com' && (m = path.match(/(h[0-9]+)/))){
 	this.kind = 'orbitz';
 	this.hval = m[1];
-    } else if(domain == 'expedia.com' && (m = path.match('(h[0-9]+)'))){
+    } else if(domain == 'expedia.com' && (m = path.match(/(h[0-9]+)/))){
 	this.kind = 'expedia';
 	this.hval = m[1];
-    } else if(domain == 'kayak.com' && (m = path.match('([0-9]+).ksp'))){
+    } else if(domain == 'kayak.com' && (m = path.match(/([0-9]+).ksp/))){
 	this.kind = 'kayak';
 	this.hval = m[1];
-    } else if(domain == 'priceline.com' && (m = path.match('-([0-9]{5,10})-'))){
+    } else if(domain == 'priceline.com' && (m = path.match(/-([0-9]{5,10})-/))){
 	this.kind = 'priceline';
 	this.hval = m[1];
-    } else if(domain == 'imdb.com' && (m = path.match('title/(tt[0-9]+)'))){
+    } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
 	this.kind = 'imdb';
 	this.hval = m[1];
-    } else if(domain == 'plus.google.com' && ((m = path.match('^([0-9]+)')) || (m = path.match('(\+\w+)')))){
+    } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
 	this.hval = m[1];
     } else if(domain == 'en.wikipedia.org' && (m = path.match(/\/wiki\/([\w]+)/))){
