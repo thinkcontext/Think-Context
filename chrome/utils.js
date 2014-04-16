@@ -30,11 +30,11 @@ chrome.extension.onMessage.addListener(
 );
 
 tc.onResponse = function(request){
-    //console.log('onResponse',request);
+    console.log('onResponse',request);
     tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
-    //console.log('sendMessage',request);
+    console.log('sendMessage',request);
     chrome.extension.sendRequest(request, tc.onResponse);
 }
 
@@ -121,6 +121,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
     tc.registerResponse('link',tc.onLink);
     $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
+	    console.log(this);
 	    var target = this, href = this.href, h;
 	    if(getval)
 		href = getval(this);
@@ -134,7 +135,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		h = tc.fragHandle(href);
 	    }else
 		h = new tc.urlHandle(href);
-	    //console.log('send',h);
+	    console.log('send',h,kind,h.kind);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
 		tc.sendMessage({
 		    kind: 'link'
