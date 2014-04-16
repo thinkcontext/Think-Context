@@ -5,4 +5,4 @@ tc.handleExamine("div.ego_unit > div:first-child > div:first-child > a:nth-child
 		 ,function(x){ return x.textContent }
 		);
 
-tc.handleExamine("div:has(a.uiStreamSponsoredLink) > h5 a",'facebook');
+tc.handleExamine("div:has(a.uiStreamSponsoredLink) > h5 a");
