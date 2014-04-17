@@ -71,7 +71,9 @@ tc.onPop = function(request){
 		$(window).unbind('resize');
 		$(window).unbind('scroll');
 	    }
-	    , height: 150
+	    , height: 'auto'
+	    , maxHeight: 600
+	    , width: 500
 	    , autoOpen: false
 	});     
 	tc.popD = d;
@@ -165,7 +167,9 @@ tc.insertPrev = function(n,request){
 	d.dialog(
 	    {autoOpen: false
 	     , title:  'thinkContext: ' + dd.title
-	     , height: 150
+	     , height: 'auto'
+	     , maxHeight: 600
+	     , width: 500
 	     , zIndex: 10000000
 	    }); 
 	$("#"+iid ).hover(
