@@ -137,7 +137,6 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		h = tc.fragHandle(href);
 	    }else
 		h = new tc.urlHandle(href);
-	    console.log(href,h,kind);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
 		tc.sendMessage({
 		    kind: 'link'
@@ -271,7 +270,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
 	this.hval = m[1];
-    } else if(domain == 'en.wikipedia.org' && (m = path.match(/\/wiki\/([\w]+)/))){
+    } else if(domain == 'en.wikipedia.org' && (m = path.match(/wiki\/([\w]+)/))){
 	this.kind = 'wiki'
 	this.hval = m[1];
     } else {

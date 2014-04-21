@@ -46,7 +46,7 @@ Ext.prototype = {
 	var req = this.db.from('thing').where('type','=','campaign');
 	req.list(100).done(
 	    function(results){
-		_self.debug && console.log('getCampaigns result',results);
+		_self.debug >= 2 && console.log('getCampaigns result',results);
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
@@ -60,11 +60,14 @@ Ext.prototype = {
 	$.getJSON(this.dataUrl + '/dataByCampaignAction'
 		  ,function(data){
 		      _self.debug >= 2 && console.log(data);
-		      var req, rows = data.rows.map(function(x){return x.value;});		      
+		      var req, rows = data.rows.map(function(x){
+			  delete x.value._rev; // save some space
+			  return x.value;
+		      });		      
 		      if(rows.length > 0){
 			  req = _self.db.put('thing',rows);
 			  req.done(function(key) {
-//			      console.log(key);
+			      // console.log(key);
 			  });
 			  req.fail(function(e) {
 			      throw e;
@@ -129,7 +132,7 @@ function onRequest(request, sender, callback) {
     } else if(request.handle){
 	tc.lookup(request.handle,request,callback);
     } else {
-	_self.debug && console.log("couldn't get a handle",request);
+	console.log("couldn't get a handle",request);
     }   
 }
 

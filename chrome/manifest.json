@@ -90,6 +90,11 @@
 	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","kayak.js"]
        }
      , { "css": ["jquery-ui.css"]
+	 , "matches": ["*://en.wikipedia.org/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","wikipedia.js"]
+       }
+     , { "css": ["jquery-ui.css"]
 	 , "matches": ["http://*.priceline.com/*"
        		       ,"https://*.priceline.com/*"
 		      ]
@@ -104,6 +109,7 @@
 			    ,"*://twitter.com/*"
 			    ,"*://facebook.com/*"
 			    ,"*://www.facebook.com/*"
+			    ,"*://en.wikipedia.org/*"
 			    ,"http://*.yahoo.com/*"
 			    ,"https://*.yahoo.com/*"
 			    ,"http://*.adsonar.com/*"
