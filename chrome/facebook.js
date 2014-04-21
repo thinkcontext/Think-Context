@@ -25,7 +25,7 @@ tc.facebook.examine = function(){
 		    );
     
     tc.handleExamine("div:has(a.uiStreamSponsoredLink) > h5 a");
-});}
+}
 
 tc.facebook.doOb();
 

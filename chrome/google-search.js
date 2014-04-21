@@ -15,7 +15,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	//     ad links
 	tc.handleExamine('li.ads-ad:has(h3) div.ads-visurl cite'
 			  ,null
-			  , function(x){ return x.textContent}
+			  , function(x){ return 'http://' + x.textContent}
 			  , function(x){return x.parentElement.children[0]}
 			);
 	
@@ -37,7 +37,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	    // sidebar
 	    tc.handleExamine("div.one span.pp-headline-authority-page"
 			     , null
-			     , function(x){return x.textContent}
+			     , function(x){return 'http://' + x.textContent}
 			     , function(x){
 				  var ret;
 				  var z = x.parentElement.parentElement.parentElement.parentElement;
@@ -55,7 +55,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	    
 	    tc.handleExamine("div.gmnoprint td.basicinfo div#iwhomepage a"
 			      , null
-			      , function(x){return x.textContent}
+			      , function(x){return 'http://' + x.textContent}
 			      , null
 			    );	    
 	}
@@ -73,7 +73,7 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 	tc.googleSearch.doit = function(){
 	    tc.handleExamine("div.cards-entity-url a"
 			      , null
-			      , function(x){return x.textContent}
+			      , function(x){return 'http://' + x.textContent}
 			      , function(x){
 				  var ret;
 				  var z = x.parentElement.parentElement.parentElement.parentElement;

@@ -21,7 +21,7 @@ tc.twitter.doOb = function(){
 tc.twitter.observe = function(){
     tc.debug >= 3 && console.log('observe');
     $observerSummaryRoot.mutationSummary("connect"
-					 , summaryCallback
+					 , tc.twitter.summaryCallback
 					 , [{ element:"div" }]);
 }
 

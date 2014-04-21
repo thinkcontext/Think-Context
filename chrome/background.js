@@ -1,5 +1,5 @@
 function Ext(){
-//    console.log('init');
+    this.debug = 0;
     this.schema = { 
 	stores: [
 	    {
@@ -46,7 +46,7 @@ Ext.prototype = {
 	var req = this.db.from('thing').where('type','=','campaign');
 	req.list(100).done(
 	    function(results){
-		console.log('getCampaigns result',results);
+		_self.debug && console.log('getCampaigns result',results);
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
@@ -57,15 +57,14 @@ Ext.prototype = {
 
     , load: function(){
 	var _self = this;
-//	console.log('load');
 	$.getJSON(this.dataUrl + '/dataByCampaignAction'
 		  ,function(data){
-//		      console.log(data);
+		      _self.debug >= 2 && console.log(data);
 		      var req, rows = data.rows.map(function(x){return x.value;});		      
 		      if(rows.length > 0){
 			  req = _self.db.put('thing',rows);
 			  req.done(function(key) {
-			      console.log(key);
+//			      console.log(key);
 			  });
 			  req.fail(function(e) {
 			      throw e;
@@ -81,23 +80,20 @@ Ext.prototype = {
 	var req ;
 	var campaign;
 	if(request.handle.match(/^domain:/)){
-	    console.log(handle);
+	    _self.debug && console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
-//		    console.log(results,handle);
+		    _self.debug && console.log(results,handle);
 		    for(var i in results){
 			for(var k in results[i].handles){
-//			    console.log(k, results[i].handles,results[i].handles[k].indexOf(handle));
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
 				    campaign = results[i].campaigns[j];
-//				    console.log(campaign.action);
 				    campaign.action = _self.actions[campaign.action];
-//				    console.log(_self.actions,j,campaign.action);
 				}
 				request['results'] = results;
-				console.log(request);
+				_self.debug && console.log(request);
 				callback(request);
 				return;
 			    }
@@ -115,7 +111,7 @@ Ext.prototype = {
 			    
 			}
 			request['results'] = results;
-			console.log(request);
+			_self.debug && console.log(request);
 			callback(request);
 		    }
 		});
@@ -127,15 +123,13 @@ Ext.prototype = {
 var tc = new Ext();
 
 function onRequest(request, sender, callback) {
-    console.log(request);
     if(request.kind == 'pageA'){
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);
     } else if(request.handle){
-//	console.log('handle',request.handle);
 	tc.lookup(request.handle,request,callback);
     } else {
-	console.log("couldn't get a handle",request);
+	_self.debug && console.log("couldn't get a handle",request);
     }   
 }
 

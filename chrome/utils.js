@@ -137,6 +137,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		h = tc.fragHandle(href);
 	    }else
 		h = new tc.urlHandle(href);
+	    console.log(href,h,kind);
 	    if(h && h.kind != null && (kind == null || kind == 'urlfrag' || kind == h.kind)){
 		tc.sendMessage({
 		    kind: 'link'
@@ -158,7 +159,7 @@ tc.insertPrev = function(n,request){
     		       , { id: iid
     			   , tc: 'tc'
     			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-    	    .append($('<img>', { src: dd.icon}));
+    	    .append($('<img>', { src: dd.icon, style: 'float:none;'}));
 	resDiv.insertBefore(n);
     	n.style.display = "inline";
 
