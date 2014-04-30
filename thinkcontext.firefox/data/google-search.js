@@ -1,134 +1,105 @@
 if (window.frameElement === null){
-    tc.googleSearch = {
+tc.googleSearch = {};
+var $observerSummaryRoot = $("body");
 
-	doit: function(){
-	    
-	    tc.googlePlacesHandler = function(siteid, icon,ra ,title ,blurb){
-		$("li#lclbox  div.vsc:has( div > div > a[href *= 'plus.google.com/" + siteid +"']) div > h4 > a").map(function(){
-		    tc.insertPrev(this,icon,ra,title,blurb);});	    
-	    }
-
-	    // tc.registerResponse('places', tc.googlePlaces);
-
-	    // tc.registerResponse('place', function(request){
-	    //     switch(request.subtype){
-	    //     case 'gs-cid':
-	    // 	$("div:has([sid=" + request.sid +"]) > h4 > a").map(function(){
-	    // 	    tc.place(this,request.key,request.data);});
-	    // 	break;
-	    //     case 'gs-ptable':
-	    // 	$("div:has([sid=" + request.sid +"]) > h3 > a").map(function(){
-	    // 	    tc.place(this,request.key,request.data);
-	    // 	});
-	    // 	break;
-	    //     case 'gs-lcll':
-	    // 	$("[sid=" + request.sid +"]").map(function(){
-	    // 	    tc.place(this,request.key,request.data);});
-	    // 	break;
-	    //     }
-	    // });
-
-	    function pageExamine(){
-		//console.log("pageExamine");
-		tc.googleSearch.examineResults();
-		//tc.reverseExamine();
-	    }
-
-	    pageExamine();
-	    window.setInterval(pageExamine,500);
-	}
-
-	,  examineResults: function(){
-
-	    //     ad links
-	    
-	    tc.searchLinkExam('ol.ads-container-list li.ads-ad:has(h3) div.ads-visurl cite'
-			      ,'google-search'
-			      , function(x){return x.parentElement.children[0]}
-			      , function(x){ return x.textContent});
-	    
-	    //	result link	
-	    tc.searchLinkExam("ol#rso > li.g div > h3 > a",'google-search');
-
-
-	    // // place page in an lclbox brief results
-	    // // eg "westin dc"
-	    // var urlmap = $("li#lclbox  div.vsc > div > div > a[href *= 'plus.google.com']").not('[tcPlace]').map(
-	    //     function(){
-	    // 	this.setAttribute('tcPlace','tcPlace');
-    	    // 	if(this.parentNode.children[0] && this.parentNode.children[0].getAttribute && !this.parentNode.children[0].getAttribute('subv')){
-	    // 	    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	    // 	    cid_res = cid_regex.exec(this.href);
-	    // 	    if(cid_res[1]){
-	    // 		var cid = cid_res[1];
-	    // 		//var sid = "gs" + tc.random();
-	    // 		//this.parentNode.children[0].setAttribute("sid",sid);
-	    // 		return [ {cid:cid} ];
-	    // 	    }
-	    // 	}
-	    //     }
-	    // );
-	    
-	    // if(urlmap.length > 0){
-	    //     tc.sendMessage({'kind': 'places'
-	    // 		    ,'type': 'google'
-	    // 		    ,'subtype': 'gs-cid'
-	    // 		    , 'data': jQuery.makeArray(urlmap)
-	    // 		   });
-	    // }
-
-	    
-	    // // place page in an lclbox long result
-	    // // eg "hay adams hotel"
-	    // $("li:has(div > h3 > a) > div > div > #lclbox > a[href*='plus.google.com']:first").not('[tcPlace]').map(
-	    //     function(){
-	    // 	this.setAttribute('tcPlace','tcPlace');
-	    // 	var target = this.parentNode.parentNode.parentNode.children[0].children[0];
-    	    // 	if(target && target.getAttribute && !target.getAttribute('subv')){
-	    // 	    var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	    // 	    cid_res = cid_regex.exec(this.href);
-	    // 	    if(cid_res[1]){
-	    // 		var cid = cid_res[1];
-	    // 		var sid = "gs" + tc.random();
-	    // 		target.setAttribute("sid",sid);
-	    // 		tc.sendMessage({'kind': 'place'
-	    // 				, 'type': 'google'
-	    // 				,'subtype': 'gs-lcll'
-	    // 				, 'sid': sid
-	    // 				, 'key': cid  });
-	    // 	    }
-	    // 	}
-	    //     }
-	    // );
-	    
-	    // // place not in an lclbox
-	    // // boston hotels
-	    // $("div.intrlu > div > span > a[href*='//plus.google.com/']").not('[tcPlace]').map(
-	    //     function(){
-	    // 	this.setAttribute('tcPlace','tcPlace');
-	    // 	var cid_regex = new RegExp('plus.google.com/([0-9]+)');
-    	    // 	cid_res = cid_regex.exec(this.href);
-	    // 	if(cid_res[1]){
-	    // 	    var cid = cid_res[1];
-	    // 	    var sid = "gs" + tc.random();
-	    // 	    this.setAttribute("sid",sid);
-	    // 	    tc.sendMessage({ 'kind': 'place'
-	    // 			     ,'subtype': 'gs-ptable'
-	    // 			     , 'sid': sid
-	    // 			     , 'type': 'google'
-	    // 			     , 'key': cid  });
-	    // 	}
-	    //     }
-	    // );
-
-	}
-    }	
-    
-    if(document.location.href.search('.*www.google.com/search\?.*') >= 0
-       ||document.location.href.search('.*www.google.com/webhp') >= 0
-       ||document.location.href.search('.*www.google.com/#') >= 0
-       ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
-      ){
-	tc.googleSearch.doit();
+if(document.location.href.search('.*www.google.com/search\?.*') >= 0
+   ||document.location.href.search('.*www.google.com/webhp') >= 0
+   ||document.location.href.search('.*www.google.com/#') >= 0
+   ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
+  ){
+    tc.googleSearch.observe = function(){
+	$observerSummaryRoot.mutationSummary("connect"
+					     , summaryCallback
+					     , [{ characterData:true }]);
     }
+    tc.googleSearch.doit = function(){
+	//     ad links
+	tc.searchLinkExam('li.ads-ad:has(h3) div.ads-visurl cite'
+			  ,'google-search'
+			  , function(x){return x.parentElement.children[0]}
+			  , function(x){ return x.textContent});
+	
+	//	result link	
+	tc.searchLinkExam("ol#rso li.g div > h3 > a",'google-search');
+    }
+}else if((document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps') == 0) || document.location.hostname == 'maps.google.com'){
+
+    if(document.location.search.search('output=classic') >= 0){
+	// classic maps interface
+
+	tc.googleSearch.observe = function(){
+	    $observerSummaryRoot.mutationSummary("connect"
+						 , summaryCallback
+						 , [{ element: 'div' }]);
+	}
+	
+	tc.googleSearch.doit = function(){
+	    // sidebar
+	    tc.searchLinkExam("div.one span.pp-headline-authority-page"
+			      , 'google-search'
+			      , function(x){
+				  var ret;
+				  var z = x.parentElement.parentElement.parentElement.parentElement;
+				  if(z.classList.contains("one")){
+				      $("div.lname",z).map(
+					  function(){ 
+					      ret = this; 
+					  });
+				  }
+				  return ret;
+			      }
+			      , function(x){return x.textContent});	
+	    
+	    // in map popup dialogs
+	    
+	    tc.searchLinkExam("div.gmnoprint td.basicinfo div#iwhomepage a"
+			      , 'google-search'
+			      , null
+			      , function(x){return x.textContent});	    
+	}
+	
+    } else {
+
+	// new maps interface
+
+	$observerSummaryRoot = $("div#cards");
+	tc.googleSearch.observe = function(){
+	    $observerSummaryRoot.mutationSummary("connect"
+						 , summaryCallback
+						 , [{ element: 'div.cards-entity-url' }]);
+	}
+	tc.googleSearch.doit = function(){
+	    tc.searchLinkExam("div.cards-entity-url a"
+			      , 'google-search'
+			      , function(x){
+				  var ret;
+				  var z = x.parentElement.parentElement.parentElement.parentElement;
+				  if(z.classList.contains("cards-entity")){
+				      $("h1.cards-entity-title",z).map(
+					  function(){ 
+					      ret = this; 
+					  });
+				  }
+				  return ret;
+			      }
+			      , function(x){return x.textContent});		
+	}
+	
+    }
+}
+
+
+function summaryCallback(summaries){
+//    tc.googleSearch.doit();
+    $observerSummaryRoot.mutationSummary("disconnect");
+    doOb();
+}
+
+function doOb(){
+    tc.googleSearch.doit();
+    window.setTimeout(tc.googleSearch.doit,1000);    
+    window.setTimeout(tc.googleSearch.observe,500);
+}
+
+doOb();
 }

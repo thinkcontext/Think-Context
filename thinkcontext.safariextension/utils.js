@@ -1,7 +1,8 @@
 if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
+    //console.log('utils');
     var tc = {};
-    tc.dialogs = [];
     tc.responses = {};
+    tc.popD = null;
 
     tc.debug = function(txt){ 
 	//console.log(txt); 
@@ -11,18 +12,19 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	tc.responses[kind] = func;
     }
 
-    safari.self.addEventListener(
-	"message"
-	,function(e){
-	    if(e.message.kind == 'tcPopD')
-		if(tc.popD.dialog('isOpen')){
-		    tc.popD.dialog('close');
-		} else {
-		    tc.popD.dialog('open');
-		}				     
-	}
-	, false);
-    
+//    if(window.top === window){
+	safari.self.addEventListener(
+	    "message"
+	    ,function(e){
+		if(e.message.kind == 'tcPopD')
+		    if(tc.popD.dialog('isOpen')){
+			tc.popD.dialog('close');
+		    } else {
+			tc.popD.dialog('open');
+		    }				     
+	    }
+	    , false);
+//    }
     tc.iconDir = safari.extension.baseURI + "icons";
     tc.icons = { infoI : tc.iconDir + "/infoI.png"
 		 ,greenG : tc.iconDir + "/greenG.png"
@@ -34,28 +36,47 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 		 ,bechdel: tc.iconDir + "/bechdel.png"
 		 ,bcorp: tc.iconDir + "/bcorp.ico"
 	       };
+    // tc.insertImgAd = function(n,icon,r,title,theDiv){
+    // 	console.log('insertImgAd',n);
+    // 	var offsetLeft = n.offsetLeft, offsetTop = n.offsetTop + 10;
+    // 	var resDiv = $('<div>'
+    // 		       , { id: r
+    // 			   , subv: true
+    // 			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; zIndex: 100000001' })
+    // 	    .append($('<img>', { src: icon}))[0];
+    // 	resDiv.style.offsetLeft = offsetLeft;
+    // 	resDiv.style.offsetTop = offsetTop;
+    // 	$('body').append(resDiv);
 
-    tc.insertPrev = function(n,icon,r,title,theDiv){
-	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	    var resDiv = $('<div>'
-			   , { id: r
-			       , subv: true
-			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-		.append($('<img>', { src: icon}))[0];
-	    n.parentNode.insertBefore(resDiv,n);
-	    n.style.display = "inline";
-	    tc.iconDialog(title,theDiv,r);
-	}
+    // };
+
+    tc.insertPrev = function(n,icon, r,title,theDiv){
+    	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
+    	    var resDiv = $('<div>'
+    			   , { id: r
+    			       , subv: true
+    			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+    		.append($('<img>', { src: icon}));
+	    resDiv.insertBefore(n);
+    	    n.style.display = "inline";
+    	    tc.iconDialog(title,theDiv,r);
+    	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
+    tc.popDialog = function(request){
 	var d;
+	var r = tc.random(), z = 'd' + r;
+ 	var rdc = request.data.template_data;
+	var title = rdc.title, icon = rdc.icon, kind = 'result';
+	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
+	var autoOpen = request.popD;
+
 	if(tc.popD == null){	
-            $('body').append($('<img>',
+	    $('body').append($('<img>',
 			       { id: r
 				 ,src: icon
 				 ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
-            
+	    
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
 		.append($('<div>',{id:'tcOther'}))
@@ -83,13 +104,11 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	}
 	if(autoOpen){
 	    d.dialog('open');
-	
 	    $(window).scroll(function(){
 		d.dialog('close');
 	    });
 	    $(window).click(function(){
 		d.dialog('close');
-		$(window).off('click');
 	    });
 	    d.mouseenter(function(){
 		$(window).off('click');
@@ -97,16 +116,16 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	    d.mouseleave(function(){
 		$(window).click(function(){
 		    d.dialog('close');
-		    $(window).off('click');
 		});
 	    });
 	}
-	tc.sendMessage({kind:'pageA',icon:icon});
 	$('div#' + z + ' a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
-        $('#'+r).click(function(){
+
+
+	$('#'+r).click(function(){
             d.dialog('open');
             $(window).resize(function(){
                 d.dialog({position:  [window.innerWidth - 350
@@ -118,6 +137,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
         $('#'+r).hover(function(){$(this).css('opacity','1.0')}
                        , function(){$(this).css('opacity','0.4')});
 
+
 	// really irritating when the dialog steals focus
 	if(autoOpen){
 	    document.activeElement.blur();
@@ -127,6 +147,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     tc.sigURL = function(url){
 	// turn a url into some sort of canonicalized version
 	// unfortunately this varies by site so this will be an imperfect exercise
+	if(!url) return;
 	var ret = url;
 	var matches;
 	var yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
@@ -138,11 +159,7 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	} else {
 	    ret = ret.split('?')[0].split('#')[0];	      
 	}
-	return ret;
-    }
-
-    tc.htmlDecode = function(value){ 
-	return $('<div/>').html(value).text(); 
+	return ret.replace(/https?:\/\//,'').replace(/\/$/,'').replace(/\s+/g,'').toLowerCase();
     }
 
     tc.iconDialog = function(title,body,iconId){
@@ -161,59 +178,17 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
-	 				  , 'key': this.attributes['tcstat'].value});
+	 		    , 'key': this.attributes['tcstat'].value});
 	});
-	tc.dialogs.push(d);
-    }
-
-    tc.onResponse = function(e){
-	var request = e.message;
-	//console.log('onResponse',request);
-	tc.responses[request.kind](request);
-    }
-
-    tc.sendMessage = function(request){
-	//console.log('sendMessage',request);
-	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
-    }
-
-    tc.closeAllDialogs = function(){
-	for(var d in tc.dialogs){
-	    tc.dialogs[d].dialog('close');
-	}
-    }
-
-    tc.googlePlaces = function(request){ 
-	var data = request.data;
-	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
-	for(var r in data){
-	    d = data[r];
-	    ra = tc.random();
-	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
-	    rdc = tc.resultDialogConfig[d.type];
-	    h = new EJS({text: rdc.template}).render();
-	    $("#d"+ra).append(h);
-	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
-	}
     }
     
-    tc.resultPop = function(request){
-	var data = request.data;
-	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	if(typeof(detail) != "object")
-	    detail = {};
-	detail.did = 'd'+r;
-	detail.r = r;
-	detail.key = request.data.key;
-	detail.url = data.url;
-	detail.tcstat = rdc.tcstat;
-	detail.id = data.id;
-
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r,detail);
-	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
+    tc.onResponse = function(message){
+	var request = message.message;
+	if(request.data.data)
+	    request.data.data = JSON.parse(request.data.data);
+	if(request.data.template_data)
+	    request.data.template_data = JSON.parse(request.data.template_data);
+	tc.responses[request.kind](request);
     }
 
     tc.resultPrevResponse = function(request){
@@ -223,55 +198,32 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
     
     tc.searchLinkExam = function(selector,source,placer,getval){
 	tc.registerResponse('link', tc.resultPrevResponse);
-	// tc.registerResponse('yelp', tc.resultPrevResponse);
-	// tc.registerResponse('tripadvisor', tc.resultPrevResponse);
-	// tc.registerResponse('hcom', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(
 	    function(){
 		var target = this, href = this.href;
 		if(getval)
 		    href = getval(this);
-		
 		if(placer)
 		    target = placer(this);
 		this.setAttribute('tcLink','tcLink');
+		if(!target){
+		    // don't know where to put it so return after we set tcLink
+		    return;
+		}
 		var sid = "gs" + tc.random();
 		target.setAttribute("sid",sid);
-		var url = tc.sigURL(href).replace(/https?:\/\//,'').replace(/\/$/,'').toLowerCase();
+		var url = tc.sigURL(href);
 		tc.sendMessage({kind: 'link'
 				,source: source
      				, sid: sid
      				, key: url});
-		// if(url.match('tripadvisor\.com')){
-		//     tc.sendMessage({kind: 'tripadvisor'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.tripadvisor(url) });
-		// } else if(url.match('yelp.com')){
-		//     tc.sendMessage({kind: 'yelp'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.yelp(url) });	
-		// } else if(url.match('facebook\.com')){
-		//     tc.sendMessage({kind: 'facebook'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.facebook(url) });	
-		// } else if(url.match('://(www\.)?hotels\.com')){
-		//     tc.sendMessage({kind: 'hcom'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.hcom(url) });	
-		// }	
 	    }
 	);
     };
 
-    tc.resultPrev = function(n,key,data){
-	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
+    tc.renderTemplate = function(data,r,key,rdc){
+	var detail = data.data;
 	if(typeof(detail) != "object")
 	    detail = {};
 	detail.did = 'd'+r;
@@ -280,31 +232,30 @@ if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || d
 	detail.url = data.url;
 	detail.tcstat = rdc.tcstat;
 	detail.id = data.id;
-
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
-
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
-    }
-
-    tc.place = function(n, cid,data){
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r);
+	return d;
 	
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
+    };
+
+    tc.resultPrev = function(n,key,data){
+	var r = tc.random();
+ 	var rdc = data.template_data;
+	
+	var d = tc.renderTemplate(data,r,key,rdc)
+
+        // if(data.subtype == 'imgad'){
+        //     console.log('imgad');
+        //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+        // } else {
+	tc.insertPrev(n, rdc.icon, r, rdc.title, d);
+	// }
     }
 
     tc.random = function(){return Math.floor(Math.random() * 100000);}
+
+    tc.sendMessage = function(request){
+	safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
+    }
 }
+

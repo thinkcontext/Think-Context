@@ -3,7 +3,7 @@
     "fullName": "thinkContext",
     "description": "Inserts contextual, politically progressive information into your web browsing", 
     "author": "", 
-    "version": "0.96", 
+    "version": "0.97", 
     "id": "jid0-TgUunRgcCYuVnWCzbw3bV96wGAI", 
     "homepage": "http://www.thinkcontext.org/",
     "preferences": [
@@ -14,6 +14,12 @@
 	    , "type": "bool"
 	    , "value": true
 	}
+	, {"name": "opt_hrc"
+	   , "title": "Human Rights Campaign Corporate Equality Index"
+	   , "description": "Rates companies on corporate policies and practices pertinent to lesbian, gay, bisexual and transgender employees."
+	    , "type": "bool"
+	    , "value": true	   
+	  }
 	, {
 	    "name": "opt_roc"
 	    , "title": "Restaurant Opportunities Center (ROC)"
@@ -24,7 +30,7 @@
 	, {
     	    "name": "opt_hotel"
 	    , "title": "Enable Union Hotels"
-	    , "description": "Using the Union Hotel Guide put out by UNITE HERE this feature will show you which hotels have union workers and which are involved involved in a labor dispute."
+	    , "description": "Using the Union Hotel Guide put out by UNITE HERE this feature will show you which hotels have union workers and which are involved in a labor dispute."
 	    , "type": "bool"
 	    , "value": true
 	}

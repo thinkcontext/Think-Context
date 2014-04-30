@@ -1,9 +1,9 @@
 var sql = require("sqlite");
-var Request = require('request').Request;
-var ss = require("simple-storage");
-var timer = require("timer");
+var Request = require('sdk/request').Request;
+var ss = require("sdk/simple-storage");
+var timer = require("sdk/timers");
 
-var prefSet = require("simple-prefs");
+var prefSet = require("sdk/simple-prefs");
 function onPrefChange(prefName) {  
     for(var t in tc.tables){
 	tc.removeLocalTableVersion(t);
@@ -16,6 +16,7 @@ prefSet.on('opt_green', onPrefChange);
 prefSet.on('opt_rush', onPrefChange);
 prefSet.on('opt_hotel', onPrefChange);
 prefSet.on('opt_roc', onPrefChange);
+prefSet.on('opt_hrc', onPrefChange);
 prefSet.on('opt_popd', onPrefChange);
 
 function bindNums(x){
@@ -45,7 +46,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.10'
+	    , version: '0.11'
 	}
 	, place: {
 	    fields: {
@@ -66,13 +67,14 @@ tc = {
 	    , opt: 'opt_hotel'
 	    , version: '0.10'
 	}
-	, template: {
+	,
+	template: {
 	    fields: {
 		id: 'integer primary key'
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.05'
+	    , version: '0.06'
 	}
     }
     
@@ -122,7 +124,11 @@ tc = {
 	ss.storage[t + 'version'] = null;
     }
     , checkLocalDeleteTime: function(t){
-	return ss.storage[t + 'deletetime'];
+	var s;
+	if(! (s = ss.storage[t + 'deletetime'])){
+	    s = 1;
+	}
+	return s;
     }
     , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
@@ -138,7 +144,11 @@ tc = {
     }
 
     , checkLocalAddTime: function(t){
-	return ss.storage[t + 'addtime'];
+	var s;
+	if(! (s = ss.storage[t + 'addtime'])){
+	    s = 1;
+	}
+	return s;
     }
     , setLocalAddTime: function(t){
 	ss.storage[t + 'addtime'] = tc.roundNowDownHour();
@@ -176,6 +186,8 @@ tc = {
 	    sql.execute("delete from results where func = 'bcorp'");
 	if(tc.optVal('opt_roc') == false)
 	    sql.execute("delete from results where func = 'roc'");
+	if(tc.optVal('opt_hrc') == false)
+	    sql.execute("delete from results where func like 'hrc%'");
 	
 	for(var t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == false)){
@@ -223,6 +235,11 @@ tc = {
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_roc') == false)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == false){
+		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -235,15 +252,14 @@ tc = {
 	}
 
 	var dateClause = '';
-	var secs;
-
-	if(secs=tc.checkLocalDeleteTime(table)){
-	    dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
+	var secs=tc.checkLocalDeleteTime(table);
+	if(secs == null){
+	    secs = 0;
 	}
+	dateClause = "&dm=" + secs + "&te=" + tc.roundNowDownHour();
 
 	var query  = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 	var len = tc.tableFieldsLength(table);
-
 	var delReq = Request({
 	    url: query
 	    ,onComplete: function(response){
@@ -264,10 +280,12 @@ tc = {
 	}).get();
 	
 	dateClause = '';
-	if(secs=tc.checkLocalAddTime(table)){
-	    dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
+	secs = tc.checkLocalAddTime(table);
+	if(secs == null){
+	    secs = 0;
 	}
-
+	dateClause = "&da=" + secs + "&te=" + tc.roundNowDownHour();
+	
 	query = encodeURI(tc.dataUrl + "tab=" + table + dateClause + resClause);
 
 	var insReq = Request({
@@ -318,6 +336,11 @@ tc = {
 		resArr.push("rushBoycott");
 	    if(tc.optVal('opt_roc') == false)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == false){
+		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == false){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -435,25 +458,7 @@ or :key like '%.' || key";
 			tc.onLookupSuccess(result,status,request,callback,['id','key','url','func','data','template_data']);}
 		    ,tc.onError);
     }
-    
-    // , lookupResults: function(request, callback){
-    // 	if(request.data.length > 0){
-    // 	    var keys = [];
-    // 	    for(var i in request.data){
-    // 		keys.push(request.data[i].key);
-    // 	    }
-	    
-    // 	    var b = bindNums(keys.length);
-    // 	    var c = bindNums(keys.length).split(',');
-    // 	    var selTxt = "SELECT * FROM results WHERE key in ( " + b + ") or " + c.join(" like key||'/%' or ") + " like key||'/%' or "+ c.join(" like '%.'||key or ") + " like '%.'||key or " + c.join(" like '%.'||key||'/%' or ") + " like '%.'||key||'/%' ";
-    // 	    request.orig_data = request.data;
-    // 	    sql.execute(selTxt
-    // 			, bindArr(keys)
-    // 			, function(result,status){tc.onLookupManySuccess(result,status,request,callback,tc.tableFields('results').split(', '));}
-    // 			,tc.onError);
-    // 	}
-    // }
-    
+        
     , lookupPlace: function(key,request,callback){
 		var selTxt = "SELECT pd.id, pd.type, pd.data, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
 	sql.execute(selTxt
@@ -479,42 +484,13 @@ or :key like '%.' || key";
 	Request({url: 'http://thinkcontext.org/s/?' + key}).get();
     }
 
-    // , urlResolve: function(request,callback){
-    // 	var s = request.key.split('/');
-    // 	if(s.length > 3){
-    // 	    var domain = s[2];
-    // 	    if(bitlyDomain(domain)){
-    // 		// do nothing because after trying several techniques we 
-    // 		// can't resolve bitly url's
-    // 		// xmlhttprequest doesn't expose redirects (WTF!)
-    // 		// and bitly refuses to let FF see the link info page (Origin header?)
-		
-    // 		// var {XMLHttpRequest} = require("xhr");
-    // 		// var r = new XMLHttpRequest();
-    //             // r.open('HEAD', request.key , true);
-    //             // r.onreadystatechange = function (aEvt) {
-    // 		//     if(r.status != 200){
-
-    // 		//     }
-    // 		// }
-    // 		// r.send();
-    // 	    } else if(domain == 'goo.gl'){
-    // 		var r = new Request({
-    // 		    url: 'https://www.googleapis.com/urlshortener/v1/url?shortUrl='+request.key
-    // 		    ,onComplete: function(response){
-    // 			request.url = response.json.longUrl;
-    // 			callback(request);
-    // 		    }});
-    // 	    }
-    // 	}
+    // , deleteReverse: function(){
+    // 	sql.execute('drop table reverse');
+    // 	sql.execute('drop table source');
     // }
 
-    , deleteReverse: function(){
-	sql.execute('drop table reverse');
-	sql.execute('drop table source');
-    }
-
 };
+
 function getReverseHost(url){
     var host;
     var ar;
@@ -547,51 +523,17 @@ function getReverseHost(url){
     return null;
 }
 
-function getReverseHost(url){
-    var host;
-    var ar;
-    var tld;
-    if(host = url.split('/')[2]){
-        ar = host.split('.');
-        if(ar[0] == 'www'){
-            ar.shift();
-        }
-        tld = ar[ar.length - 1];
-        if(ar.length <= 2){
-            return ar.join('.')
-        } else if((tld == 'com'
-                   || tld == 'net'
-                   || tld == 'gov'
-                   || tld == 'edu'
-                   || tld == 'org')
-                  && !(tld == 'com' 
-                       && (ar[ar.length - 2] == 'patch'
-                           || ar[ar.length - 2] == 'cbslocal'
-                           || ar[ar.length - 2] == 'curbed'
-                           || ar[ar.length - 2] == 'yahoo'
-                           || ar[ar.length - 2] == 'craigslist')
-                      )){
-            return ar.slice(ar.length - 2).join('.')
-        } else {
-            return ar.slice(ar.length - 3).join('.')
-        }
-    }
-    return null;
-}
-
-
-
 tc.connectDB();
 tc.loadAllTables();
-timer.setTimeout(tc.updateAllTables,10000); // do at idle?
-timer.setInterval(tc.updateAllTables, 10870000);
+timer.setTimeout(tc.updateAllTables,100000); // do at idle?
+//timer.setInterval(tc.updateAllTables, 10870000);
 
 exports.lookupResult = tc.lookupResult;
 exports.lookupPlace = tc.lookupPlace;
 exports.lookupPlaces = tc.lookupPlaces;
 exports.sendStat = tc.sendStat;
 exports.getReverseHost = getReverseHost;
-exports.deleteReverse = tc.deleteReverse;
+//exports.deleteReverse = tc.deleteReverse;
 //exports.urlResolve = tc.urlResolve;
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this

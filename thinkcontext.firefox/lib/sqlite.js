@@ -81,7 +81,7 @@ function queryAsync(statement, parameters, success) {
     });
     } catch(e){
         //console.error('executeAsync: ' + statement);
-        console.error(e.name+' - '+e.message);
+        //console.error(e.name+' - '+e.message);
     }
 }
 
@@ -105,10 +105,14 @@ exports.executeMany = function executeMany(txt, params, success, fail){
 				    if(reason == 0){ 
 					success() }
 				}
-				, handleError: function(error){            console.error(error.name+' - '+error.message); 	    console.error(connection.lastErrorString); fail(); }
+				, handleError: function(error){            
+				    //console.error(error.name+' - '+error.message + ' ' + txt); 	    
+				    //console.error(connection.lastErrorString); 
+				    fail(); }
 			    , handleResult: function(resultSet){} });   
     }    catch(e){
-        console.error(e.name+' - '+e.message);
+	//	console.error('executeMany: ' + txt);
+        //console.error(e.name+' - '+e.message);
     }
 }
 
@@ -122,10 +126,11 @@ exports.connect = function connect(database) {
 exports.execute = function execute(statement) {
     if(arguments.length == 1) {
         try {
+	    //console.error('executeSimpleSQL',statement);
             connection.executeSimpleSQL(statement);
         }
         catch(e) {
-            console.error(e.name + ' - ' + e.message);
+            //console.error(e.name + ' - ' + e.message);
         }
     }
     else {
@@ -133,7 +138,7 @@ exports.execute = function execute(statement) {
             queryAsync(statement,execute.arguments[1],execute.arguments[2]);
         }
         catch(e) {
-            console.error(e.name + ' - ' + e.message);
+            //console.error(e.name + ' - ' + e.message);
         }
     }
 }

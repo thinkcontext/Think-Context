@@ -2,7 +2,7 @@
 /*jslint forin: true, indent: 2 */
 
 var winUtils = require("sdk/window/utils"),
-  windows = require("windows").browserWindows,
+  windows = require("sdk/windows").browserWindows,
   UrlbarButton;
 
 UrlbarButton = function (options) {

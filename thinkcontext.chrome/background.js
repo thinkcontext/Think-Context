@@ -39,8 +39,6 @@ chrome.runtime.onInstalled.addListener(
 	if(details.reason == "install"){
 	    chrome.tabs.create({url:"options.html?install"});
 	}else if(details.reason == "update"){
-	    tc.simpleSql("drop table reverse");
-	    tc.simpleSql("drop table source");
 	    chrome.tabs.create({url:"options.html?update"});
 	}
     });

@@ -1,6 +1,5 @@
 if (window.frameElement === null){
     var tc = {};
-    tc.dialogs = [];
     tc.responses = {};
     tc.popD = null;
 
@@ -10,6 +9,14 @@ if (window.frameElement === null){
 
     tc.sendMessage = function(request){
 	self.postMessage(request);
+    }
+
+    tc.onResponse = function(request){
+	if(request.data.data)
+	    request.data.data = JSON.parse(request.data.data);
+	if(request.data.template_data)
+	    request.data.template_data = JSON.parse(request.data.template_data);
+	tc.responses[request.kind](request);
     }
 
     tc.registerResponse = function(kind, func){
@@ -37,47 +44,12 @@ if (window.frameElement === null){
 					 ,greenCheck : tc.iconDir + "/greenCheck.png"
 					 ,redCirc : tc.iconDir + "/redCirc.png"
 					 ,stopRush : tc.iconDir + "/sr.png"
-					 ,unitehere : tc.iconDir + "/unitehere.ico"
-					 ,trackback16: tc.iconDir + "/trackback-16.png"
-					 ,trackback32: tc.iconDir + "/trackback-32.png"};
+					 ,hrc: tc.iconDir + "/hrc.png"
+					 ,hrcapprox: tc.iconDir + "/hrc-approx.png"
+					 ,hrcnot: tc.iconDir + "/hrc-notequal.png"};			    
 			});
 
     tc.sendMessage({'kind': 'resource'});
-    tc.getReverseHost = function(url){
-	var host;
-	var ar;
-	var tld;
-	if(host = url.split('/')[2]){
-	    ar = host.split('.');
-	    if(ar[0] == 'www'){
-		ar.shift();
-	    }
-	    tld = ar[ar.length - 1];
-	    if(ar.length <= 2){
-		return ar.join('.')
-	    } else if((tld == 'com'
-		       || tld == 'net'
-		       || tld == 'gov'
-		       || tld == 'edu'
-		       || tld == 'org')
-		      && !(tld == 'com' 
-			   && (ar[ar.length - 2] == 'patch'
-			       || ar[ar.length - 2] == 'cbslocal'
-			       || ar[ar.length - 2] == 'curbed'
-			       || ar[ar.length - 2] == 'curbed'
-			       || ar[ar.length - 2] == 'craigslist')
-			  )){
-		return ar.slice(ar.length - 2).join('.')
-	    } else {
-		return ar.slice(ar.length - 3).join('.')
-	    }
-	}
-	return null;
-    }
-    
-    tc.onResponse = function(request){
-	tc.responses[request.kind](request);
-    }
     
     tc.activeateResponses = function(){
 	self.on('message',tc.onResponse);
@@ -85,20 +57,26 @@ if (window.frameElement === null){
     tc.activeateResponses();
 
     tc.insertPrev = function(n,icon, r,title,theDiv){
-	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
-	    var resDiv = $('<div>'
-			   , { id: r
-			       , subv: true
-			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-		.append($('<img>', { src: icon}))[0];
-	    n.parentNode.insertBefore(resDiv,n);
-	    n.style.display = "inline";
-	    tc.iconDialog(title,theDiv,r);
-	}
+    	if(!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('subv')){ 
+    	    var resDiv = $('<div>'
+    			   , { id: r
+    			       , subv: true
+    			       , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
+    		.append($('<img>', { src: icon}));
+	    resDiv.insertBefore(n);
+    	    n.style.display = "inline";
+    	    tc.iconDialog(title,theDiv,r);
+    	}
     };
 
-    tc.popDialog = function(title, revDiv, z, autoOpen,icon,kind){
+    tc.popDialog = function(request){
 	var d;
+	var r = tc.random(), z = 'd' + r;
+ 	var rdc = request.data.template_data;
+	var title = rdc.title, icon = rdc.icon, kind = 'result';
+	var revDiv = tc.renderTemplate(request.data,r,request.data.key,rdc);
+	var autoOpen = request.popD;
+
 	if(tc.popD == null){	
 	    d = $('<div>',{id:'tcPopD'})
 		.append($('<div>',{id:'tcResults'}))
@@ -133,7 +111,7 @@ if (window.frameElement === null){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});
 	});
-	
+
 	$(window).scroll(function(){
 	    d.dialog('close');
 	});
@@ -158,6 +136,7 @@ if (window.frameElement === null){
     tc.sigURL = function(url){
 	// turn a url into some sort of canonicalized version
 	// unfortunately this varies by site so this will be an imperfect exercise
+	if(!url) return;
 	var ret = url;
 	var matches;
 	var yt = new RegExp(/http(s)?:\/\/([^\.]+\.)?youtube.com\/watch\?.*(v=[^\&]*).*/);
@@ -169,11 +148,7 @@ if (window.frameElement === null){
 	} else {
 	    ret = ret.split('?')[0].split('#')[0];	      
 	}
-	return ret;
-    }
-
-    tc.htmlDecode = function(value){ 
-	return $('<div/>').html(value).text(); 
+	return ret.replace(/https?:\/\//,'').replace(/\/$/,'').replace(/\s+/g,'').toLowerCase();
     }
 
     tc.iconDialog = function(title,body,iconId){
@@ -192,48 +167,8 @@ if (window.frameElement === null){
 	);
 	$('div#d' + iconId+' a[tcstat]').click(function(){
 	    tc.sendMessage({'kind': 'sendstat'
-	 		      , 'key': this.attributes['tcstat'].value});
+	 		    , 'key': this.attributes['tcstat'].value});
 	});
-	tc.dialogs.push(d);
-    }
-
-    tc.closeAllDialogs = function(){
-	for(var d in tc.dialogs){
-	    tc.dialogs[d].dialog('close');
-	}
-    }
-
-    tc.googlePlaces = function(request){ 
-	var data = request.data;
-	var d, icon, title, blurb, rdc, ra, tcstat = 'gsp',h;
-	for(var r in data){
-	    d = data[r];
-	    ra = tc.random();
-	    blurb = $("<div>",{id: "d"+ra}).appendTo('body');
-	    rdc = JSON.parse(data.template_data);
-	    h = new EJS({text: rdc.template}).render();
-	    $("#d"+ra).append(h);
-	    tc.googlePlacesHandler(d.siteid, rdc.icon ,ra, rdc.title ,blurb);
-	}
-    }
-
-    tc.resultPop = function(request){
-	var data = request.data;
-	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	if(typeof(detail) != "object")
-	    detail = {};
-	detail.did = 'd'+r;
-	detail.r = r;
-	detail.key = request.data.key;
-	detail.url = data.url;
-	detail.tcstat = rdc.tcstat;
-	detail.id = data.id;
-
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r,detail);
-	tc.popDialog(rdc.title, d, 'd'+r,request.popD,rdc.icon,'result');    
     }
 
     tc.resultPrevResponse = function(request){
@@ -243,9 +178,6 @@ if (window.frameElement === null){
     
     tc.searchLinkExam = function(selector,source,placer,getval){
 	tc.registerResponse('link', tc.resultPrevResponse);
-	// tc.registerResponse('yelp', tc.resultPrevResponse);
-	// tc.registerResponse('tripadvisor', tc.resultPrevResponse);
-	// tc.registerResponse('hcom', tc.resultPrevResponse);
 
 	$(selector).not('[tcLink]').map(
 	    function(){
@@ -255,42 +187,23 @@ if (window.frameElement === null){
 		if(placer)
 		    target = placer(this);
 		this.setAttribute('tcLink','tcLink');
+		if(!target){
+		    // don't know where to put it so return after we set tcLink
+		    return;
+		}
 		var sid = "gs" + tc.random();
 		target.setAttribute("sid",sid);
-		var url = tc.sigURL(href).replace(/https?:\/\//,'').replace(/\/$/,'').toLowerCase();
+		var url = tc.sigURL(href);
 		tc.sendMessage({kind: 'link'
 				,source: source
      				, sid: sid
      				, key: url});
-		// if(url.match('tripadvisor\.com')){
-		//     tc.sendMessage({kind: 'tripadvisor'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.tripadvisor(url) });
-		// } else if(url.match('yelp.com')){
-		//     tc.sendMessage({kind: 'yelp'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.yelp(url) });	
-		// } else if(url.match('facebook\.com')){
-		//     tc.sendMessage({kind: 'facebook'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.facebook(url) });	
-		// } else if(url.match('://(www\.)?hotels\.com')){
-		//     tc.sendMessage({kind: 'hcom'
-		// 		    , source: source
-     		// 		    , sid: sid
-     		// 		    , key: tc.keyMatch.hcom(url) });	
-		// }	
 	    }
 	);
     };
 
-    tc.resultPrev = function(n,key,data){
-	var detail = JSON.parse(data.data);
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
+    tc.renderTemplate = function(data,r,key,rdc){
+	var detail = data.data;
 	if(typeof(detail) != "object")
 	    detail = {};
 	detail.did = 'd'+r;
@@ -299,32 +212,24 @@ if (window.frameElement === null){
 	detail.url = data.url;
 	detail.tcstat = rdc.tcstat;
 	detail.id = data.id;
-
 	var d = $("<div>",{id: "d"+r}).appendTo('body');
 	new EJS({text: rdc.template}).update("d"+r,detail);
-
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
-    }
-
-    tc.place = function(n, cid,data){
-	var rdc = JSON.parse(data.template_data);
-	r = tc.random();
-	var d = $("<div>",{id: "d"+r}).appendTo('body');
-	new EJS({text: rdc.template}).update("d"+r);
+	return d;
 	
-	tc.insertPrev(n
-		      , rdc.icon
-		      , r
-		      , rdc.title
-		      , d
-		     );
+    };
+
+    tc.resultPrev = function(n,key,data){
+	var r = tc.random();
+ 	var rdc = data.template_data;
+	var d = tc.renderTemplate(data,r,key,rdc);
+        // if(data.subtype == 'imgad'){
+        //     console.log('imgad');
+        //     tc.insertImgAd(n, rdc.icon, r, rdc.title, d);
+        // } else {
+	tc.insertPrev(n, rdc.icon, r, rdc.title, d);
+	// }
     }
-
+    
     tc.random = function(){return Math.floor(Math.random() * 100000);}
-
+    
 }

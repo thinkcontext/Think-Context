@@ -1,5 +1,6 @@
 tc = {
     optVal: function(o){ return localStorage[o];}
+
     , dbName: 'thinkcontext'
     , tables: {
 	results: { 
@@ -10,7 +11,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.10'
+	    , version: '0.11'
 	}
 	, place: {
 	    fields: {
@@ -37,7 +38,7 @@ tc = {
 		, func: 'text'
 		, data: 'text'
 	    }
-	    , version: '0.05'
+	    , version: '0.06'
 	}
     }
 
@@ -92,7 +93,11 @@ tc = {
 	localStorage.removeItem(t + 'version');
     }
     , checkLocalDeleteTime: function(t){
-	return localStorage.getItem(t + 'deletetime');
+	var s;
+	if(! (s = localStorage.getItem(t + 'deletetime'))){
+	    s = 1;
+	}
+	return s;
     }
     , roundNowDownHour: function(){
 	// round down to the hour to improve cacheability
@@ -107,7 +112,11 @@ tc = {
 	localStorage.setItem(t + 'deletetime', tc.roundNowDownHour());
     }
     , checkLocalAddTime: function(t){
-	return localStorage.getItem(t + 'addtime');
+	var s;
+	if(! (s = localStorage.getItem(t + 'addtime'))){
+	    s = 1;
+	}
+	return s;
     }
     , setLocalAddTime: function(t){
 	localStorage.setItem(t + 'addtime', tc.roundNowDownHour());
@@ -145,6 +154,8 @@ tc = {
 	    tc.simpleSql("delete from results where func = 'bcorp'");
 	if(tc.optVal('opt_roc') == 0)
 	    tc.simpleSql("delete from results where func = 'roc'");
+	if(tc.optVal('opt_hrc') == 0)
+	    tc.simpleSql("delete from results where func like 'hrc%'");
 	var t;
 	for(t in tc.tables){
 	    if(! (tc.optVal(tc.tables[t].opt) == 0)){
@@ -162,7 +173,7 @@ tc = {
     }
     
     , checkNoTable: function(table){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		tx.executeSql("select count(*) from " + table
 			      ,[]
@@ -194,6 +205,11 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == 0){
+		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -276,6 +292,11 @@ tc = {
 		resArr.push("bcorp");
 	    if(tc.optVal('opt_roc') == 0)
 		resArr.push("roc");
+	    if(tc.optVal('opt_hrc') == 0){
+		resArr.push("hrc");
+		resArr.push("hrcapprox");
+		resArr.push("hrcnot");
+	    }
 	    if(tc.optVal('opt_hotel') == 0){
 		resArr.push("hotelsafe");
 		resArr.push("hotelstrike");
@@ -326,7 +347,7 @@ tc = {
     }
     , onLookupSuccess: function(tx, r, request, callback){
 	if(r.rows.length > 0){
-	    request.data = r.rows.item(0);;
+	    request.data = r.rows.item(0);
 	    callback(request);
 	}
     }
@@ -334,7 +355,7 @@ tc = {
     , onLookupResultSuccess: function(tx, r, request, callback){
 	var x;
 	if(r.rows.length > 0){
-	    request.data = r.rows.item(0);;
+	    request.data = r.rows.item(0);
 	    if(request.pop){
 		switch(tc.optVal('opt_popD')){
 		case 'never':
@@ -365,7 +386,7 @@ tc = {
     }
 
     , lookupResult: function(key, request, callback){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "\
 SELECT r.*, t.data template_data FROM results r \
@@ -385,7 +406,7 @@ or ? like '%.' || key";
 	);
     }
     , lookupPlace: function(key,request,callback){
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "SELECT pd.id, pd.type, pd.data, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid = ? and p.type = ? LIMIT 1";
 		tx.executeSql(selTxt
@@ -402,7 +423,7 @@ or ? like '%.' || key";
 	var i;
 	var inStmt = "('" + request.data.map(function(x){ return x.cid }).join("' , '") + "')";
 	
-	tc.db.transaction(
+	tc.db.readTransaction(
 	    function(tx){
 		var selTxt = "SELECT p.siteid, pd.id, pd.type, t.data template_data FROM place p inner join place_data pd on pd.id = p.pdid inner join template t on t.func = pd.type WHERE siteid in " + inStmt +" and p.type = ?";
 		tx.executeSql(selTxt

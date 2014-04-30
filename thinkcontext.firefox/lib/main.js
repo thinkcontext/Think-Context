@@ -1,7 +1,7 @@
-var s = require("self");
+var s = require("sdk/self");
 var data = s.data;
 var db = require("db");
-var pageMod = require("page-mod");
+var pageMod = require("sdk/page-mod");
 var iconDir = s.data.url("icons");
 var tabs = require("sdk/tabs");
 
@@ -10,22 +10,22 @@ var icons = { hotelrisky : iconDir + "/infoI.png"
 	      ,hotelsafe : iconDir + "/greenCheck.png"
 	      ,hotelboycott : iconDir + "/redCirc.png"
 	      ,rushBoycott : iconDir + "/sr.png"
-	      ,unitehere : iconDir + "/unitehere.ico"
-	      ,trackback16: iconDir + "/trackback-16.png"
-	      ,trackback32: iconDir + "/trackback-32.png"
 	      ,bechdel: iconDir + "/greenCheck.png"
 	      ,bcorp: iconDir + "/bcorp.ico"
+	      ,hrc: iconDir + "/hrc.png"
+	      ,hrcapprox: iconDir + "/hrc-approx.png"
+	      ,hrcnot: iconDir + "/hrc-notequal.png"
 };
 
 if(s.loadReason == 'upgrade'){
-    db.deleteReverse();
     tabs.open(data.url('update.html'));
 } else if(s.loadReason == 'install'){
     tabs.open(data.url('install.html'));
 }
 
 pageMod.PageMod({
-    include : "*.www.google.com",
+    include : ["*.www.google.com",
+	       "*.maps.google.com"],
     attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
@@ -33,6 +33,8 @@ pageMod.PageMod({
 	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
 	,data.url('utils.js')
 	,data.url('google-search.js')],
     onAttach: function(worker){
@@ -243,6 +245,8 @@ pageMod.PageMod({
     contentScriptFile: [
 	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
 	,data.url('facebook.js')],
@@ -267,7 +271,40 @@ pageMod.PageMod({
 	    }
 	})}
 });
-
+pageMod.PageMod({
+    include: "*.mail.google.com",
+    attachTo: "top",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.3.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js')
+	,data.url('google-mail.js')],
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    var key = request.key;
+	    var data;
+	    switch(request.kind){
+	    case 'resource':
+		request.data = iconDir;
+		worker.postMessage(request);
+		break;
+	    case 'sendstat':
+		db.sendStat(request.key);
+		break;
+	    case 'link':
+		db.lookupResult(request, function(r){worker.postMessage(r)});
+		break;
+	    case 'urlresolve':
+		db.urlResolve(request, function(r){worker.postMessage(r)});
+		break;
+	    }
+	})}
+});
 
 pageMod.PageMod({
     include : ["*.adsonar.com"
@@ -283,7 +320,7 @@ pageMod.PageMod({
 	,data.url('jquery-ui-1.9.2.custom.min.js')
 	,data.url('ejs_production.js') 
 	,data.url('utils.js')
-	,data.url('facebook.js')],
+	,data.url('iframe.js')],
     onAttach: function(worker){
 	worker.on('message', function(request){
 	    var key = request.key;

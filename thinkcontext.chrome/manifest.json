@@ -1,6 +1,6 @@
 {
     "name": "Think Context",
-    "version": "0.96",
+    "version": "0.97",
     "description": "Inserts contextual, politically progressive information into your web browsing",
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
@@ -10,33 +10,35 @@
     "icons": {
 	"128": "icons/tc-128.png"
     },
-    "page_action": { "default_title": "thinkContext" },
+    "page_action": { "default_title": "thinkContext - Click for more info" },
     "permissions": ["*://www.google.com/*"
     		    ,"http://*.thinkcontext.org/*"
 		    ,"*://yahoo.com/*"
 		    ,"*://goodsearch.com/*"
+		    ,"tabs"
         	   ],
     "background": {"scripts": ["jquery-2.0.3.min.js","bg-utils.js","db.js","background.js"]},
     "content_scripts": [
 	{
 	    "css": ["jquery-ui.css"],
-	    "matches": ["*://www.google.com/*"],
-	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
-	}
-	, {
-	    "css": ["jquery-ui.css"],
-	    "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
-	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","twitter.js"]
+	    "matches": ["*://www.google.com/*"
+			,"*://maps.google.com/*"
+		       ],
+	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","google-search.js"]
 	}
 	, {
 	    "css": ["jquery-ui.css"],
 	    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
-	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
+	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","bg-utils.js","utils.js","facebook.js"]
 	}
 
 	,{  "matches": ["*://plus.google.com/*"],
 	    "css": ["jquery-ui.css"],
-	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","utils.js","google-place-page.js"]
+	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-place-page.js"]
+	 }
+	,{  "matches": ["*://mail.google.com/*"],
+	    "css": ["jquery-ui.css"],
+	    "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-mail.js"]
 	 }
 	,{
 	    "css": ["jquery-ui.css"],
@@ -53,6 +55,7 @@
 	    "css": ["jquery-ui.css"],
 	    "matches": ["*://*/*"],
 	    "exclude_globs": ["*://mail.google.com/*"
+			      ,"*://maps.google.com/*"
 			      ,"*://www.google.com/*"
 			      ,"*://www.bing.com/search*"
 			      ,"*://www.bing.com/"
@@ -71,7 +74,6 @@
 			,"http://*.msn.com/*"
 			,"http://*.doubleclick.net/pagead/*"
 			,"http://*.overture.com/*"
-			,"http://ad.doubleclick.net/adi/*"
 		       ],
 	    "js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bg-utils.js","iframe.js"]
 	}
