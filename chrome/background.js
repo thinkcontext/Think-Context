@@ -22,14 +22,27 @@ function Ext(){
     this.db = new ydn.db.Storage(this.dbName,this.schema);
     this.dataUrl = 'http://127.0.0.1:5984/tc/_design/think/_view';
     this.actions = {};
-    this.getActions();
     this.campaigns = {};
-    this.getCampaigns();
+    this.availableActions = {};
+    this.availableCampaigns = {};
+    this.getAvailableActions();
+    this.getAvailableCampaigns();
+    this.getSubscribed();
 } 
 
 Ext.prototype = {
 
-    getActions: function(){
+    getSubscribed: function(){
+	var c, a;
+	if(c = localStorage['campaigns']){
+	    this.campaigns = JSON.parse(c);
+	}
+	if(a = localStorage['actions']){
+	    this.actions = JSON.parse(a);
+	}
+    },
+
+    getAvailableActions: function(){
 	var _self = this;
 	var req = this.db.from('thing').where('type','=','action');
 	req.list(100).done(
@@ -37,11 +50,11 @@ Ext.prototype = {
 		var action;
 		for(var i in results){
 		    action = results[i].tid
-		    _self.actions[action] = results[i];
+		    _self.availableActions[action] = results[i];
 		}
 	    });
-    }
-    , getCampaigns: function(){
+    },
+    getAvailableCampaigns: function(){
 	var _self = this;
 	var req = this.db.from('thing').where('type','=','campaign');
 	req.list(100).done(
@@ -50,12 +63,11 @@ Ext.prototype = {
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
-		    _self.campaigns[campaign] = results[i];
+		    _self.availableCampaigns[campaign] = results[i];
 		}
 	    });
-    }
-
-    , load: function(){
+    },
+    load: function(){
 	var _self = this;
 	$.getJSON(this.dataUrl + '/dataByCampaignAction'
 		  ,function(data){
@@ -74,11 +86,14 @@ Ext.prototype = {
 			  });
 		      }
 		  });
-    }
-    , update: function(){
+    },
+    sendStat: function(key){
+	$.get('http://thinkcontext.org/s/?' + key);
+    },
+    update: function(){
 	
-    }
-    , lookup: function(handle,request,callback){
+    },
+    lookup: function(handle,request,callback){
 	var _self = this;
 	var req ;
 	var campaign;
@@ -120,7 +135,6 @@ Ext.prototype = {
 		});
 	}
     }
-    
 }
 
 var tc = new Ext();
@@ -141,3 +155,11 @@ chrome.pageAction.onClicked.addListener(
     function(tab){
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
     });
+// chrome.runtime.onInstalled.addListener(
+//     function(details){
+// 	if(details.reason == "install"){
+// 	    chrome.tabs.create({url:"options.html?install"});
+// 	}else if(details.reason == "update"){
+// 	    chrome.tabs.create({url:"options.html?update"});
+// 	}
+//     });

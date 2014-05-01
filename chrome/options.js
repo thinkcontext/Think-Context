@@ -1,13 +1,32 @@
 var bgPage = chrome.extension.getBackgroundPage();
-var campaigns = bgPage.tc.campaigns;
+var campaigns = bgPage.tc.campaigns, campaign;
 var actions = bgPage.tc.actions;
-var campaign;
+var availableCampaigns = bgPage.tc.availableCampaigns;
+var availableActions = bgPage.tc.availableActions;
+var aTD, action;
 
-for(var i in campaigns){
-    campaign = campaigns[i];
-    $("<tr>")
-	.append($("<td>",{text: campaign['tid']}))
-	.append($("<td>",{text: campaign['title']}))
-	.appendTo("#campaigns");
+console.log(availableCampaigns);
+
+for(var i in availableCampaigns){
+    campaign = availableCampaigns[i];
+    aTD = $("<td>");
+    for(var a in campaign['actions']){
+    	action = availableActions[campaign.actions[a]];
+    	aTD.append($("<img>",{src: action['icon']}));
+    }    
     
+    $("<tr>")
+    	.append($("<td>")
+    		.append($("<input>",{class: 'campaignSubscribe', type: 'checkbox', id: campaign['tid']})))
+    	.append(aTD)
+    	.append($("<td>",{text: campaign['title']}))
+    	.appendTo("#campaigns");    
 }
+
+$("input.campaignSubscribe").on(
+    'change',
+    function(e){
+	console.log(this);
+	console.log(e);
+    });
+
