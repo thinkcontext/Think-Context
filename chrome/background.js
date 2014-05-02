@@ -67,31 +67,40 @@ Ext.prototype = {
 		}
 	    });
     },
-    load: function(){
+
+    sync: function(depth){
+	if(depth >= 100){
+	    console.error('Over 100 sync recursions!', localStorage['seq']);
+	    return;
+	}
 	var _self = this;
-	$.getJSON(this.dataUrl + '/dataByCampaignAction'
-		  ,function(data){
-		      _self.debug >= 2 && console.log(data);
-		      var req, rows = data.rows.map(function(x){
-			  delete x.value._rev; // save some space
-			  return x.value;
-		      });		      
+	var seq = localStorage['seq'] || 0;
+	var z = 'http://127.0.0.1:5984/tc/_changes' //?timeout=20000&include_docs=true&since=0&limit=10'
+	$.getJSON(z, 
+		  {timeout:20000,include_docs:true,since:seq,limit:500} ,
+		  function(data){
+		      if(data.results.length == 0)
+			  return;
+		      console.log(data);
+		      var req, rows = data.results.map(function(x){
+			  delete x.doc._rev; // save some space
+			  return x.doc;
+		      });	
 		      if(rows.length > 0){
 			  req = _self.db.put('thing',rows);
 			  req.done(function(key) {
-			      // console.log(key);
+			      localStorage['seq'] = data.last_seq;
+			      console.log(key);
+			      setTimeout(function(){_self.sync(depth+1)},2000);
 			  });
 			  req.fail(function(e) {
 			      throw e;
 			  });
 		      }
-		  });
+		  });	      		      
     },
     sendStat: function(key){
 	$.get('http://thinkcontext.org/s/?' + key);
-    },
-    update: function(){
-	
     },
     lookup: function(handle,request,callback){
 	var _self = this;
