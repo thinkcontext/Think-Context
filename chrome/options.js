@@ -18,13 +18,13 @@ function renderPage(){
 
     for(var i in availableCampaigns){
 	campaign = availableCampaigns[i];
+
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
     	    action = availableActions[campaign.actions[a]];
     	    aTD.append($("<img>",{src: action['icon']}));
 	}    
-
-	if(campaigns.indexOf(campaign['tid']) >= 0){
+	if(campaigns.length >= 1 && campaigns.indexOf(campaign['tid']) >= 0){
 	    checked = true;
 	} else {
 	    checked = false;
@@ -36,7 +36,7 @@ function renderPage(){
     	    .append(aTD)
     	    .append($("<td>",{text: campaign['title']}))
     	    .appendTo("#campaigns");    
-
+	
     }
 }
 
@@ -45,7 +45,6 @@ function saveOptions(){
     $("input.campaignSubscribe").map(
 	function(){ this.checked && camps.push(this.id) }
     );
-    console.log('saveOptions',camps);
     bgPage.tc.saveCampaigns(camps);
 }
 

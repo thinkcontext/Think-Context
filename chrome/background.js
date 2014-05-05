@@ -56,36 +56,33 @@ Ext.prototype = {
 	var _self = this, c;
 	if(c = localStorage['campaigns']){
 	    _self.campaigns = JSON.parse(c);
-	}
-
-	_self.getAvailableCampaigns(
-	    function(campaigns){ 
-		var camp, actions = [];
-		for(var i in campaigns){
-		    camp = campaigns[i];
-		    if(_self.campaigns.indexOf(camp.tid) >= 0){
-			console.log(camp.actions);
-			camp.actions.forEach(
-			    function(el,i,arr){ actions.push(el); }
+	    _self.getAvailableCampaigns(
+		function(campaigns){ 
+		    var camp, actions = [];
+		    for(var i in campaigns){
+			camp = campaigns[i];
+			if(_self.campaigns.indexOf(camp.tid) >= 0){
+			    camp.actions.forEach(
+				function(el,i,arr){ actions.push(el); }
+			    );
+			}
+		    }
+		    actions = _self.uniqueArray(actions);
+		    if(actions.length > 0){		
+			_self.getAvailableActions(
+			    function(availableActions){ 
+				var a;
+				for(var i in availableActions){
+				    a = availableActions[i];
+				    if(actions.indexOf(a.tid) >= 0)
+					_self.actions[a.tid] = a;
+				}
+				
+			    }
 			);
 		    }
-		}
-		actions = _self.uniqueArray(actions);
-		console.log(actions);
-		if(actions.length > 0){		
-		    _self.getAvailableActions(
-			function(availableActions){ 
-			    var a;
-			    for(var i in availableActions){
-				a = availableActions[i];
-				if(actions.indexOf(a.tid) >= 0)
-				    _self.actions[a.tid] = a;
-			    }
-			
-			}
-		    );
-		}
-	    });
+		});
+	}
     },
 
     getAvailableActions: function(callback){
@@ -130,7 +127,6 @@ Ext.prototype = {
 			  _self.getSubscribed();
 			  return;
 		      }
-		      console.log(data);
 		      var req, rows = data.results.map(function(x){
 			  delete x.doc._rev; // save some space
 			  return x.doc;
@@ -139,7 +135,6 @@ Ext.prototype = {
 			  req = _self.db.put('thing',rows);
 			  req.done(function(key) {
 			      localStorage['seq'] = data.last_seq;
-			      console.log(key);
 			      setTimeout(function(){_self.sync(depth+1)},2000);
 			  });
 			  req.fail(function(e) {
