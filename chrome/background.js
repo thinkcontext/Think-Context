@@ -1,5 +1,5 @@
 function Ext(){
-    this.debug = 0;
+    this.debug = 1;
     this.schema = { 
 	stores: [
 	    {
@@ -13,58 +13,106 @@ function Ext(){
 		    , { name: 'type'
 			, keyPath: 'type'
 		      }
+		    , { name: 'campaigns'
+			, keyPath: 'campaign_list'
+			, multiEntry: true
+		      }
 		]
 	    }
 	]
-	, version: 10
+	, version: 13
     };
     this.dbName = 'tc';
     this.db = new ydn.db.Storage(this.dbName,this.schema);
-    this.dataUrl = 'http://127.0.0.1:5984/tc/_design/think/_view';
+    this.dataUrl = 'http://127.0.0.1:5984/tc/_changes';
     this.actions = {};
     this.campaigns = {};
-    this.availableActions = {};
-    this.availableCampaigns = {};
-    this.getAvailableActions();
-    this.getAvailableCampaigns();
     this.getSubscribed();
 } 
 
 Ext.prototype = {
 
-    getSubscribed: function(){
-	var c, a;
-	if(c = localStorage['campaigns']){
-	    this.campaigns = JSON.parse(c);
-	}
-	if(a = localStorage['actions']){
-	    this.actions = JSON.parse(a);
-	}
+    resetDB: function(callback){
+	localStorage['seq'] = 0;
+	this.db.clear('thing').done(
+	    function(){
+		if(typeof callback == 'function')
+		    callback();
+	    });
     },
 
-    getAvailableActions: function(){
+    saveCampaigns: function(campaigns){
 	var _self = this;
+
+	// just reload for now, later
+	// delete unsubscribed campaigns
+	// filter sync new ones
+
+	localStorage['campaigns'] = JSON.stringify(campaigns);
+	_self.resetDB( function(){ _self.sync(0) });
+    },
+
+    getSubscribed: function(){
+	var _self = this, c;
+	if(c = localStorage['campaigns']){
+	    _self.campaigns = JSON.parse(c);
+	}
+
+	_self.getAvailableCampaigns(
+	    function(campaigns){ 
+		var camp, actions = [];
+		for(var i in campaigns){
+		    camp = campaigns[i];
+		    if(_self.campaigns.indexOf(camp.tid) >= 0){
+			console.log(camp.actions);
+			camp.actions.forEach(
+			    function(el,i,arr){ actions.push(el); }
+			);
+		    }
+		}
+		actions = _self.uniqueArray(actions);
+		console.log(actions);
+		if(actions.length > 0){		
+		    _self.getAvailableActions(
+			function(availableActions){ 
+			    var a;
+			    for(var i in availableActions){
+				a = availableActions[i];
+				if(actions.indexOf(a.tid) >= 0)
+				    _self.actions[a.tid] = a;
+			    }
+			
+			}
+		    );
+		}
+	    });
+    },
+
+    getAvailableActions: function(callback){
+	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','action');
-	req.list(100).done(
+	req.list(1000).done(
 	    function(results){
 		var action;
 		for(var i in results){
 		    action = results[i].tid
-		    _self.availableActions[action] = results[i];
+		    ret[action] = results[i];
 		}
+		callback(ret);
 	    });
     },
-    getAvailableCampaigns: function(){
-	var _self = this;
+    getAvailableCampaigns: function(callback){
+	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','campaign');
-	req.list(100).done(
+	req.list(1000).done(
 	    function(results){
 		_self.debug >= 2 && console.log('getCampaigns result',results);
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
-		    _self.availableCampaigns[campaign] = results[i];
+		    ret[campaign] = results[i];
 		}
+		callback(ret);
 	    });
     },
 
@@ -75,12 +123,13 @@ Ext.prototype = {
 	}
 	var _self = this;
 	var seq = localStorage['seq'] || 0;
-	var z = 'http://127.0.0.1:5984/tc/_changes' //?timeout=20000&include_docs=true&since=0&limit=10'
-	$.getJSON(z, 
+	$.getJSON(_self.dataUrl, 
 		  {timeout:20000,include_docs:true,since:seq,limit:500} ,
 		  function(data){
-		      if(data.results.length == 0)
+		      if(data.results.length == 0){
+			  _self.getSubscribed();
 			  return;
+		      }
 		      console.log(data);
 		      var req, rows = data.results.map(function(x){
 			  delete x.doc._rev; // save some space
@@ -143,6 +192,14 @@ Ext.prototype = {
 		    }
 		});
 	}
+    },
+
+    uniqueArray:  function(a) {
+	if(a)
+	    return a.reduce(function(p, c) {
+		if (p.indexOf(c) < 0) p.push(c);
+		return p;
+	    }, []);
     }
 }
 
