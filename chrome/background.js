@@ -156,20 +156,23 @@ Ext.prototype = {
 	    req.list(100).done(
 		function(results){
 		    _self.debug && console.log(results,handle);
+		    request.results = [];
 		    for(var i in results){
 			for(var k in results[i].handles){
+			    console.log("checking",handle,results[i].handles[k],handle.indexOf(results[i].handles[k]))
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
 				    campaign = results[i].campaigns[j];
 				    campaign.action = _self.actions[campaign.action];
 				}
-				request['results'] = results;
-				_self.debug && console.log(request);
-				callback(request);
-				return;
+				request.results.push(results[i]);
+				break;
 			    }
 			}
 		    }
+		    _self.debug && console.log('domain returning',request);
+		    callback(request);
+		    return;			    		
 		});
 	} else {
 	    req = tc.db.from('thing').where('handles','=',handle);
