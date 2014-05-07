@@ -1,5 +1,5 @@
 function Ext(){
-    this.debug = 1;
+    this.debug = 0;
     this.schema = { 
 	stores: [
 	    {
@@ -159,7 +159,6 @@ Ext.prototype = {
 		    request.results = [];
 		    for(var i in results){
 			for(var k in results[i].handles){
-			    console.log("checking",handle,results[i].handles[k],handle.indexOf(results[i].handles[k]))
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
 				    campaign = results[i].campaigns[j];
@@ -170,8 +169,10 @@ Ext.prototype = {
 			    }
 			}
 		    }
-		    _self.debug && console.log('domain returning',request);
-		    callback(request);
+		    if(request.results.length > 0){
+			_self.debug && console.log('domain returning',request);
+			callback(request);
+		    }
 		    return;			    		
 		});
 	} else {
