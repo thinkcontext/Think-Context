@@ -1,5 +1,5 @@
 var tc = {};
-tc.debug = 0;
+tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg==";
@@ -58,7 +58,7 @@ tc.popSend = function(){
 
 tc.onPop = function(request){
     tc.debug  && console.log('onPop',request);
-    var autoOpen = true;
+    var autoOpen = request.popD;
     var dd = tc.renderResults(request.results,'tcpopd');
     var d;
     if(dd){
@@ -201,7 +201,11 @@ tc.renderResults = function(results,rid){
 		title = campaign.action.title;
 	    }
 	    $("<div>",{id: rid + j,class: 'thinkcontext ui-widget'}).appendTo('div#' + rid);
-	    new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
+	    if(campaign && campaign.action && campaign.action.template){
+		new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
+	    } else {
+		tc.debug >= 1 && console.log("renderResults: can't render",results,campaign);
+	    }
 	}
     }
     return {title:title,icon:icon,dialog:d};
