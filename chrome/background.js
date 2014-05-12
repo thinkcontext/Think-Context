@@ -23,26 +23,14 @@ function Ext(){
 	]
 	, version: 13
     };
-    _self.dbName = 'tc';
-    _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-    _self.couch = 'http://127.0.0.1:5984/tc';
-    _self.dataUrl = _self.couch + '/_changes';
-    _self.actions = {};
-    _self.campaigns = {};
-    _self.getSubscribed();
-
-    // check that we have a sane sequence number
-    var seq = localStorage['seq'];
-    if(seq && seq > 0){
-	$.getJSON(_self.couch,null
-		  ,function(result){
-		      if(result.update_seq < seq){
-			  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-			  localStorage['seq'] = 0;
-		      }
-		  });
-    }
-
+<<<<<<< HEAD
+    this.dbName = 'tc';
+    this.db = new ydn.db.Storage(this.dbName,this.schema);
+    this.dataUrl = 'http://127.0.0.1:5984/tc/_changes';
+    this.actions = {};
+    this.campaigns = {};
+    this.getSubscribed();
+    this.getOptions();
 } 
 
 Ext.prototype = {
@@ -142,12 +130,23 @@ Ext.prototype = {
 			  _self.getSubscribed();
 			  return;
 		      }
-		      var req, rows = data.results.map(function(x){
-			  delete x.doc._rev; // save some space
-			  return x.doc;
-		      });	
-		      if(rows.length > 0){
-			  req = _self.db.put('thing',rows);
+		      var req, rows = data.results, deleted = [], insert = [];
+		      for(var x in rows){
+			  if(rows[x]._deleted){
+			      deleted.push(rows.splice(x,1));
+			  } else {		      
+			      delete rows[x].doc._rev; // save some space
+			      insert.push(rows[x].doc);
+			  }
+
+		      }
+		      if(deleted.length > 0){
+			  for(var x in deleted){
+			      _self.db.remove('thing',deleted[x]._id).done();
+			  }
+		      }
+		      if(insert.length > 0){
+			  req = _self.db.put('thing',insert);
 			  req.done(function(key) {
 			      localStorage['seq'] = data.last_seq;
 			      setTimeout(function(){_self.sync(depth+1)},2000);
@@ -186,7 +185,7 @@ Ext.prototype = {
 		    }
 		    if(request.results.length > 0){
 			_self.debug && console.log('domain returning',request);
-			callback(request);
+			_self.resultsPrep(request,callback);
 		    }
 		    return;			    		
 		});
@@ -198,14 +197,48 @@ Ext.prototype = {
 			for(var j in results[0].campaigns){
 			    campaign = results[0].campaigns[j];
 			    campaign.action = _self.actions[campaign.action];
-			    
 			}
 			request['results'] = results;
 			_self.debug && console.log(request);
-			callback(request);
+			_self.resultsPrep(request,callback);
 		    }
 		});
 	}
+    },
+
+    resultsPrep: function(request,callback){
+	var _self = this;
+	if(request.kind == 'pop'){
+	    switch(_self.popd){
+	    case 'never':
+		request.popD = false;
+		break;
+	    case 'every':
+		request.popD = true;
+		break;
+	    case 'session':
+		if(! sessionStorage.getItem('tcPopD_' + request.handle)){
+		    request.popD = true;
+		    sessionStorage.setItem('tcPopD_' + request.handle,1);
+		} else {
+		    request.popD = false;
+		}
+		break;
+	    default:
+		if(! localStorage.getItem('tcPopD_' + request.handle)){
+		    request.popD = true;
+		    localStorage.setItem('tcPopD_' + request.handle,1);
+		} else {
+		    request.popD = false;
+		}		
+	    }
+	}
+	callback(request);
+    },
+
+    getOptions: function(){
+	var _self = this;
+	_self.popd = localStorage['opt_popD'];
     },
 
     uniqueArray:  function(a) {
