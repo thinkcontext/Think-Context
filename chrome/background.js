@@ -1,6 +1,7 @@
 function Ext(){
-    this.debug = 0;
-    this.schema = { 
+    var _self = this;
+    _self.debug = 0;
+    _self.schema = { 
 	stores: [
 	    {
 		name: 'thing'
@@ -22,12 +23,26 @@ function Ext(){
 	]
 	, version: 13
     };
-    this.dbName = 'tc';
-    this.db = new ydn.db.Storage(this.dbName,this.schema);
-    this.dataUrl = 'http://127.0.0.1:5984/tc/_changes';
-    this.actions = {};
-    this.campaigns = {};
-    this.getSubscribed();
+    _self.dbName = 'tc';
+    _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
+    _self.couch = 'http://127.0.0.1:5984/tc';
+    _self.dataUrl = _self.couch + '/_changes';
+    _self.actions = {};
+    _self.campaigns = {};
+    _self.getSubscribed();
+
+    // check that we have a sane sequence number
+    var seq = localStorage['seq'];
+    if(seq && seq > 0){
+	$.getJSON(_self.couch,null
+		  ,function(result){
+		      if(result.update_seq < seq){
+			  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
+			  localStorage['seq'] = 0;
+		      }
+		  });
+    }
+
 } 
 
 Ext.prototype = {
@@ -220,11 +235,32 @@ chrome.pageAction.onClicked.addListener(
     function(tab){
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
     });
-// chrome.runtime.onInstalled.addListener(
-//     function(details){
-// 	if(details.reason == "install"){
-// 	    chrome.tabs.create({url:"options.html?install"});
-// 	}else if(details.reason == "update"){
-// 	    chrome.tabs.create({url:"options.html?update"});
-// 	}
-//     });
+
+
+function initialCamps(){
+    if(localStorage['campaigns']) // there's existing config so return
+	return;
+
+    var newCamps = ['congress'];
+    [ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
+	function(o){
+	    if(localStorage[o] == 0){
+
+	    } else {
+		newCamps.push(o.replace('opt_',''));
+	    }
+	    localStorage.removeItem(o);
+	});
+    localStorage['campaigns'] = newCamps;    
+}
+
+
+chrome.runtime.onInstalled.addListener(
+    function(details){
+	initialCamps();
+	if(details.reason == "install"){	    
+	    //chrome.tabs.create({url:"options.html?install"});
+	}else if(details.reason == "update"){
+	    //chrome.tabs.create({url:"options.html?update"});
+	}
+    });
