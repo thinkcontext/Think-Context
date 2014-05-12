@@ -23,14 +23,26 @@ function Ext(){
 	]
 	, version: 13
     };
-<<<<<<< HEAD
-    this.dbName = 'tc';
-    this.db = new ydn.db.Storage(this.dbName,this.schema);
-    this.dataUrl = 'http://127.0.0.1:5984/tc/_changes';
-    this.actions = {};
-    this.campaigns = {};
-    this.getSubscribed();
-    this.getOptions();
+    _self.dbName = 'tc';
+    _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
+    _self.couch = 'http://127.0.0.1:5984/tc';
+    _self.dataUrl = _self.couch + '/_changes';
+    _self.actions = {};
+    _self.campaigns = {};
+    _self.getSubscribed();
+    _self.getOptions();
+
+    // check that we have a sane sequence number
+    var seq = localStorage['seq'];
+    if(seq && seq > 0){
+	$.getJSON(_self.couch,null
+		  ,function(result){
+		      if(result.update_seq < seq){
+			  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
+			  localStorage['seq'] = 0;
+		      }
+		  });
+    }
 } 
 
 Ext.prototype = {
