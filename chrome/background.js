@@ -135,6 +135,9 @@ Ext.prototype = {
 	}
 	var _self = this;
 	var seq = localStorage['seq'] || 0;
+
+	//$.getJSON('http://127.0.0.1:5984/tc/_changes',{timeout:20000 ,include_docs:true ,filter:'rep/client' , limit:900,camps:'congress,roc'},function(x){console.log(x)})
+
 	$.getJSON(_self.dataUrl, 
 		  {timeout:20000,include_docs:true,since:seq,limit:500} ,
 		  function(data){

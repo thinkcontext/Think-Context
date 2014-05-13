@@ -16,6 +16,12 @@
 		   ]
       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","twitter.js"]
      }
+     ,{"css": ["jquery-ui.css"]
+      , "matches": ["http://*.duckduckgo.com/*"
+       		    ,"https://*.duckduckgo.com/*"
+		   ]
+      ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","duckduckgo.js"]
+     }
      , {
 	 "css": ["jquery-ui.css"],
 	 "matches": ["*://www.google.com/*"
@@ -110,6 +116,8 @@
 			    ,"*://facebook.com/*"
 			    ,"*://www.facebook.com/*"
 			    ,"*://en.wikipedia.org/*"
+			    ,"http://*.duckduckgo.com/*"
+       			    ,"https://*.duckduckgo.com/*"
 			    ,"http://*.yahoo.com/*"
 			    ,"https://*.yahoo.com/*"
 			    ,"http://*.adsonar.com/*"
