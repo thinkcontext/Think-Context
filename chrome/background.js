@@ -32,18 +32,24 @@ function Ext(){
     _self.getSubscribed();
     _self.getOptions();
 
-    // check that we have a sane sequence number
+    // sync but first check that we have a sane sequence number
     var seq = localStorage['seq'];
-    if(seq && seq > 0){
-	$.getJSON(_self.couch,null
-		  ,function(result){
-		      if(result.update_seq < seq){
-			  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-			  localStorage['seq'] = 0;
-		      }
-		  });
-    }
-} 
+    setTimeout(
+	function(){
+	    if(seq && seq > 0){
+		$.getJSON(_self.couch,null
+			  ,function(result){
+			      if(result.update_seq < seq){
+				  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
+				  _self.resetDB(_self.sync(0));
+			      }
+			  });
+	    } else {
+		_self.sync(0);
+	    }
+	}
+	, 10 * 60 * 1000); // 10 minutes
+}
 
 Ext.prototype = {
 
@@ -64,6 +70,7 @@ Ext.prototype = {
 	// filter sync new ones
 
 	localStorage['campaigns'] = JSON.stringify(campaigns);
+	_self.campaigns = campaigns;
 	_self.resetDB( function(){ _self.sync(0) });
     },
 
@@ -129,17 +136,27 @@ Ext.prototype = {
     },
 
     sync: function(depth){
+	var _self = this;
+	var seq = localStorage['seq'] || 0;
+
 	if(depth >= 100){
 	    console.error('Over 100 sync recursions!', localStorage['seq']);
 	    return;
-	}
-	var _self = this;
-	var seq = localStorage['seq'] || 0;
+	} else if(_self.campaigns.length == 0){
+	    console.error('No campaigns to find!');
+	    return;
+	}	    
 
 	//$.getJSON('http://127.0.0.1:5984/tc/_changes',{timeout:20000 ,include_docs:true ,filter:'rep/client' , limit:900,camps:'congress,roc'},function(x){console.log(x)})
 
 	$.getJSON(_self.dataUrl, 
-		  {timeout:20000,include_docs:true,since:seq,limit:500} ,
+		  {timeout:20000
+		   ,include_docs:true
+		   ,since:seq
+		   ,limit:500
+		   ,camps: _self.campaigns.join(',')
+		   ,filter:'rep/client'
+		  } ,
 		  function(data){
 		      if(data.results.length == 0){
 			  _self.getSubscribed();
@@ -153,7 +170,7 @@ Ext.prototype = {
 			      delete rows[x].doc._rev; // save some space
 			      insert.push(rows[x].doc);
 			  }
-
+			  
 		      }
 		      if(deleted.length > 0){
 			  for(var x in deleted){
@@ -164,11 +181,13 @@ Ext.prototype = {
 			  req = _self.db.put('thing',insert);
 			  req.done(function(key) {
 			      localStorage['seq'] = data.last_seq;
-			      setTimeout(function(){_self.sync(depth+1)},2000);
+			      setTimeout(function(){_self.sync(depth+1)},500);
 			  });
 			  req.fail(function(e) {
 			      throw e;
 			  });
+		      } else {
+			  _self.getSubscribed();
 		      }
 		  });	      		      
     },
@@ -292,9 +311,7 @@ function initialCamps(){
     var newCamps = ['congress'];
     [ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	function(o){
-	    if(localStorage[o] == 0){
-
-	    } else {
+	    if(localStorage[o] != 0){
 		newCamps.push(o.replace('opt_',''));
 	    }
 	    localStorage.removeItem(o);
