@@ -34,21 +34,21 @@ function Ext(){
 
     // sync but first check that we have a sane sequence number
     var seq = localStorage['seq'];
-    setTimeout(
-	function(){
-	    if(seq && seq > 0){
-		$.getJSON(_self.couch,null
-			  ,function(result){
-			      if(result.update_seq < seq){
-				  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-				  _self.resetDB(_self.sync(0));
-			      }
-			  });
-	    } else {
-		_self.sync(0);
-	    }
-	}
-	, 10 * 60 * 1000); // 10 minutes
+    // setTimeout(
+    // 	function(){
+    // 	    if(seq && seq > 0){
+    // 		$.getJSON(_self.couch,null
+    // 			  ,function(result){
+    // 			      if(result.update_seq < seq){
+    // 				  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
+    // 				  _self.resetDB(_self.sync(0));
+    // 			      }
+    // 			  });
+    // 	    } else {
+    // 		_self.sync(0);
+    // 	    }
+    // 	}
+    // 	, 10 * 60 * 1000); // 10 minutes
 }
 
 Ext.prototype = {
@@ -156,6 +156,7 @@ Ext.prototype = {
 		   ,limit:500
 		   ,camps: _self.campaigns.join(',')
 		   ,filter:'rep/client'
+		   ,rando: Math.random() // remove me
 		  } ,
 		  function(data){
 		      if(data.results.length == 0){
@@ -164,8 +165,8 @@ Ext.prototype = {
 		      }
 		      var req, rows = data.results, deleted = [], insert = [];
 		      for(var x in rows){
-			  if(rows[x]._deleted){
-			      deleted.push(rows.splice(x,1));
+			  if(rows[x].deleted){
+			      deleted.push(rows[x].id);
 			  } else {		      
 			      delete rows[x].doc._rev; // save some space
 			      insert.push(rows[x].doc);
@@ -174,7 +175,7 @@ Ext.prototype = {
 		      }
 		      if(deleted.length > 0){
 			  for(var x in deleted){
-			      _self.db.remove('thing',deleted[x]._id).done();
+			      _self.db.remove('thing',deleted[x]).done();
 			  }
 		      }
 		      if(insert.length > 0){
