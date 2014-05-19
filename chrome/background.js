@@ -33,7 +33,7 @@ function Ext(){
     _self.getOptions();
 
     // sync but first check that we have a sane sequence number
-    var seq = localStorage['seq'];
+    var seq = _self.lsGet('seq');
     // setTimeout(
     // 	function(){
     // 	    if(seq && seq > 0){
@@ -53,6 +53,12 @@ function Ext(){
 
 Ext.prototype = {
 
+    lsSet: function(x,y){
+	localStorage[x] = y;
+    },
+    lsGet: function(x){
+	return localStorage[x];
+    },
     resetDB: function(callback){
 	localStorage['seq'] = 0;
 	this.db.clear('thing').done(
