@@ -31,7 +31,7 @@ function Ext(){
     _self.campaigns = {};
     _self.getSubscribed();
     _self.getOptions();
-
+    _self.checkNotifications();
     // sync but first check that we have a sane sequence number
     var seq = _self.lsGet('seq');
     // setTimeout(
@@ -53,14 +53,8 @@ function Ext(){
 
 Ext.prototype = {
 
-    lsSet: function(x,y){
-	localStorage[x] = y;
-    },
-    lsGet: function(x){
-	return localStorage[x];
-    },
     resetDB: function(callback){
-	localStorage['seq'] = 0;
+	this.lsSet('seq',0);
 	this.db.clear('thing').done(
 	    function(){
 		if(typeof callback == 'function')
@@ -74,15 +68,14 @@ Ext.prototype = {
 	// just reload for now, later
 	// delete unsubscribed campaigns
 	// filter sync new ones
-
-	localStorage['campaigns'] = JSON.stringify(campaigns);
+	_self.lsSet('campaigns',JSON.stringify(campaigns));
 	_self.campaigns = campaigns;
 	_self.resetDB( function(){ _self.sync(0) });
     },
 
     getSubscribed: function(){
 	var _self = this, c;
-	if(c = localStorage['campaigns']){
+	if(c = _self.lsGet('campaigns')){
 	    _self.campaigns = JSON.parse(c);
 	    _self.getAvailableCampaigns(
 		function(campaigns){ 
@@ -143,10 +136,10 @@ Ext.prototype = {
 
     sync: function(depth){
 	var _self = this;
-	var seq = localStorage['seq'] || 0;
+	var seq = _self.lsGet('seq') || 0;
 
 	if(depth >= 100){
-	    console.error('Over 100 sync recursions!', localStorage['seq']);
+	    console.error('Over 100 sync recursions!', seq);
 	    return;
 	} else if(_self.campaigns.length == 0){
 	    console.error('No campaigns to find!');
@@ -187,7 +180,7 @@ Ext.prototype = {
 		      if(insert.length > 0){
 			  req = _self.db.put('thing',insert);
 			  req.done(function(key) {
-			      localStorage['seq'] = data.last_seq;
+			      _self.lsSet('seq',data.last_seq);
 			      setTimeout(function(){_self.sync(depth+1)},500);
 			  });
 			  req.fail(function(e) {
@@ -266,9 +259,9 @@ Ext.prototype = {
 		}
 		break;
 	    default:
-		if(! localStorage.getItem('tcPopD_' + request.handle)){
+		if(! _self.lsGet('tcPopD_' + request.handle)){
 		    request.popD = true;
-		    localStorage.setItem('tcPopD_' + request.handle,1);
+		    _self.lsSet('tcPopD_' + request.handle,1);
 		} else {
 		    request.popD = false;
 		}		
@@ -279,57 +272,71 @@ Ext.prototype = {
 
     getOptions: function(){
 	var _self = this;
-	_self.popd = localStorage['opt_popD'];
+	_self.popd = _self.lsGet('opt_popD');
     },
-
+    
+    getNotifications: function(){
+	
+    },
+    
     uniqueArray:  function(a) {
 	if(a)
 	    return a.reduce(function(p, c) {
 		if (p.indexOf(c) < 0) p.push(c);
 		return p;
 	    }, []);
+    },
+    
+    initialCamps: function(){
+	var _self = this;
+	if(_self.lsGet('campaigns')) // there's existing config so return
+	    return;
+	
+	var newCamps = ['congress'];
+	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
+	    function(o){
+		if(_self.lsGet(o) != 0){
+		    newCamps.push(o.replace('opt_',''));
+		}
+		_self.lsRm(o);
+	    });
+	_self.lsSet('campaigns', newCamps);    
+    },
+
+    // browser specific
+    onRequest: function(request, sender, callback) {
+	if(request.kind == 'pageA'){
+	    chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	    chrome.pageAction.show(sender.tab.id);
+	} else if(request.handle){
+	    tc.lookup(request.handle,request,callback);
+	} else {
+	    console.log("couldn't get a handle",request);
+	}   
+    },
+    lsSet: function(x,y){
+	localStorage[x] = y;
+    },
+    lsGet: function(x){
+	return localStorage[x];
+    },
+    lsRm: function(x){
+	localStorage.removeItem(x);
     }
 }
 
 var tc = new Ext();
 
-function onRequest(request, sender, callback) {
-    if(request.kind == 'pageA'){
-	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-	chrome.pageAction.show(sender.tab.id);
-    } else if(request.handle){
-	tc.lookup(request.handle,request,callback);
-    } else {
-	console.log("couldn't get a handle",request);
-    }   
-}
-
-chrome.extension.onRequest.addListener(onRequest);
+// browser specific
+chrome.extension.onRequest.addListener(tc.onRequest);
 chrome.pageAction.onClicked.addListener(
     function(tab){
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
     });
 
-
-function initialCamps(){
-    if(localStorage['campaigns']) // there's existing config so return
-	return;
-
-    var newCamps = ['congress'];
-    [ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
-	function(o){
-	    if(localStorage[o] != 0){
-		newCamps.push(o.replace('opt_',''));
-	    }
-	    localStorage.removeItem(o);
-	});
-    localStorage['campaigns'] = newCamps;    
-}
-
-
 chrome.runtime.onInstalled.addListener(
     function(details){
-	initialCamps();
+	tc.initialCamps();
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
 	}else if(details.reason == "update"){

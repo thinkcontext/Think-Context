@@ -3,7 +3,11 @@
  , "description":"YDN-DB Test"
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
-		   , "http://tcdata.iriscouch.com/*"]
+		   , "http://tcdata.iriscouch.com/*"
+		   , "http://*.thinkcontext.org/*"
+		   , "https://*.thinkcontext.org/*"		   
+		   , "notifications"
+		  ]
  , "page_action": { "default_title": "thinkContext - Click for more info" }
  , "options_page": "options.html"
  , "background": {"scripts": ["jquery-2.0.3.min.js"
