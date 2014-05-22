@@ -27,11 +27,12 @@ function Ext(){
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
     _self.couch = 'http://127.0.0.1:5984/tc';
     _self.dataUrl = _self.couch + '/_changes';
+    _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.actions = {};
     _self.campaigns = {};
     _self.getSubscribed();
     _self.getOptions();
-    _self.checkNotifications();
+    _self.getNotifications();
     // sync but first check that we have a sane sequence number
     var seq = _self.lsGet('seq');
     // setTimeout(
@@ -145,8 +146,6 @@ Ext.prototype = {
 	    console.error('No campaigns to find!');
 	    return;
 	}	    
-
-	//$.getJSON('http://127.0.0.1:5984/tc/_changes',{timeout:20000 ,include_docs:true ,filter:'rep/client' , limit:900,camps:'congress,roc'},function(x){console.log(x)})
 
 	$.getJSON(_self.dataUrl, 
 		  {timeout:20000
@@ -276,7 +275,23 @@ Ext.prototype = {
     },
     
     getNotifications: function(){
-	
+	var _self = this;
+    },
+    
+    checkOldVersion: function(){	
+	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
+	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
+	    // its been a month so lets check    
+	    $.getJSON(_self.versionURL,
+		      function(results){
+			  if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
+			      console.log("Version more than 2 weeks out of date",results);
+			  }
+		      });
+	} else {
+	    _self.setVersionTime();
+	}
+
     },
     
     uniqueArray:  function(a) {
@@ -322,7 +337,19 @@ Ext.prototype = {
     },
     lsRm: function(x){
 	localStorage.removeItem(x);
+    },
+    setVersionTime: function(){
+	var _self = this, d = new Date;
+	_self.lsSet('versionTime', d.toJSON());
+    },
+    getVersionTime: function(){
+	var _self = this, j, ret;
+	j = _self.lsGet('versionTime');
+	if(j)
+	    ret = new Date(j);
+	return ret;
     }
+        
 }
 
 var tc = new Ext();
@@ -337,6 +364,7 @@ chrome.pageAction.onClicked.addListener(
 chrome.runtime.onInstalled.addListener(
     function(details){
 	tc.initialCamps();
+	tc.setVersionTime();
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
 	}else if(details.reason == "update"){
