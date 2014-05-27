@@ -18,10 +18,13 @@ function Ext(){
 			, keyPath: 'campaign_list'
 			, multiEntry: true
 		      }
+		    , { name: 'notification_date'
+			,keyPath: 'notification_date'
+		      }
 		]
 	    }
 	]
-	, version: 13
+	, version: 15
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
@@ -276,6 +279,11 @@ Ext.prototype = {
     
     getNotifications: function(){
 	var _self = this;
+	// if lastnotifytime is blank set it and return
+	// else get notifications in reverse order
+	// go through them until we get to last notify date
+	// set last notify date
+	// finally, checkOldVersion
     },
     
     checkOldVersion: function(){	
