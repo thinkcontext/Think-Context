@@ -19,14 +19,12 @@ bgPage.tc.getAvailableCampaigns(
 
 function renderPage(){
     var aTD, action, checked;
-    console.log('aa',availableCampaigns,availableActions);
 
     for(var i in availableCampaigns){
 	campaign = availableCampaigns[i];
 
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
-	    console.log(a,campaign.actions[a]);
     	    action = availableActions[campaign.actions[a]];
     	    aTD.append($("<img>",{src: action['icon']}));
 	}    

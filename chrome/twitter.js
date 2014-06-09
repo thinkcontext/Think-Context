@@ -2,7 +2,12 @@ tc.debug && console.log('twitter');
 tc.twitter = {};
 
 tc.popSend();
-var h = new tc.urlHandle(document.URL);
+var proHandle, canon;
+canon = $("head link[rel='canonical']");
+if(canon.length == 1){
+    proHandle = new tc.urlHandle(canon[0].href);
+}
+console.log(proHandle);
 var $observerSummaryRoot = $("div#page-container");
 
 tc.twitter.summaryCallback = function(summaries){
@@ -27,10 +32,10 @@ tc.twitter.observe = function(){
 
 tc.twitter.examine = function(){
     tc.debug >= 3 && console.log('examine');
-    tc.handleExamine("div.profile-card-inner[data-screen-name]"
+    tc.handleExamine("div#profile_popup-body div.profile-details[data-screen-name]"
 		     ,'twitter'
 		     ,function(x){ return 'https://twitter.com/' + x.attributes['data-screen-name']; });
-    tc.handleExamine("a.js-user-profile-link:not([href*='"+h.path+"']),a.twitter-atreply",'twitter');
+    tc.handleExamine("a.js-user-profile-link:not([href*='"+proHandle.path+"']),a.twitter-atreply:not([href*='"+proHandle.path+"'])",'twitter');
 }
 
 tc.twitter.doOb();

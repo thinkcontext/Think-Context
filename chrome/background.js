@@ -72,15 +72,18 @@ Ext.prototype = {
 	// just reload for now, later
 	// delete unsubscribed campaigns
 	// filter sync new ones
-	_self.lsSet('campaigns',JSON.stringify(campaigns));
-	_self.campaigns = campaigns;
-	_self.resetDB( function(){ _self.sync(0) });
+	campaigns = campaigns.sort();
+	if(campaigns.join(',') != _self.campaigns.join(',')){
+	    _self.lsSet('campaigns',JSON.stringify(campaigns));
+	    _self.campaigns = campaigns;
+	    _self.resetDB( function(){ _self.sync(0) });
+	}
     },
 
     getSubscribed: function(){
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
-	    _self.campaigns = JSON.parse(c);
+	    _self.campaigns = JSON.parse(c).sort();
 	    _self.getAvailableCampaigns(
 		function(campaigns){ 
 		    var camp, actions = [];
