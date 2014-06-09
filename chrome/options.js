@@ -4,10 +4,14 @@ var actions = bgPage.tc.actions;
 var availableCampaigns, availableActions;
 bgPage.tc.getAvailableCampaigns(
     function(x){ 
-	availableCampaigns = x;
+	availableCampaigns = [];
+	for(var z in x){
+	    availableCampaigns.push(x[z]);
+	}
+	availableCampaigns = availableCampaigns.sort(function(a,b){ if(a.title > b.title){ return 1 }else{ return -1}});
 	bgPage.tc.getAvailableActions(
 	    function(y){ 
-		availableActions = y;
+		availableActions = y
 		renderPage();
 	    }
 	);
@@ -15,12 +19,14 @@ bgPage.tc.getAvailableCampaigns(
 
 function renderPage(){
     var aTD, action, checked;
+    console.log('aa',availableCampaigns,availableActions);
 
     for(var i in availableCampaigns){
 	campaign = availableCampaigns[i];
 
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
+	    console.log(a,campaign.actions[a]);
     	    action = availableActions[campaign.actions[a]];
     	    aTD.append($("<img>",{src: action['icon']}));
 	}    
@@ -38,6 +44,13 @@ function renderPage(){
     	    .appendTo("#campaigns");    
 	
     }
+    var val = localStorage['opt_popD'];
+    if(val != null){
+	$("[name='popD'] option[value='" + val + "']").map(
+	    function(){
+		this.selected = true;
+	    });
+    }
 }
 
 function saveOptions(){
@@ -46,6 +59,7 @@ function saveOptions(){
 	function(){ this.checked && camps.push(this.id) }
     );
     bgPage.tc.saveCampaigns(camps);
+    localStorage['opt_popD'] = $("[name='popD']").val();
 }
 
 

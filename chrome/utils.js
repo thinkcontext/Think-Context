@@ -158,7 +158,7 @@ tc.insertPrev = function(n,request){
     		       , { id: iid
     			   , tc: 'tc'
     			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-    	    .append($('<img>', { src: dd.icon, style: 'float:none;'}));
+    	    .append($('<img>', { src: dd.icon, style: 'float:none;margin: 0px;'}));
 	resDiv.insertBefore(n);
     	n.style.display = "inline";
 
@@ -193,6 +193,8 @@ tc.renderResults = function(results,rid){
 	result = results[i];
 	for(var j in result.campaigns){
 	    campaign = result.campaigns[j];
+	    if(campaign.status == 'D' || ! campaign.action)
+		continue;
 	    if(icon){
 		icon = tc.defaultIcon;
 		title = tc.defaultTitle;

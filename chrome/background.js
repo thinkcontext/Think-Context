@@ -157,7 +157,7 @@ Ext.prototype = {
 		   ,limit:500
 		   ,camps: _self.campaigns.join(',')
 		   ,filter:'rep/client'
-		   ,rando: Math.random() // remove me
+//		   ,rando: Math.random() // remove me
 		  } ,
 		  function(data){
 		      if(data.results.length == 0){

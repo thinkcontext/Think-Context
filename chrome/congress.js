@@ -26,59 +26,67 @@
 
 tc.registerResponse('congress',tc.onLink);
 
-tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
+tc.congress = {};
 
-var cRe = new RegExp(tc.congressPattern,'g');
+tc.congress.doit = function(){
 
-// make a list of candidate matches
-var cs = tc.uniqueArray(document.body.textContent.match(cRe));
+    tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
 
-var cong, cons, tn, cm, range, nn, tcid, mArray, name;
-console.log(cs);
-for(var q in cs){
-    cong = cs[q];
-    
-    // find all nodes that contain a candidate string
-    cons = $.makeArray($("*:not('body,head,script,a,html'):contains("+cong+")"));
-    
-    for(var i in cons){
-	// the list contains ancestors we don't want
-	// so walk the list and skip those that are parents
+    var cRe = new RegExp(tc.congressPattern,'g');
 
-	if(!cons[i+1] || !cons[i+1].parentElement == cons[i]){
-	    // if this is the last element or this element is not the parent of the next element
-	    for(var j in cons[i].childNodes){
-		//iterate over the child nodes to find the right one
-		tn = cons[i].childNodes[j];
-		//console.log(tn.data.trim().length, (cong.length * 3))
-		if(tn.nodeType == 3 && tn.parentElement.textContent.trim().length > (cong.length * 3)){
-		    // is this a text node and is it long enough 
-		    if(cm = tn.data.match(cong)){
-			// if it contains the text we are looking for 
-			// create the range and surround the text
-			nn = document.createElement('span');
-			tcid = tc.random();
-			var cRe = new RegExp(tc.congressPattern,'g');
-			mArray = cRe.exec(cong);
-			name = mArray[4];
-			if(mArray[5])
-			    name = name.replace(mArray[5],'');
-			name = name.toLowerCase().replace(' ','');
+    // make a list of candidate matches
+    var cs = tc.uniqueArray(document.body.textContent.match(cRe));
 
-			nn.setAttribute('tcid',tcid);
-			//nn.style.backgroundColor = 'yellow'; //helps w/ debugging
-			range = document.createRange();
-			range.setStart(tn,cm.index);
-			range.setEnd(tn,cm.index + cong.length);
-			range.surroundContents(nn);
-			tc.sendMessage({
-			    kind: 'congress'
-			    , tcid: tcid
-			    , handle: 'name:' + name
-			});
+    var cong, cons, tn, cm, range, nn, tcid, mArray, name;
+    console.log(cs);
+    for(var q in cs){
+	cong = cs[q];
+	
+	// find all nodes that contain a candidate string
+	cons = $.makeArray($("*:not('body,head,script,a,html'):contains("+cong+")"));
+	
+	for(var i in cons){
+	    // the list contains ancestors we don't want
+	    // so walk the list and skip those that are parents
+
+	    if(!cons[i+1] || !cons[i+1].parentElement == cons[i]){
+		// if this is the last element or this element is not the parent of the next element
+		for(var j in cons[i].childNodes){
+		    //iterate over the child nodes to find the right one
+		    tn = cons[i].childNodes[j];
+		    //console.log(tn.data.trim().length, (cong.length * 3))
+		    if(tn.nodeType == 3 && tn.parentElement.textContent.trim().length > (cong.length * 3)){
+			// is this a text node and is it long enough 
+			if(cm = tn.data.match(cong)){
+			    // if it contains the text we are looking for 
+			    // create the range and surround the text
+			    nn = document.createElement('span');
+			    tcid = tc.random();
+			    var cRe = new RegExp(tc.congressPattern,'g');
+			    mArray = cRe.exec(cong);
+			    name = mArray[4];
+			    if(mArray[5])
+				name = name.replace(mArray[5],'');
+			    name = name.toLowerCase().replace(' ','');
+
+			    nn.setAttribute('tcid',tcid);
+			    //nn.style.backgroundColor = 'yellow'; //helps w/ debugging
+			    range = document.createRange();
+			    range.setStart(tn,cm.index);
+			    range.setEnd(tn,cm.index + cong.length);
+			    range.surroundContents(nn);
+			    tc.sendMessage({
+				kind: 'congress'
+				, tcid: tcid
+				, handle: 'name:' + name
+			    });
+			}
 		    }
 		}
 	    }
 	}
     }
 }
+
+tc.congress.doit();
+tc.popSend();
