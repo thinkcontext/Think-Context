@@ -95,13 +95,13 @@ if(document.location.href.search('.*www.google.com/search\?.*') >= 0
 function summaryCallback(summaries){
 //    tc.googleSearch.doit();
     $observerSummaryRoot.mutationSummary("disconnect");
-    doOb();
+    tc.googleSearch.doOb();
 }
 
-function doOb(){
+tc.googleSearch.doOb = function(){
     tc.googleSearch.doit();
     window.setTimeout(tc.googleSearch.doit,1000);    
     window.setTimeout(tc.googleSearch.observe,500);
 }
 
-doOb();
+tc.googleSearch.doOb();
