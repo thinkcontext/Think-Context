@@ -5,6 +5,8 @@ tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg==";
 tc.defaultTitle = "thinkContext";
 
+tc.debug && console.log("utils",document.URL);
+
 tc.urlRegExp = new RegExp(
     "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
 
@@ -18,17 +20,18 @@ tc.registerResponse = function(kind, func){
     tc.responses[kind] = func;
 }
 
-//    if(window.top === window){
-chrome.extension.onMessage.addListener(
-    function(request, sender, sendResponse){
-	if(request.kind == 'tcPopD')
-	    if(tc.popD.dialog('isOpen')){
-		tc.popD.dialog('close');
-	    } else {
-		tc.popD.dialog('open');
-	    }
-    }
-);
+if(window.top === window){ // don't listen in an iframe
+    chrome.extension.onMessage.addListener(
+	function(request, sender, sendResponse){
+	    if(request.kind == 'tcPopD')
+		if(tc.popD.dialog('isOpen')){
+		    tc.popD.dialog('close');
+		} else {
+		    tc.popD.dialog('open');
+		}
+	}
+    );
+}
 
 tc.onResponse = function(request){
     tc.debug  && console.log('onResponse',request);
@@ -58,7 +61,7 @@ tc.popSend = function(){
 
 tc.onPop = function(request){
     tc.debug  && console.log('onPop',request);
-    var autoOpen = request.popD;
+    var autoOpen = window.top === window ? request.popD : null; // don't open in iframe
     var dd = tc.renderResults(request.results,'tcpopd');
     var d;
     if(dd){

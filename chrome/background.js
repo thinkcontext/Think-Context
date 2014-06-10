@@ -36,23 +36,33 @@ function Ext(){
     _self.getSubscribed();
     _self.getOptions();
     _self.getNotifications();
-    // sync but first check that we have a sane sequence number
+    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+
+    // sync after a short interval to not cause lag on startup
+    // before syncing check that we haven't recently done a sync
+    // then check that we have a sane sequence number
+    // finally, run syncs periodically
+
     var seq = _self.lsGet('seq');
-    // setTimeout(
-    // 	function(){
-    // 	    if(seq && seq > 0){
-    // 		$.getJSON(_self.couch,null
-    // 			  ,function(result){
-    // 			      if(result.update_seq < seq){
-    // 				  _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-    // 				  _self.resetDB(_self.sync(0));
-    // 			      }
-    // 			  });
-    // 	    } else {
-    // 		_self.sync(0);
-    // 	    }
-    // 	}
-    // 	, 10 * 60 * 1000); // 10 minutes
+    var lastSyncTime = _self.lsGet('lastSyncTime');
+    if(!lastSyncTime || (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+	setTimeout(
+    	    function(){
+    		if(seq && seq > 0){
+    		    $.getJSON(_self.couch,null
+    			      ,function(result){
+    				  if(result.update_seq < seq){
+    				      _self.debug && console.error("local sequence is greater than remote, resetting to zero");
+    				      _self.resetDB(_self.sync(0));
+    				  }
+    			      });
+    		} else {
+    		    _self.sync(0);
+    		}
+    	    }
+    	    , 10 * 60 * 1000); // 10 minutes 
+    }
+    setInterval(function(){_self.sync(0)}, 4 * 3600 * 1000);  // 4hrs
 }
 
 Ext.prototype = {
@@ -68,10 +78,6 @@ Ext.prototype = {
 
     saveCampaigns: function(campaigns){
 	var _self = this;
-
-	// just reload for now, later
-	// delete unsubscribed campaigns
-	// filter sync new ones
 	campaigns = campaigns.sort();
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
@@ -126,6 +132,7 @@ Ext.prototype = {
 		callback(ret);
 	    });
     },
+
     getAvailableCampaigns: function(callback){
 	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','campaign');
@@ -143,6 +150,7 @@ Ext.prototype = {
 
     sync: function(depth){
 	var _self = this;
+	_self.lsSet('lastSyncTime', (new Date).toJSON());
 	var seq = _self.lsGet('seq') || 0;
 
 	if(depth >= 100){
@@ -160,7 +168,7 @@ Ext.prototype = {
 		   ,limit:500
 		   ,camps: _self.campaigns.join(',')
 		   ,filter:'rep/client'
-//		   ,rando: Math.random() // remove me
+		   ,rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
 		      if(data.results.length == 0){
@@ -186,7 +194,7 @@ Ext.prototype = {
 			  req = _self.db.put('thing',insert);
 			  req.done(function(key) {
 			      _self.lsSet('seq',data.last_seq);
-			      setTimeout(function(){_self.sync(depth+1)},500);
+			      _self.sync(depth+1);
 			  });
 			  req.fail(function(e) {
 			      throw e;
@@ -197,7 +205,8 @@ Ext.prototype = {
 		  });	      		      
     },
     sendStat: function(key){
-	$.get('http://thinkcontext.org/s/?' + key);
+	if(key.match(/^\w+$/))
+	    $.get('http://thinkcontext.org/s/?' + key);
     },
     lookup: function(handle,request,callback){
 	var _self = this;
@@ -214,8 +223,10 @@ Ext.prototype = {
 			for(var k in results[i].handles){
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				for(var j in results[i].campaigns){
-				    campaign = results[i].campaigns[j];
-				    campaign.action = _self.actions[campaign.action];
+				    if(_self.campaigns.indexOf(j) >= 0){
+					campaign = results[i].campaigns[j];
+					campaign.action = _self.actions[campaign.action];
+				    }
 				}
 				request.results.push(results[i]);
 				break;
@@ -234,8 +245,10 @@ Ext.prototype = {
 		function(results){
 		    if(results[0]){
 			for(var j in results[0].campaigns){
-			    campaign = results[0].campaigns[j];
-			    campaign.action = _self.actions[campaign.action];
+			    if(_self.campaigns.indexOf(j) >= 0){
+				campaign = results[0].campaigns[j];
+				campaign.action = _self.actions[campaign.action];
+			    }
 			}
 			request['results'] = results;
 			_self.debug && console.log(request);
@@ -280,13 +293,39 @@ Ext.prototype = {
 	_self.popd = _self.lsGet('opt_popD');
     },
     
+    sendNotification: function(title,message){
+	chrome.notifications.create(
+	    result._id
+	    , {type: "basic"
+	       , title: title
+	       , message: message
+	       , iconUrl: 'tc-64.png'
+	      }
+	    , function(x){}	    );
+    },
+    
     getNotifications: function(){
 	var _self = this;
-	// if lastnotifytime is blank set it and return
-	// else get notifications in reverse order
-	// go through them until we get to last notify date
-	// set last notify date
-	// finally, checkOldVersion
+	var lnt = _self.lsGet('lastnotifytime');
+	var now = new Date;
+	if(lnt){
+	    if(now - new Date(lnt) > 7 * 24 * 3600 * 1000){  // one week
+		_self.checkOldVersion();
+		_self.db.from('thing').where('type','=','notification').list(1000).done(
+		    function(results){
+			var result;
+			for(var i in results){
+			    result = results[i];
+			    if(result.notification_date >= lnt && result.kind == 'meta'){
+				_self.sendNotification(result.title,result.text);
+			    }
+			}
+		    }
+		);
+	    }
+	} else {	
+	    _self.lsSet('lastnotifytime',now);
+	}
     },
     
     checkOldVersion: function(){	
@@ -296,7 +335,7 @@ Ext.prototype = {
 	    $.getJSON(_self.versionURL,
 		      function(results){
 			  if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
-			      console.log("Version more than 2 weeks out of date",results);
+			      _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
 			  }
 		      });
 	} else {
@@ -328,18 +367,6 @@ Ext.prototype = {
 	    });
 	_self.lsSet('campaigns', newCamps);    
     },
-
-    // browser specific
-    onRequest: function(request, sender, callback) {
-	if(request.kind == 'pageA'){
-	    chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-	    chrome.pageAction.show(sender.tab.id);
-	} else if(request.handle){
-	    tc.lookup(request.handle,request,callback);
-	} else {
-	    console.log("couldn't get a handle",request);
-	}   
-    },
     lsSet: function(x,y){
 	localStorage[x] = y;
     },
@@ -366,7 +393,21 @@ Ext.prototype = {
 var tc = new Ext();
 
 // browser specific
-chrome.extension.onRequest.addListener(tc.onRequest);
+function onRequest(request, sender, callback) {
+    console.log(request,sender);
+    if(request.kind == 'pageA'){
+	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	chrome.pageAction.show(sender.tab.id);
+    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+	tc.sendstat(request.key);
+    } else if(request.handle){
+	tc.lookup(request.handle,request,callback);
+    } else {
+	console.log("couldn't get a handle",request);
+    }   
+}
+
+chrome.extension.onRequest.addListener(onRequest);
 chrome.pageAction.onClicked.addListener(
     function(tab){
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
@@ -378,7 +419,13 @@ chrome.runtime.onInstalled.addListener(
 	tc.setVersionTime();
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
+	    //setTimeout(function(){tc.sync(0);}, 15 * 1000);
 	}else if(details.reason == "update"){
 	    //chrome.tabs.create({url:"options.html?update"});
 	}
+    });
+
+chrome.notifications.onClicked.addListener(
+    function(notificationId){
+	chrome.tabs.create({url:"options.html"});
     });
