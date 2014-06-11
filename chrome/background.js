@@ -48,13 +48,16 @@ function Ext(){
     if(!lastSyncTime || (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
 	setTimeout(
     	    function(){
+		_self.debug && console.log('sync did timeout');
     		if(seq && seq > 0){
     		    $.getJSON(_self.couch,null
     			      ,function(result){
     				  if(result.update_seq < seq){
     				      _self.debug && console.error("local sequence is greater than remote, resetting to zero");
     				      _self.resetDB(_self.sync(0));
-    				  }
+    				  } else {
+				      _self.sync(0);
+				  }
     			      });
     		} else {
     		    _self.sync(0);
@@ -394,7 +397,6 @@ var tc = new Ext();
 
 // browser specific
 function onRequest(request, sender, callback) {
-    console.log(request,sender);
     if(request.kind == 'pageA'){
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);

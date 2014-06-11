@@ -196,7 +196,7 @@ tc.renderResults = function(results,rid){
 	result = results[i];
 	for(var j in result.campaigns){
 	    campaign = result.campaigns[j];
-	    if(campaign.status == 'D' || ! campaign.action)
+	    if(campaign.status == 'D' || ! campaign.action || typeof campaign.action != 'object')
 		continue;
 	    if(icon){
 		icon = tc.defaultIcon;
