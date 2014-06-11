@@ -1,0 +1,23 @@
+html {
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12pt;
+    line-height: 125%;
+    max-width: 42em;
+    margin: 0 0 5em 9em;
+}
+img {
+    border: 0;
+}
+#toc {
+    position: fixed;
+    top: 2em;
+    left: 0;
+    width: 10em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+.camp-desc { font-size: .9em; }
+.camp-title { font-weight: bold; }

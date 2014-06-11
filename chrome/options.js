@@ -22,7 +22,7 @@ function renderPage(){
 
     for(var i in availableCampaigns){
 	campaign = availableCampaigns[i];
-
+	console.log(campaign);
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
     	    action = availableActions[campaign.actions[a]];
@@ -38,9 +38,16 @@ function renderPage(){
     	    .append($("<td>")
     		    .append($("<input>",{class: 'campaignSubscribe', type: 'checkbox', id: campaign['tid'],checked:checked})))
     	    .append(aTD)
-    	    .append($("<td>",{text: campaign['title']}))
-    	    .appendTo("#campaigns");    
-	
+    	    .append($("<td>")
+		    .append($("<span>",{class: 'camp-title', text: campaign['title']})))
+    	    .appendTo("#campaigns");    	
+	$("<tr>")
+	    .append($("<td>"))
+	    .append($("<td>"))
+	    .append($("<td>",{class: 'camp-desc'})
+		    .append(campaign['description'])
+		    .append($("<a>",{href: campaign['link'], text: " More info"})))
+    	    .appendTo("#campaigns");    	
     }
     var val = localStorage['opt_popD'];
     if(val != null){

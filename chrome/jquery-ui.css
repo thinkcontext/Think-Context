@@ -311,3 +311,4 @@
 .subv-ui-dialog .subv-ui-dialog-buttonpane button { margin: .5em .4em .5em 0 !important ; cursor: pointer !important ; }
 .subv-ui-dialog .subv-ui-resizable-se { width: 14px !important ; height: 14px !important ; right: 3px !important ; bottom: 3px !important ; }
 .subv-ui-draggable .subv-ui-dialog-titlebar { cursor: move !important ; }
+.tc-camp { margin-bottom: 3px }

@@ -302,7 +302,7 @@ Ext.prototype = {
 	    , {type: "basic"
 	       , title: title
 	       , message: message
-	       , iconUrl: 'tc-64.png'
+	       , iconUrl: 'icons/tc-64.png'
 	      }
 	    , function(x){}	    );
     },

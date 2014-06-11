@@ -191,7 +191,7 @@ tc.insertPrev = function(n,request){
 tc.renderResults = function(results,rid){
     tc.debug >= 2 && console.log('renderResults',results,rid);
     var d = $("<div>",{id: rid,tc:'tc',class: 'thinkcontext'}).appendTo('body');
-    var result, campaign, c, icon, title;
+    var result, campaign, c = 0, icon, title;
     for(var i in results){
 	result = results[i];
 	for(var j in result.campaigns){
@@ -205,7 +205,10 @@ tc.renderResults = function(results,rid){
 		icon = campaign.action.icon;
 		title = campaign.action.title;
 	    }
-	    $("<div>",{id: rid + j,class: 'thinkcontext ui-widget'}).appendTo('div#' + rid);
+	    if(c > 0)
+		$("<hr>",{style:"border: solid medium gray; margin: 3px;"}).appendTo('div#' + rid);
+	    c = 1;	    
+	    $("<div>",{id: rid + j,class: 'tc-camp'}).appendTo('div#' + rid);
 	    if(campaign && campaign.action && campaign.action.template){
 		new EJS({text: campaign.action.template}).update(rid + j,$.extend(campaign,campaign.action));
 	    } else {

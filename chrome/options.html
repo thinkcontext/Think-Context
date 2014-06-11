@@ -1,24 +1,68 @@
 <html>
-  <head></head>
+  <head>
+    <title>thinkContext Options Page</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
 
   <body>
-    
-    <button id="save">Save</button>    
-
-    <div id="campaignDiv">
-	<table id="campaigns">
-	
-      </table>
+    <div id="toc">
+      <img src="icons/tc-128.png">
+      <br>
+      <a href="#about">About</a>
+      <br>
+      <a href="#campaignDiv">Campaigns</a>
+      <br>
+      <a href="#options">Options</a>
+      <br>
+      <a href="#privacy">Privacy</a>
+      <p>
+	<a href="http://www.thinkcontext.org/" target="_blank">Website</a>
+	<br>
+	<a href="http://twitter.com/thinkcontext" target="_blank">Twitter</a>
+      </p>
     </div>
-    <h3>Behavior</h3>
-    Open a domain popup:
-    <select name="popD">
-      <option value="ever">Once ever</option>
-      <option value="session">Once per session</option>
-      <option value="every">Everytime</option>
-      <option value="never">Never</option>
-    </select>
-    
+    <div id="main">
+      <div id="about">
+	<p>
+	  Welcome to <b>thinkContext</b>, the web browser extension which adds contextually relevant, politically progressive information to your web browsing.  This is the options page for the software running on your computer.
+	</p>
+	
+	<p>
+	  <div>
+	    As you browse the web <b>thinkContext</b> consults progressive data sources and if it finds anything relevant to what you are looking at it will unobtrusively add that information right into the page.  Look for the icons shown next to the campaigns below and hover your mouse over them to show more information.  Subscribe to campaigns below.
+	    <div style="float:right">
+	      <table>
+		<tr><td><img src="icons/urlbaricon.png"></td></tr> 
+		<tr><td><img src="icons/resulticon.png"></td></tr>
+	      </table>
+	    </div>
+	  </div>	  
+	</p>
+      </div>
+
+      <button id="save">Save</button>    
+      
+      <div id="campaignDiv">
+	<h3>Campaigns</h3> 
+	<table id="campaigns"></table>
+      </div>
+      
+      <div id="options">
+	<h3>Options</h3>
+	Open a domain popup:
+	<select name="popD">
+	  <option value="ever">Once ever</option>
+	  <option value="session">Once per session</option>
+	  <option value="every">Everytime</option>
+	  <option value="never">Never</option>
+	</select>
+      </div>
+    </div>
+    <div id="privacy">
+      <h3>Privacy Policy</h3>
+      <b>thinkContext</b> will not collect personal information without your express permission.  We may collect metrics on your use of the software to be compiled in aggregate.  Routine IP address information collected by your use of our website will be removed after approximately one month.      
+    </div>
+
     <script src="jquery-2.0.3.min.js"></script>
     <script src="ejs_production.js"></script>
     <script src="options.js"></script>
