@@ -22,7 +22,6 @@ function renderPage(){
 
     for(var i in availableCampaigns){
 	campaign = availableCampaigns[i];
-	console.log(campaign);
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
     	    action = availableActions[campaign.actions[a]];
@@ -67,7 +66,14 @@ function saveOptions(){
     localStorage['opt_popD'] = $("[name='popD']").val();
 }
 
-
 $("button#save").click(function(e){saveOptions();});
-
+$(window).on('beforeunload', function(){
+    var camps = [];
+    $("input.campaignSubscribe").map(
+	function(){ this.checked && camps.push(this.id) }
+    );
+    if(campaigns.sort().join(',') != camps.sort().join(',')){
+	return "You've made changes but haven't saved them.  Stay on the page and then click the \"Save\" button if you want to keep your changes."
+    }
+});
 

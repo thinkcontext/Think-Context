@@ -75,6 +75,7 @@ tc.onPop = function(request){
 		$(window).unbind('resize');
 		$(window).unbind('scroll');
 	    }
+	    , closeText: 'x'
 	    , height: 'auto'
 	    , maxHeight: 600
 	    , width: 500
@@ -173,12 +174,13 @@ tc.insertPrev = function(n,request){
 	     , width: 500
 	     , zIndex: 10000000
 	     , dialogClass: 'thinkcontext'
+  	     , closeText: 'x'
 	    }); 
 	$("#"+iid ).hover(
 	    function(event){ 
 		d.dialog('option','position',[event.clientX - 15, event.clientY - 15]); 
 		d.dialog('open'); 
-		$('div:has(#'+iid+')').mouseleave(function(e){ d.dialog('close'); });
+		$('div:has(#'+iid+')').mouseout(function(e){ d.dialog('close'); });
 		return false;}
 	);
 	$('#' + iid +' a[tcstat]').click(function(){
