@@ -64,6 +64,9 @@ function saveOptions(){
     );
     bgPage.tc.saveCampaigns(camps);
     localStorage['opt_popD'] = $("[name='popD']").val();
+    campaigns = camps;
+    $('div#saveMsg').append('Saved');
+    setTimeout(function(){ $('div#saveMsg').map(function(){this.innerHTML = ''})}, 1000);
 }
 
 $("button#save").click(function(e){saveOptions();});

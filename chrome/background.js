@@ -197,14 +197,12 @@ Ext.prototype = {
 			  req = _self.db.put('thing',insert);
 			  req.done(function(key) {
 			      _self.lsSet('seq',data.last_seq);
-			      _self.sync(depth+1);
 			  });
 			  req.fail(function(e) {
 			      throw e;
 			  });
-		      } else {
-			  _self.getSubscribed();
 		      }
+		      _self.sync(depth+1);
 		  });	      		      
     },
     sendStat: function(key){
@@ -214,7 +212,7 @@ Ext.prototype = {
     lookup: function(handle,request,callback){
 	var _self = this;
 	var req ;
-	var campaign;
+	var campaign, hmatch;
 	if(request.handle.match(/^domain:/)){
 	    _self.debug && console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
@@ -225,6 +223,7 @@ Ext.prototype = {
 		    for(var i in results){
 			for(var k in results[i].handles){
 			    if(handle.indexOf(results[i].handles[k]) == 0){
+				hmatch = results[i].handles[k];
 				for(var j in results[i].campaigns){
 				    if(_self.campaigns.indexOf(j) >= 0){
 					campaign = results[i].campaigns[j];
@@ -238,7 +237,7 @@ Ext.prototype = {
 		    }
 		    if(request.results.length > 0){
 			_self.debug && console.log('domain returning',request);
-			_self.resultsPrep(request,callback);
+			_self.resultsPrep(request,callback,hmatch);
 		    }
 		    return;			    		
 		});
@@ -255,13 +254,13 @@ Ext.prototype = {
 			}
 			request['results'] = results;
 			_self.debug && console.log(request);
-			_self.resultsPrep(request,callback);
+			_self.resultsPrep(request,callback,handle);
 		    }
 		});
 	}
     },
 
-    resultsPrep: function(request,callback){
+    resultsPrep: function(request,callback,hmatch){
 	var _self = this;
 	if(request.kind == 'pop'){
 	    switch(_self.popd){
@@ -272,17 +271,17 @@ Ext.prototype = {
 		request.popD = true;
 		break;
 	    case 'session':
-		if(! sessionStorage.getItem('tcPopD_' + request.handle)){
+		if(! sessionStorage.getItem('tcPopD_' + hmatch)){
 		    request.popD = true;
-		    sessionStorage.setItem('tcPopD_' + request.handle,1);
+		    sessionStorage.setItem('tcPopD_' + hmatch,1);
 		} else {
 		    request.popD = false;
 		}
 		break;
 	    default:
-		if(! _self.lsGet('tcPopD_' + request.handle)){
+		if(! _self.lsGet('tcPopD_' + hmatch)){
 		    request.popD = true;
-		    _self.lsSet('tcPopD_' + request.handle,1);
+		    _self.lsSet('tcPopD_' + hmatch,1);
 		} else {
 		    request.popD = false;
 		}		
@@ -398,6 +397,7 @@ var tc = new Ext();
 // browser specific
 function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
+	console.log(request);
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);
     } else if(request.kind == 'sendstat' && !sender.tab.incognito){

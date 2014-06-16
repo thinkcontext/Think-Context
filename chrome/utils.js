@@ -1,5 +1,5 @@
 var tc = {};
-tc.debug = 0;
+tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg==";
@@ -158,14 +158,11 @@ tc.insertPrev = function(n,request){
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
 	d = dd.dialog;
 
-    	var resDiv = $('<span>'
-    		       , { id: iid
-    			   , tc: 'tc'
-    			   , style: 'display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px;' })
-    	    .append($('<img>', { src: dd.icon, style: 'float:none;margin: 0px;display:inline;'}));
+    	var resDiv = $('<span>', { id: iid, tc: 'tc'})
+    	    .append($('<img>', { src: dd.icon }));
 	resDiv.insertBefore(n);
-    	n.style.display = "inline";
-
+    	//n.style.display = "inline";
+	
 	d.dialog(
 	    {autoOpen: false
 	     , title:  'thinkContext: ' + dd.title
@@ -208,7 +205,7 @@ tc.renderResults = function(results,rid){
 		title = campaign.action.title;
 	    }
 	    if(c > 0)
-		$("<hr>",{style:"border: solid medium gray; margin: 3px;"}).appendTo('div#' + rid);
+		$("<hr>").appendTo('div#' + rid);
 	    c = 1;	    
 	    $("<div>",{id: rid + j,class: 'tc-camp'}).appendTo('div#' + rid);
 	    if(campaign && campaign.action && campaign.action.template){
@@ -218,7 +215,8 @@ tc.renderResults = function(results,rid){
 	    }
 	}
     }
-    return {title:title,icon:icon,dialog:d};
+    if(title && icon)
+	return {title:title,icon:icon,dialog:d};
 }
 
 tc.uniqueArray = function(a) {
