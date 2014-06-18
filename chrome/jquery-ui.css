@@ -317,4 +317,4 @@
 .thinkcontext ul { padding: 8px; margin: 0px; }
 .thinkcontext img { display:inline; float:none; margin:0px; }
 .thinkcontext span { display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; }
-.thinkcontext hr {border: solid medium gray; margin: 3px;}
+.thinkcontext hr {border: solid medium gray; margin: 3px; display: inline;}
