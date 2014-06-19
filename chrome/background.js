@@ -156,6 +156,14 @@ Ext.prototype = {
 	_self.lsSet('lastSyncTime', (new Date).toJSON());
 	var seq = _self.lsGet('seq') || 0;
 
+	// check if there was an error
+	// if so start over, depth will prevent infinite loop
+	if(_self.lsGet('syncError')){
+	    _self.lsSet('seq',0);
+	    _self.lsRm('syncError',0);
+	    seq = 0;
+	}
+
 	if(depth >= 100){
 	    console.error('Over 100 sync recursions!', seq);
 	    return;
@@ -195,13 +203,16 @@ Ext.prototype = {
 		      }
 		      if(insert.length > 0){
 			  req = _self.db.put('thing',insert);
-			  req.done(function(key) {
-			      _self.lsSet('seq',data.last_seq);
-			  });
+			  req.done();
 			  req.fail(function(e) {
-			      throw e;
+			      // there was a insert problem 
+			      // set the error flag that will get acted on 
+			      // by the next sync call
+			      _self.lsSet('syncError', true);
+			      console.error(e);
 			  });
 		      }
+		      _self.lsSet('seq',data.last_seq);
 		      _self.sync(depth+1);
 		  });	      		      
     },
@@ -401,7 +412,7 @@ function onRequest(request, sender, callback) {
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);
     } else if(request.kind == 'sendstat' && !sender.tab.incognito){
-	tc.sendstat(request.key);
+	tc.sendStat(request.key);
     } else if(request.handle){
 	tc.lookup(request.handle,request,callback);
     } else {
