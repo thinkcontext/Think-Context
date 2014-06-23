@@ -158,7 +158,7 @@ tc.insertPrev = function(n,request){
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
 	d = dd.dialog;
 
-    	var resDiv = $('<span>', { id: iid, tc: 'tc'})
+    	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
     	    .append($('<img>', { src: dd.icon }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";

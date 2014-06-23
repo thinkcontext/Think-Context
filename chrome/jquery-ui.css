@@ -315,6 +315,6 @@
 
 .thinkcontext { display:inline; padding:0px; }
 .thinkcontext ul { padding: 8px; margin: 0px; }
-.thinkcontext img { display:inline; float:none; margin:0px; }
+.thinkcontext img { display:inline !important ; float:none !important ; margin:0px !important ; }
 .thinkcontext span { display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; }
 .thinkcontext hr {border: solid medium gray; margin: 3px; display: block;}
