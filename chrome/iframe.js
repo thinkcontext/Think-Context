@@ -1,6 +1,6 @@
-console.log('iframe');
+//console.log('iframe');
 if(document.domain.match('adsonar.com')){
-    console.log('adsonor');
+//    console.log('adsonar');
     tc.handleExamine("p.lnk a"
 		     ,'urlfrag'
 		     ,function(x){ return x.textContent;}

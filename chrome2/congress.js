@@ -1,3 +1,4 @@
+if (window.top === window && !tc.found) {
 //x                 "http://*.washingtonpost.com/*"
 //x 		   ,"http://*.nytimes.com/*"
 //y 		   ,"http://online.wsj.com/*"
@@ -41,14 +42,11 @@ tc.congress.doit = function(){
     //console.log(cs);
     for(var q in cs){
 	cong = cs[q];
-	
 	// find all nodes that contain a candidate string
 	cons = $.makeArray($("*:not('body,head,script,a,html'):contains("+cong+")"));
-	
 	for(var i = 0; i < cons.length; i++){
 	    // the list contains ancestors we don't want
 	    // so walk the list and skip those that are parents
-
 	    if(!cons[i+1] || !cons[i+1].parentElement == cons[i]){
 		// if this is the last element or this element is not the parent of the next element
 		for(var j in cons[i].childNodes){
@@ -89,4 +87,5 @@ tc.congress.doit = function(){
 }
 
 tc.congress.doit();
-tc.popSend();
+
+}

@@ -1,7 +1,6 @@
 tc.debug && console.log('twitter');
 tc.twitter = {};
 
-tc.popSend();
 var proHandle, canon;
 canon = $("head link[rel='canonical']");
 if(canon.length == 1){
