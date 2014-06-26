@@ -45,7 +45,7 @@ function Ext(){
 
     var seq = _self.lsGet('seq');
     var lastSyncTime = _self.lsGet('lastSyncTime');
-    if(!lastSyncTime || (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
 	setTimeout(
     	    function(){
 		_self.debug && console.log('sync did timeout');
@@ -430,6 +430,8 @@ chrome.runtime.onInstalled.addListener(
     function(details){
 	tc.initialCamps();
 	tc.setVersionTime();
+	tc.getSubscribed();
+	//tc.sync(0);  // uncomment me
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
 	    //setTimeout(function(){tc.sync(0);}, 15 * 1000);

@@ -103,6 +103,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.c
 	window.setTimeout(tc.googleSearch.doit,1000);    
 	window.setTimeout(tc.googleSearch.observe,500);
     }
-    
-    tc.googleSearch.doOb();
+    console.log(tc.googleSearch.doit);
+    if(tc.googleSearch.doit)
+	tc.googleSearch.doOb();
 }
