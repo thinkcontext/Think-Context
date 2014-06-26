@@ -400,7 +400,6 @@ Ext.prototype = {
 	    ret = new Date(j);
 	return ret;
     }
-        
 }
 
 var tc = new Ext();
@@ -408,7 +407,6 @@ var tc = new Ext();
 // browser specific
 function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
-	console.log(request);
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);
     } else if(request.kind == 'sendstat' && !sender.tab.incognito){

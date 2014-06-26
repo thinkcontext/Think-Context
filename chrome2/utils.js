@@ -3,7 +3,7 @@ tc.found = false;
 tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
-tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg==";
+tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAACEGQqEGwqEHAqANAp7TQp7Uwp3YQp3Ywp3ZAp3ZQrdpkQRAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfeBhoTAjhQUFKRAAAATUlEQVQI12NgYGZg4Jw5gYGBwZiBYeZMIIsZxJgAYXDOZOAEMYy8gComMBgbG0aBlIKkOmGMmUQywAZOBxsINMgMbBeQAbIUpMgA7AwAwBIcVgaFLcUAAAAASUVORK5CYII"; // tC
 tc.defaultTitle = "thinkContext";
 
 tc.debug && console.log("utils",document.URL);
@@ -35,7 +35,7 @@ if(window.top === window){ // don't listen in an iframe
 }
 
 tc.onResponse = function(request){
-    tc.debug  && console.log('onResponse',request);
+    tc.debug  && console.log('onResponse',request,tc.responses);
     tc.responses[request.kind](request);
 }
 tc.sendMessage = function(request){
@@ -77,9 +77,11 @@ tc.onPop = function(request){
 		$(window).unbind('scroll');
 	    }
 	    , closeText: 'x'
-	    , height: 'auto'
-	    , maxHeight: 600
+	    , create: function() {
+	    	$(this).css("maxHeight", 300);
+	    }	    
 	    , width: 500
+	    , resizable: false
 	    , autoOpen: false
 	    , dialogClass: 'thinkcontext'
 	});     
@@ -117,7 +119,7 @@ tc.onPop = function(request){
 }
 
 tc.onLink = function(request){
-//    console.log('onLink',request,request.tcid);
+    console.log('onLink',request,request.tcid);
     if(request.tcid > 0)
 	$("[tcid="+request.tcid+"]").map(
 	    function(){
@@ -169,8 +171,10 @@ tc.insertPrev = function(n,request){
 	d.dialog(
 	    {autoOpen: false
 	     , title:  'thinkContext: ' + dd.title
-	     , height: 'auto'
-	     , maxHeight: 600
+	     , create: function() {
+	      	 $(this).css("maxHeight", 300);        
+	     }	    
+	     , resizable: false
 	     , width: 500
 	     , zIndex: 10000000
 	     , dialogClass: 'thinkcontext'
@@ -192,7 +196,13 @@ tc.insertPrev = function(n,request){
     
 tc.renderResults = function(results,rid){
     tc.debug >= 2 && console.log('renderResults',results,rid);
-    var d = $("<div>",{id: rid,tc:'tc',class: 'thinkcontext'}).appendTo('body');
+    var d = $("<div>"
+	      ,{id: rid
+		,tc:'tc'
+		,class: 'thinkcontext'
+		,style: "overflow-y: scroll"}	      
+	     )
+	.appendTo('body');
     var result, campaign, c = 0, icon, title;
     for(var i in results){
 	result = results[i];

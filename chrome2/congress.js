@@ -31,7 +31,7 @@ tc.congress = {};
 
 tc.congress.doit = function(){
 
-    tc.congressPattern = "((Rep|Sen)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
+    tc.congressPattern = "((Rep|Sen|Speaker)([\\S]*)) ([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
 
     var cRe = new RegExp(tc.congressPattern,'g');
 
@@ -53,6 +53,7 @@ tc.congress.doit = function(){
 		    //iterate over the child nodes to find the right one
 		    tn = cons[i].childNodes[j];
 		    if(tn.nodeType == 3 && tn.parentElement.textContent.trim().length > (cong.length * 3)){
+			console.log(tn.data);
 			// is this a text node and is it long enough 
 			if(cm = tn.data.match(cong)){
 			    // if it contains the text we are looking for 
@@ -77,7 +78,7 @@ tc.congress.doit = function(){
 				, tcid: tcid
 				, handle: 'name:' + name
 			    });
-			    break;
+			    //break;
 			}
 		    }
 		}
