@@ -30,6 +30,7 @@ function Ext(){
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
     _self.couch = 'http://127.0.0.1:5984/tc';
     _self.dataUrl = _self.couch + '/_changes';
+    _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.actions = {};
     _self.campaigns = {};
@@ -365,12 +366,32 @@ Ext.prototype = {
 	    }, []);
     },
     
+    fetchCampaignsActions: function(){
+	var _self = this;
+	$.getJSON(_self.campaignsActionsUrl,
+	      function(data){
+		  var insert = [], req;
+		  for(var i = 0; i < data.rows.length; i++){
+		      delete data.rows[i].value._rev;  // save some space
+		      insert.push(data.rows[i].value);		      
+		  }
+		  if(insert.length > 0){
+		      req = _self.db.put('thing',insert);
+		      req.done();
+		      req.fail(function(e) {
+			  console.error('error inserting initial campaign/action list',e);
+		      });		      
+		  }
+	      });
+    },
+
     initialCamps: function(){
 	var _self = this;
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
-	
-	var newCamps = ['congress'];
+
+	_self.fetchCampaignsActions();
+	var newCamps = ['congress','climatecounts'];
 	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){

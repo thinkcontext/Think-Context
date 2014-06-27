@@ -119,7 +119,7 @@ tc.onPop = function(request){
 }
 
 tc.onLink = function(request){
-    console.log('onLink',request,request.tcid);
+    //console.log('onLink',request,request.tcid);
     if(request.tcid > 0)
 	$("[tcid="+request.tcid+"]").map(
 	    function(){
@@ -129,10 +129,8 @@ tc.onLink = function(request){
 
 tc.handleExamine = function(selector,kind,getval,placer){
     tc.registerResponse('link',tc.onLink);
-    console.log('handleExamine',selector);
     $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
-	    console.log(this);
 	    var target = this, href = this.href, h;
 	    if(getval)
 		href = getval(this);
