@@ -3,13 +3,11 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)twitter\.
     tc.debug && console.log('twitter');
     tc.twitter = {};
 
-    tc.popSend();
     var proHandle, canon;
     canon = $("head link[rel='canonical']");
     if(canon.length == 1){
 	proHandle = new tc.urlHandle(canon[0].href);
     }
-    console.log(proHandle);
     var $observerSummaryRoot = $("div#page-container");
 
     tc.twitter.summaryCallback = function(summaries){

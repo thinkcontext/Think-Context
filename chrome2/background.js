@@ -32,6 +32,7 @@ function Ext(){
     _self.dataUrl = _self.couch + '/_changes';
     _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
+    _self.syncing = false;
     _self.actions = {};
     _self.campaigns = {};
     _self.getSubscribed();
@@ -45,7 +46,7 @@ function Ext(){
     // finally, run syncs periodically
 
     var seq = _self.lsGet('seq');
-    var lastSyncTime = _self.lsGet('lastSyncTime');
+    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
     if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
 	setTimeout(
     	    function(){
@@ -73,6 +74,7 @@ Ext.prototype = {
 
     resetDB: function(callback){
 	this.lsSet('seq',0);
+	this.lsRm('lastSyncTime');
 	this.db.clear('thing').done(
 	    function(){
 		if(typeof callback == 'function')
@@ -152,8 +154,14 @@ Ext.prototype = {
 	    });
     },
 
-    sync: function(depth){
+    sync: function(depth){	
 	var _self = this;
+	if(depth == 0 && _self.syncing){
+	    console.error("already syncing");
+	    return;
+	} else {
+	    _self.syncing = true;
+	}
 	_self.lsSet('lastSyncTime', (new Date).toJSON());
 	var seq = _self.lsGet('seq') || 0;
 
@@ -167,9 +175,11 @@ Ext.prototype = {
 
 	if(depth >= 100){
 	    console.error('Over 100 sync recursions!', seq);
+	    _self.syncing = false;
 	    return;
 	} else if(_self.campaigns.length == 0){
 	    console.error('No campaigns to find!');
+	    _self.syncing = false;	    
 	    return;
 	}	    
 
@@ -183,8 +193,13 @@ Ext.prototype = {
 		   ,rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
+		      if(data.last_seq < seq){
+			  _self.resetDB(_self.sync(0));
+			  return;
+		      }			  
 		      if(data.results.length == 0){
 			  _self.getSubscribed();
+			  _self.syncing = false;
 			  return;
 		      }
 		      var req, rows = data.results, deleted = [], insert = [];

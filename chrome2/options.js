@@ -72,7 +72,12 @@
 	localStorage['opt_popD'] = $("[name='popD']").val();
 	campaigns = camps;
 	$('div#saveMsg').append('Saved');
-	setTimeout(function(){ $('div#saveMsg').map(function(){this.innerHTML = ''})}, 1000);
+	setTimeout(
+	    function(){ 
+		$('div#saveMsg').map(function(){this.innerHTML = ''});
+		window.close();
+	    }
+	    , 1000);
     }
 
     $("button#save").click(function(e){saveOptions();});
