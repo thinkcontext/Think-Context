@@ -28,7 +28,8 @@ function Ext(){
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-    _self.couch = 'http://127.0.0.1:5984/tc';
+//    _self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_changes';
     _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
@@ -182,7 +183,6 @@ Ext.prototype = {
 	    _self.syncing = false;	    
 	    return;
 	}	    
-
 	$.getJSON(_self.dataUrl, 
 		  {timeout:20000
 		   ,include_docs:true
@@ -194,6 +194,7 @@ Ext.prototype = {
 		  } ,
 		  function(data){
 		      if(data.last_seq < seq){
+			  _self.syncing = false;
 			  _self.resetDB(_self.sync(0));
 			  return;
 		      }			  
