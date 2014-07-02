@@ -1,4 +1,4 @@
-if(!window.top
+if(window != window.parent
    && (document.domain.match('adsonar.com')
        || document.domain.match('msn.com')
        || document.URL.match("doubleclick.net/pagead/")
@@ -6,10 +6,8 @@ if(!window.top
        || document.URL.match("ad.doubleclick.net/adi/")       
       )
   ){ 
-    //console.log('iframe');
     tc.found = true;
     if(document.domain.match('adsonar.com')){
-	//    console.log('adsonar');
 	tc.handleExamine("p.lnk a"
 			 ,'urlfrag'
 			 ,function(x){ return x.textContent;}

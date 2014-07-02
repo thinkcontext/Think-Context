@@ -9,7 +9,10 @@ if (window.top === window && !tc.found) {
 			 ,function(x){ return x.textContent;}
 			);
 	
-	tc.handleExamine("li > h4 > a[href*='googleadservices.com/pagead/aclk']");
+	tc.handleExamine("li > p > a[href*='googleadservices.com/pagead/aclk']"
+			 ,'urlfrag'
+			 ,function(x){ return x.textContent}
+			);
 	
 	tc.handleExamine("div.adsonarAd > a.displayUrl"
 			 ,'urlfrag'
@@ -18,8 +21,8 @@ if (window.top === window && !tc.found) {
 
 	tc.handleExamine("[itemtype='http://schema.org/Organization'] [itemprop='url']"
 			 ,'urlfrag'
-			 ,function(x){ console.log(x.href); return x.href; }
-			 ,function(x){ console.log(x.parentElement); return x.parentElement; });
+			 ,function(x){ return x.href; }
+			 ,function(x){ return x.parentElement; });
 
 
 	// $("object param[name='flashvars'][value*='2mdn.net']").not('a[sid]').map(

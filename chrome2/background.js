@@ -466,7 +466,7 @@ chrome.runtime.onInstalled.addListener(
 	tc.initialCamps();
 	tc.setVersionTime();
 	tc.getSubscribed();
-	//tc.sync(0);  // uncomment me
+	tc.sync(0);  // uncomment me
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
 	    //setTimeout(function(){tc.sync(0);}, 15 * 1000);
