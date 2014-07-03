@@ -6,7 +6,6 @@ if(window != window.parent
        || document.URL.match("ad.doubleclick.net/adi/")       
       )
   ){ 
-    tc.found = true;
     if(document.domain.match('adsonar.com')){
 	tc.handleExamine("p.lnk a"
 			 ,'urlfrag'
