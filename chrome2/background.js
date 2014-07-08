@@ -28,9 +28,9 @@ function Ext(){
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-//    _self.couch = 'http://127.0.0.1:5984/tc';
-    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
-    _self.dataUrl = _self.couch + '/_changes';
+    _self.couch = 'http://127.0.0.1:5984/tc';
+//    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.syncing = false;
@@ -155,7 +155,7 @@ Ext.prototype = {
 	    });
     },
 
-    sync: function(depth){	
+    sync: function(depth,campaigns){	
 	var _self = this;
 	if(depth == 0 && _self.syncing){
 	    console.error("already syncing");
@@ -178,19 +178,16 @@ Ext.prototype = {
 	    console.error('Over 100 sync recursions!', seq);
 	    _self.syncing = false;
 	    return;
-	} else if(_self.campaigns.length == 0){
+	} else if(campaigns.length == 0){
 	    console.error('No campaigns to find!');
 	    _self.syncing = false;	    
 	    return;
 	}	    
 	$.getJSON(_self.dataUrl, 
-		  {timeout:20000
-		   ,include_docs:true
-		   ,since:seq
-		   ,limit:500
-		   ,camps: _self.campaigns.join(',')
-		   ,filter:'rep/client'
-		   ,rando: Math.random() // remove me, pierces cache
+		  {include_docs:true,
+		   startkey: JSON.stringify([ campaigns[0], seq ]),
+		   endkey: JSON.stringify([ campaigns[0], {} ]),
+		   rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
 		      if(data.last_seq < seq){
@@ -198,12 +195,32 @@ Ext.prototype = {
 			  _self.resetDB(_self.sync(0));
 			  return;
 		      }			  
-		      if(data.results.length == 0){
+		      if(data.results.length > 0){
+			  req = _self.db.put('thing',data.results);
+			  req.done(
+			      function(){
+				  $.getJSON(_self.deactivateUrl,
+					    { startkey: JSON.stringify([ campaigns[0], seq ]),
+					      endkey: JSON.stringify([ campaigns[0], {} ]),
+					      rando: Math.random() // remove me, pierces cache
+					    } ,
+					    function(){});
+					    
+			      }			      
+			  );
+			  req.fail(function(e) {
+			      // there was a insert problem 
+			      // set the error flag that will get acted on 
+			      // by the next sync call
+			      _self.lsSet('syncError', true);
+			      console.error(e);
+			  });
+		      } else {
 			  _self.getSubscribed();
 			  _self.syncing = false;
 			  return;
 		      }
-		      var req, rows = data.results, deleted = [], insert = [];
+		      var req, rows = data.results;
 		      for(var x in rows){
 			  if(rows[x].deleted){
 			      deleted.push(rows[x].id);
@@ -219,15 +236,6 @@ Ext.prototype = {
 			  }
 		      }
 		      if(insert.length > 0){
-			  req = _self.db.put('thing',insert);
-			  req.done();
-			  req.fail(function(e) {
-			      // there was a insert problem 
-			      // set the error flag that will get acted on 
-			      // by the next sync call
-			      _self.lsSet('syncError', true);
-			      console.error(e);
-			  });
 		      }
 		      _self.lsSet('seq',data.last_seq);
 		      _self.sync(depth+1);
