@@ -32,51 +32,47 @@ function Ext(){
 //    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
-    _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
+    _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
+    _self.metaDeactivatedUrl = _self.couch + '/_design/seq/_view/metaDeactivated';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.actions = {};
     _self.campaigns = {};
     _self.getSubscribed();
     _self.getOptions();
     _self.getNotifications();
-    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 
-    // sync after a short interval to not cause lag on startup
-    // before syncing check that we haven't recently done a sync
-    // then check that we have a sane sequence number
-    // finally, run syncs periodically
-
-    var seq = _self.lsGet('seq');
     var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-    if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+
+    if(lastSyncTime == 0){
+	// we haven't done a sync before do it immediately
+	_self.sync();
+    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+	// we haven't done one in 4 hrs so do one 
+	// but wait a little bit first to not lag browser start
 	setTimeout(
     	    function(){
-		_self.debug && console.log('sync did timeout');
-    		if(seq && seq > 0){
-    		    $.getJSON(_self.couch,null
-    			      ,function(result){
-    				  if(result.update_seq < seq){
-    				      _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-    				      _self.resetDB(_self.sync(0));
-    				  } else {
-				      _self.sync(0);
-				  }
-    			      });
-    		} else {
-    		    _self.sync(0);
-    		}
+    		_self.sync();
     	    }
-    	    , 10 * 60 * 1000); // 10 minutes 
+    	    , 5 * 60 * 1000); // 5 minutes 
     }
-    setInterval(function(){_self.sync(0)}, 4 * 3600 * 1000);  // 4hrs
-}
+    
+    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);}
 
 Ext.prototype = {
 
     resetDB: function(callback){
-	this.lsSet('seq',0);
-	this.lsRm('lastSyncTime');
-	this.db.clear('thing').done(
+	var _self = this, campaign;
+	_self.lsRm('lastSyncTime');
+	_self.lsRm('metaseq');
+	_self.lsRm('metadea');
+	for(var x = 0; x < _self.campaigns.length; x++){
+	    campaign = _self.campaigns[x];
+	    _self.lsRm('seq' + campaign);
+	    _self.lsRm('dea' + campaign);
+	}
+
+	_self.db.clear('thing').done(
 	    function(){
 		if(typeof callback == 'function')
 		    callback();
@@ -89,7 +85,7 @@ Ext.prototype = {
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
-	    _self.resetDB( function(){ _self.sync(0) });
+	    _self.resetDB( function(){ _self.sync() });
 	}
     },
 
@@ -125,7 +121,7 @@ Ext.prototype = {
 		});
 	}
     },
-
+    
     getAvailableActions: function(callback){
 	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','action');
@@ -155,25 +151,76 @@ Ext.prototype = {
 	    });
     },
 
+    fetchMetaDeactivated: function(){
+	var _self = this;
+	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
+	console.log(_self.metaDeactivatedUrl);
+	$.getJSON(_self.metaDeactivatedUrl, 
+		  {startkey: metaDeact,
+		   rando: Math.random() // remove me, pierces cache
+		  } ,
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  for(var x = 0; x < rows.length; x++){
+			      _self.db.remove('thing', rows[x].key).done();
+			  }
+			  _self.lsSet('metadea', rows[rows.length -1].key);
+		      }
+		  });
+    },
+    
+    fetchMetaData: function(){
+	var _self = this;
+	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
+	$.getJSON(_self.metaUrl,
+		  { include_docs: true,
+		    startkey: metaSeq,
+		    rando: Math.random() // remove me, pierces cache 
+		  },		  
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  var insert = rows.map( function(x){ return x.doc } );
+		      	  req = _self.db.put('thing',insert);
+			  req.done(
+			      function(){
+				  _self.lsSet('metaseq', rows[rows.length -1].key);
+				  _self.fetchMetaDeactivated();
+			      }
+			  );
+			  req.fail(function(e) {
+			      // there was a insert problem 
+			      console.error('fetchMetaData',e);
+			  });
+		      } else {
+			  _self.fetchMetaDeactivated();
+		      }		      
+		  });
+    },
+
     fetchCampaignDeactivated: function(campaign){
 	var _self = this;
-	var campDeact = _self.lsGet('dea' + campaign) || _self.lsGet('seq' + campaign) || 0;
-	$.getJSON(_self.dataUrl, 
+	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
+	$.getJSON(_self.deactivateUrl, 
 		  {startkey: JSON.stringify([ campaign, campDeact ]),
 		   endkey: JSON.stringify([ campaign, {} ]),
 		   rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
-		      for(var x = 0; x < data.rows.length; x++){
-			  _self.db.remove('thing',data.rows[x].key).done();
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  for(var x = 0; x < rows.length; x++){
+			      _self.db.remove('thing',rows[x].key).done();
+			  }
+			  _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
 		      }
-		      _self.lsSet('dea' + campaign, data.last_seq);
 		  });
     },
 
     fetchCampaignData: function(campaign){
 	var _self = this;
-	var campSeq = _self.lsGet('seq' + campaign) || 0;
+	var campSeq = parseInt(_self.lsGet('seq' + campaign)) || 0;
 	$.getJSON(_self.dataUrl, 
 		  {include_docs: true,
 		   startkey: JSON.stringify([ campaign, campSeq ]),
@@ -181,30 +228,35 @@ Ext.prototype = {
 		   rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
-		      if(data.results.length > 0){
-			  req = _self.db.put('thing',data.results);
-			  req.done(
-			      _self.lsSet('seq' + campaign, data.last_seq);
-			      _self.fetchCampaignDeactivated(campaign);
-			  );
-			  req.fail(function(e) {
-			      // there was a insert problem 
-			      console.error(e);
-			  });
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  var insert = rows.map( function(x){ return x.doc } );
+		      	  req = _self.db.put('thing',insert);
+		      	  req.done(
+			      function(){
+		      		  _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
+		      		  _self.fetchCampaignDeactivated(campaign);
+			      }
+		      	  );
+		      	  req.fail(function(e) {
+		      	      // there was a insert problem 
+		      	      console.error('fetchCampaignData',campaign,e);
+		      	  });
 		      } else {
-			  _self.fetchCampaignDeactivated(campaign);
+		      	  _self.fetchCampaignDeactivated(campaign);
 		      }
 		  });				  
     },
     
     sync: function(){	
 	var _self = this;
+	_self.fetchMetaData();
 	for(var x = 0; x < _self.campaigns.length; x++){
 	    _self.fetchCampaignData(_self.campaigns[x])
 	}
 	_self.lsSet('lastSyncTime', (new Date).toJSON());	
     },
-
+    
     sendStat: function(key){
 	if(key.match(/^\w+$/))
 	    $.get('http://thinkcontext.org/s/?' + key);
@@ -354,25 +406,6 @@ Ext.prototype = {
 	    }, []);
     },
     
-    fetchCampaignsActions: function(){
-	var _self = this;
-	$.getJSON(_self.campaignsActionsUrl,
-	      function(data){
-		  var insert = [], req;
-		  for(var i = 0; i < data.rows.length; i++){
-		      delete data.rows[i].value._rev;  // save some space
-		      insert.push(data.rows[i].value);		      
-		  }
-		  if(insert.length > 0){
-		      req = _self.db.put('thing',insert);
-		      req.done();
-		      req.fail(function(e) {
-			  console.error('error inserting initial campaign/action list',e);
-		      });		      
-		  }
-	      });
-    },
-
     initialCamps: function(){
 	var _self = this;
 	if(_self.lsGet('campaigns')) // there's existing config so return
