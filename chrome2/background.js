@@ -31,9 +31,9 @@ function Ext(){
     _self.couch = 'http://127.0.0.1:5984/tc';
 //    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
+    _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
-    _self.syncing = false;
     _self.actions = {};
     _self.campaigns = {};
     _self.getSubscribed();
@@ -155,92 +155,56 @@ Ext.prototype = {
 	    });
     },
 
-    sync: function(depth,campaigns){	
+    fetchCampaignDeactivated: function(campaign){
 	var _self = this;
-	if(depth == 0 && _self.syncing){
-	    console.error("already syncing");
-	    return;
-	} else {
-	    _self.syncing = true;
-	}
-	_self.lsSet('lastSyncTime', (new Date).toJSON());
-	var seq = _self.lsGet('seq') || 0;
-
-	// check if there was an error
-	// if so start over, depth will prevent infinite loop
-	if(_self.lsGet('syncError')){
-	    _self.lsSet('seq',0);
-	    _self.lsRm('syncError',0);
-	    seq = 0;
-	}
-
-	if(depth >= 100){
-	    console.error('Over 100 sync recursions!', seq);
-	    _self.syncing = false;
-	    return;
-	} else if(campaigns.length == 0){
-	    console.error('No campaigns to find!');
-	    _self.syncing = false;	    
-	    return;
-	}	    
+	var campDeact = _self.lsGet('dea' + campaign) || _self.lsGet('seq' + campaign) || 0;
 	$.getJSON(_self.dataUrl, 
-		  {include_docs:true,
-		   startkey: JSON.stringify([ campaigns[0], seq ]),
-		   endkey: JSON.stringify([ campaigns[0], {} ]),
+		  {startkey: JSON.stringify([ campaign, campDeact ]),
+		   endkey: JSON.stringify([ campaign, {} ]),
 		   rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
-		      if(data.last_seq < seq){
-			  _self.syncing = false;
-			  _self.resetDB(_self.sync(0));
-			  return;
-		      }			  
+		      for(var x = 0; x < data.rows.length; x++){
+			  _self.db.remove('thing',data.rows[x].key).done();
+		      }
+		      _self.lsSet('dea' + campaign, data.last_seq);
+		  });
+    },
+
+    fetchCampaignData: function(campaign){
+	var _self = this;
+	var campSeq = _self.lsGet('seq' + campaign) || 0;
+	$.getJSON(_self.dataUrl, 
+		  {include_docs: true,
+		   startkey: JSON.stringify([ campaign, campSeq ]),
+		   endkey: JSON.stringify([ campaign, {} ]),
+		   rando: Math.random() // remove me, pierces cache
+		  } ,
+		  function(data){
 		      if(data.results.length > 0){
 			  req = _self.db.put('thing',data.results);
 			  req.done(
-			      function(){
-				  $.getJSON(_self.deactivateUrl,
-					    { startkey: JSON.stringify([ campaigns[0], seq ]),
-					      endkey: JSON.stringify([ campaigns[0], {} ]),
-					      rando: Math.random() // remove me, pierces cache
-					    } ,
-					    function(){});
-					    
-			      }			      
+			      _self.lsSet('seq' + campaign, data.last_seq);
+			      _self.fetchCampaignDeactivated(campaign);
 			  );
 			  req.fail(function(e) {
 			      // there was a insert problem 
-			      // set the error flag that will get acted on 
-			      // by the next sync call
-			      _self.lsSet('syncError', true);
 			      console.error(e);
 			  });
 		      } else {
-			  _self.getSubscribed();
-			  _self.syncing = false;
-			  return;
+			  _self.fetchCampaignDeactivated(campaign);
 		      }
-		      var req, rows = data.results;
-		      for(var x in rows){
-			  if(rows[x].deleted){
-			      deleted.push(rows[x].id);
-			  } else {		      
-			      delete rows[x].doc._rev; // save some space
-			      insert.push(rows[x].doc);
-			  }
-			  
-		      }
-		      if(deleted.length > 0){
-			  for(var x in deleted){
-			      _self.db.remove('thing',deleted[x]).done();
-			  }
-		      }
-		      if(insert.length > 0){
-		      }
-		      _self.lsSet('seq',data.last_seq);
-		      _self.sync(depth+1);
-		  });	      		      
+		  });				  
     },
+    
+    sync: function(){	
+	var _self = this;
+	for(var x = 0; x < _self.campaigns.length; x++){
+	    _self.fetchCampaignData(_self.campaigns[x])
+	}
+	_self.lsSet('lastSyncTime', (new Date).toJSON());	
+    },
+
     sendStat: function(key){
 	if(key.match(/^\w+$/))
 	    $.get('http://thinkcontext.org/s/?' + key);
