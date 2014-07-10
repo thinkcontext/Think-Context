@@ -154,7 +154,6 @@ Ext.prototype = {
     fetchMetaDeactivated: function(){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
-	console.log(_self.metaDeactivatedUrl);
 	$.getJSON(_self.metaDeactivatedUrl, 
 		  {startkey: metaDeact,
 		   rando: Math.random() // remove me, pierces cache
@@ -265,8 +264,8 @@ Ext.prototype = {
 	var _self = this;
 	var req ;
 	var campaign, hmatch;
+	_self.debug && console.log(handle);
 	if(request.handle.match(/^domain:/)){
-	    _self.debug && console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){

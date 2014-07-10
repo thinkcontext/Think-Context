@@ -64,7 +64,7 @@
     }
 
     function saveOptions(){
-	var camps = [];
+	var camps = unavailableCampaigns;
 	$("input.campaignSubscribe").map(
 	    function(){ this.checked && camps.push(this.id) }
 	);
