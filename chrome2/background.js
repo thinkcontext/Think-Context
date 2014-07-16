@@ -28,8 +28,8 @@ function Ext(){
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-    _self.couch = 'http://127.0.0.1:5984/tc';
-//    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+//    _self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -81,7 +81,7 @@ Ext.prototype = {
 
     saveCampaigns: function(campaigns){
 	var _self = this;
-	campaigns = campaigns.sort();
+	campaigns = _self.uniqueArray(campaigns.sort());
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
@@ -92,7 +92,7 @@ Ext.prototype = {
     getSubscribed: function(){
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
-	    _self.campaigns = JSON.parse(c).sort();
+	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
 	    _self.getAvailableCampaigns(
 		function(campaigns){ 
 		    var camp, actions = [];
