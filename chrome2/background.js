@@ -28,8 +28,8 @@ function Ext(){
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-    _self.couch = 'http://127.0.0.1:5984/tc';
-//    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+//    _self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -81,7 +81,7 @@ Ext.prototype = {
 
     saveCampaigns: function(campaigns){
 	var _self = this;
-	campaigns = campaigns.sort();
+	campaigns = _self.uniqueArray(campaigns.sort());
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
@@ -410,7 +410,6 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	_self.fetchCampaignsActions();
 	var newCamps = ['congress','climatecounts'];
 	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
@@ -470,10 +469,10 @@ chrome.runtime.onInstalled.addListener(
 	tc.initialCamps();
 	tc.setVersionTime();
 	tc.getSubscribed();
-	tc.sync(0);  // uncomment me
+	tc.sync();  // uncomment me
 	if(details.reason == "install"){	    
 	    //chrome.tabs.create({url:"options.html?install"});
-	    //setTimeout(function(){tc.sync(0);}, 15 * 1000);
+	    //setTimeout(function(){tc.sync();}, 15 * 1000);
 	}else if(details.reason == "update"){
 	    //chrome.tabs.create({url:"options.html?update"});
 	}
