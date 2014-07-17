@@ -92,7 +92,7 @@ Ext.prototype = {
     getSubscribed: function(){
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
-	    _self.campaigns = JSON.parse(c).sort();
+	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
 	    _self.getAvailableCampaigns(
 		function(campaigns){ 
 		    var camp, actions = [];
