@@ -255,7 +255,7 @@ tc.urlHandle = function(url){
 	return null;
     this.url = url;
     var m, sp = url.split('/');
-    var domain = sp[2].toLowerCase().replace(/^www\./,'');
+    var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
     var path = sp.slice(3).join('/');
     this.domain = domain;
     this.path = path;

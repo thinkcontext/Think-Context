@@ -1,5 +1,11 @@
 (function(){
 
+    if(document.documentURI.match(/\?update$/)){
+	$('div#update').css('display','inline');
+    } else if(document.documentURI.match(/\?install$/)){
+	$('div#install').css('display','inline');
+    }
+
     var bgPage = chrome.extension.getBackgroundPage();
     var campaigns = bgPage.tc.campaigns, campaign;
     var actions = bgPage.tc.actions;

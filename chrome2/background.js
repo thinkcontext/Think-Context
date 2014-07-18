@@ -466,16 +466,25 @@ chrome.pageAction.onClicked.addListener(
 
 chrome.runtime.onInstalled.addListener(
     function(details){
+	var url;
 	tc.initialCamps();
 	tc.setVersionTime();
 	tc.getSubscribed();
-	tc.sync();  // uncomment me
+	tc.sync();
 	if(details.reason == "install"){	    
-	    //chrome.tabs.create({url:"options.html?install"});
-	    //setTimeout(function(){tc.sync();}, 15 * 1000);
+	    url = "options.html?install";
 	}else if(details.reason == "update"){
-	    //chrome.tabs.create({url:"options.html?update"});
+	    // remove websql tables
+	    url = "options.html?update";
+	    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	    olddb.transaction(function(tx){
+		tx.executeSql('drop table template',[]); 
+		tx.executeSql('drop table place',[]); 
+		tx.executeSql('drop table place_data',[]); 
+		tx.executeSql('drop table results',[]); 
+	    });
 	}
+	setTimeout(function(){chrome.tabs.create({url:url})}, 1000);	
     });
 
 chrome.notifications.onClicked.addListener(

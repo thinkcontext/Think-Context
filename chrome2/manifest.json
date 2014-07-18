@@ -1,9 +1,8 @@
-{"name":"thinkContext"
- , "version": "1.0"
- , "description":"YDN-DB Test"
+{"name":"thinkContext test"
+ , "version": "7.1"
+ , "description":"thinkContext Test"
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
-		   , "http://tcdata.iriscouch.com/*"
 		   , "http://*.thinkcontext.org/*"
 		   , "https://*.thinkcontext.org/*"		   
 		   , "notifications"
