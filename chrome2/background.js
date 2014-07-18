@@ -166,6 +166,7 @@ Ext.prototype = {
 			  }
 			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
+		      setTimeout(function(){_self.getSubscribed();},500);
 		  });
     },
     
