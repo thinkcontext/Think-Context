@@ -37,7 +37,7 @@ tc.congress.doit = function(){
 			    name = mArray[4];
 			    if(mArray[5])
 				name = name.replace(mArray[5],'');
-			    name = name.toLowerCase().replace(' ','');
+			    name = tc.stCanon(name.toLowerCase().replace(' ',''));
 
 			    nn.setAttribute('tcid',tcid);
 			    //nn.style.backgroundColor = 'yellow'; //helps w/ debugging

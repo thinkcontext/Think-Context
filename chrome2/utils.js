@@ -305,3 +305,20 @@ tc.urlHandle = function(url){
     else 
     	return null;
 }
+
+//for congress, names frequently appear as either
+tc.stCanon = function(st){
+    return st.replace(/[áéíóúÉñÑ]/g,
+		      function(m){
+			  return {
+			      'á': 'a',
+			      'é': 'e',
+			      'í': 'i',
+			      'ó': 'o',
+			      'ú': 'u',
+			      'É': 'E',
+			      'ñ': 'n',
+			      'Ñ': 'N'
+			  }[m]
+		      });
+}
