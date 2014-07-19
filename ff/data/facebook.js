@@ -26,7 +26,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)facebook\
 			 ,function(x){ return x.textContent }
 			);
 	
-	tc.handleExamine("div:has(a.uiStreamSponsoredLink) > h5 a");
+	tc.handleExamine("div:has(a.uiStreamSponsoredLink) > h5 a","facebook");
     }
     
     tc.facebook.doOb();   

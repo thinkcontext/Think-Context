@@ -475,8 +475,8 @@ chrome.runtime.onInstalled.addListener(
 	if(details.reason == "install"){	    
 	    url = "options.html?install";
 	}else if(details.reason == "update"){
-	    // remove websql tables
 	    url = "options.html?update";
+	    // remove websql tables
 	    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
 	    olddb.transaction(function(tx){
 		tx.executeSql('drop table template',[]); 

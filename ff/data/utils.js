@@ -1,9 +1,9 @@
 var tc = {};
 tc.found = false;
-tc.debug = 1;
+tc.debug = 0;
 tc.responses = {};
 tc.popD = null;
-tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAACEGQqEGwqEHAqANAp7TQp7Uwp3YQp3Ywp3ZAp3ZQrdpkQRAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfeBhoTAjhQUFKRAAAATUlEQVQI12NgYGZg4Jw5gYGBwZiBYeZMIIsZxJgAYXDOZOAEMYy8gComMBgbG0aBlIKkOmGMmUQywAZOBxsINMgMbBeQAbIUpMgA7AwAwBIcVgaFLcUAAAAASUVORK5CYII"; // tC
+tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
 tc.defaultTitle = "thinkContext";
 
 tc.debug && console.log("utils",document.URL);
@@ -255,7 +255,7 @@ tc.urlHandle = function(url){
 	return null;
     this.url = url;
     var m, sp = url.split('/');
-    var domain = sp[2].toLowerCase().replace(/^www\./,'');
+    var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
     var path = sp.slice(3).join('/');
     this.domain = domain;
     this.path = path;

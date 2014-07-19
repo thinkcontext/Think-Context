@@ -1,5 +1,11 @@
 (function(){
 
+    if(document.documentURI.match(/\?update$/)){
+	$('div#update').css('display','inline');
+    } else if(document.documentURI.match(/\?install$/)){
+	$('div#install').css('display','inline');
+    }
+
     var bgPage = chrome.extension.getBackgroundPage();
     var campaigns = bgPage.tc.campaigns, campaign;
     var actions = bgPage.tc.actions;
@@ -64,10 +70,11 @@
     }
 
     function saveOptions(){
-	var camps = [];
+	var camps = unavailableCampaigns;
 	$("input.campaignSubscribe").map(
 	    function(){ this.checked && camps.push(this.id) }
 	);
+	camps = bgPage.tc.uniqueArray(camps);
 	bgPage.tc.saveCampaigns(camps);
 	localStorage['opt_popD'] = $("[name='popD']").val();
 	campaigns = camps;
@@ -86,6 +93,7 @@
 	$("input.campaignSubscribe").map(
 	    function(){ this.checked && camps.push(this.id) }
 	);
+	camps = bgPage.tc.uniqueArray(camps);
 	if(campaigns.sort().join(',') != camps.sort().join(',')){
 	    return "You've made changes but haven't saved them.  Stay on the page and then click the \"Save\" button if you want to keep your changes."
 	}

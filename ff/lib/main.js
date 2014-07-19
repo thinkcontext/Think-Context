@@ -52,53 +52,50 @@ function Ext(){
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
     _self.couch = 'http://127.0.0.1:5984/tc';
-    _self.dataUrl = _self.couch + '/_changes';
-    _self.campaignsActionsUrl = _self.couch + '/_design/think/_view/campaignsActions';
+//    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
+    _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
+    _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
+    _self.metaDeactivatedUrl = _self.couch + '/_design/seq/_view/metaDeactivated';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
-    _self.syncing = false;
     _self.actions = {};
     _self.campaigns = {};
     _self.getSubscribed();
     _self.getOptions();
     _self.getNotifications();
-    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 
-    // sync after a short interval to not cause lag on startup
-    // before syncing check that we haven't recently done a sync
-    // then check that we have a sane sequence number
-    // finally, run syncs periodically
-
-    var seq = _self.lsGet('seq');
     var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-    if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+
+    if(lastSyncTime == 0){
+	// we haven't done a sync before do it immediately
+	_self.sync();
+    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+	// we haven't done one in 4 hrs so do one 
+	// but wait a little bit first to not lag browser start
 	setTimeout(
     	    function(){
-		_self.debug && console.log('sync did timeout');
-    		if(seq && seq > 0){
-    		    $.getJSON(_self.couch,null
-    			      ,function(result){
-    				  if(result.update_seq < seq){
-    				      _self.debug && console.error("local sequence is greater than remote, resetting to zero");
-    				      _self.resetDB(_self.sync(0));
-    				  } else {
-				      _self.sync(0);
-				  }
-    			      });
-    		} else {
-    		    _self.sync(0);
-    		}
+    		_self.sync();
     	    }
-    	    , 10 * 60 * 1000); // 10 minutes 
+    	    , 5 * 60 * 1000); // 5 minutes 
     }
-    setInterval(function(){_self.sync(0)}, 4 * 3600 * 1000);  // 4hrs
-}
+    
+    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);}
 
 Ext.prototype = {
 
     resetDB: function(callback){
-	this.lsSet('seq',0);
-	this.lsRm('lastSyncTime');
-	this.db.clear('thing').done(
+	var _self = this, campaign;
+	_self.lsRm('lastSyncTime');
+	_self.lsRm('metaseq');
+	_self.lsRm('metadea');
+	for(var x = 0; x < _self.campaigns.length; x++){
+	    campaign = _self.campaigns[x];
+	    _self.lsRm('seq' + campaign);
+	    _self.lsRm('dea' + campaign);
+	}
+
+	_self.db.clear('thing').done(
 	    function(){
 		if(typeof callback == 'function')
 		    callback();
@@ -107,18 +104,18 @@ Ext.prototype = {
 
     saveCampaigns: function(campaigns){
 	var _self = this;
-	campaigns = campaigns.sort();
+	campaigns = _self.uniqueArray(campaigns.sort());
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
-	    _self.resetDB( function(){ _self.sync(0) });
+	    _self.resetDB( function(){ _self.sync() });
 	}
     },
 
     getSubscribed: function(){
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
-	    _self.campaigns = JSON.parse(c).sort();
+	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
 	    _self.getAvailableCampaigns(
 		function(campaigns){ 
 		    var camp, actions = [];
@@ -147,7 +144,7 @@ Ext.prototype = {
 		});
 	}
     },
-
+    
     getAvailableActions: function(callback){
 	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','action');
@@ -177,84 +174,112 @@ Ext.prototype = {
 	    });
     },
 
-    sync: function(depth){	
+    fetchMetaDeactivated: function(){
 	var _self = this;
-	if(depth == 0 && _self.syncing){
-	    console.error("already syncing");
-	    return;
-	} else {
-	    _self.syncing = true;
-	}
-	_self.lsSet('lastSyncTime', (new Date).toJSON());
-	var seq = _self.lsGet('seq') || 0;
-
-	// check if there was an error
-	// if so start over, depth will prevent infinite loop
-	if(_self.lsGet('syncError')){
-	    _self.lsSet('seq',0);
-	    _self.lsRm('syncError',0);
-	    seq = 0;
-	}
-
-	if(depth >= 100){
-	    console.error('Over 100 sync recursions!', seq);
-	    _self.syncing = false;
-	    return;
-	} else if(_self.campaigns.length == 0){
-	    console.error('No campaigns to find!');
-	    _self.syncing = false;	    
-	    return;
-	}	    
-
-	$.getJSON(_self.dataUrl, 
-		  {timeout:20000
-		   ,include_docs:true
-		   ,since:seq
-		   ,limit:500
-		   ,camps: _self.campaigns.join(',')
-		   ,filter:'rep/client'
-		   ,rando: Math.random() // remove me, pierces cache
+	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
+	$.getJSON(_self.metaDeactivatedUrl, 
+		  {startkey: metaDeact,
+		   rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
-		      if(data.last_seq < seq){
-			  _self.resetDB(_self.sync(0));
-			  return;
-		      }			  
-		      if(data.results.length == 0){
-			  _self.getSubscribed();
-			  _self.syncing = false;
-			  return;
-		      }
-		      var req, rows = data.results, deleted = [], insert = [];
-		      for(var x in rows){
-			  if(rows[x].deleted){
-			      deleted.push(rows[x].id);
-			  } else {		      
-			      delete rows[x].doc._rev; // save some space
-			      insert.push(rows[x].doc);
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  for(var x = 0; x < rows.length; x++){
+			      _self.db.remove('thing', rows[x].key).done();
 			  }
-			  
+			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
-		      if(deleted.length > 0){
-			  for(var x in deleted){
-			      _self.db.remove('thing',deleted[x]).done();
-			  }
-		      }
-		      if(insert.length > 0){
-			  req = _self.db.put('thing',insert);
-			  req.done();
+		      setTimeout(function(){_self.getSubscribed();},500);
+		  });
+    },
+    
+    fetchMetaData: function(){
+	var _self = this;
+	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
+	$.getJSON(_self.metaUrl,
+		  { include_docs: true,
+		    startkey: metaSeq,
+		    rando: Math.random() // remove me, pierces cache 
+		  },		  
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  var insert = rows.map( function(x){ return x.doc } );
+		      	  req = _self.db.put('thing',insert);
+			  req.done(
+			      function(){
+				  _self.lsSet('metaseq', rows[rows.length -1].key);
+				  _self.fetchMetaDeactivated();
+			      }
+			  );
 			  req.fail(function(e) {
 			      // there was a insert problem 
-			      // set the error flag that will get acted on 
-			      // by the next sync call
-			      _self.lsSet('syncError', true);
-			      console.error(e);
+			      console.error('fetchMetaData',e);
 			  });
-		      }
-		      _self.lsSet('seq',data.last_seq);
-		      _self.sync(depth+1);
-		  });	      		      
+		      } else {
+			  _self.fetchMetaDeactivated();
+		      }		      
+		  });
     },
+
+    fetchCampaignDeactivated: function(campaign){
+	var _self = this;
+	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
+	$.getJSON(_self.deactivateUrl, 
+		  {startkey: JSON.stringify([ campaign, campDeact ]),
+		   endkey: JSON.stringify([ campaign, {} ]),
+		   rando: Math.random() // remove me, pierces cache
+		  } ,
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  for(var x = 0; x < rows.length; x++){
+			      _self.db.remove('thing',rows[x].key).done();
+			  }
+			  _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
+		      }
+		  });
+    },
+
+    fetchCampaignData: function(campaign){
+	var _self = this;
+	var campSeq = parseInt(_self.lsGet('seq' + campaign)) || 0;
+	$.getJSON(_self.dataUrl, 
+		  {include_docs: true,
+		   startkey: JSON.stringify([ campaign, campSeq ]),
+		   endkey: JSON.stringify([ campaign, {} ]),
+		   rando: Math.random() // remove me, pierces cache
+		  } ,
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  var insert = rows.map( function(x){ return x.doc } );
+		      	  req = _self.db.put('thing',insert);
+		      	  req.done(
+			      function(){
+		      		  _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
+		      		  _self.fetchCampaignDeactivated(campaign);
+			      }
+		      	  );
+		      	  req.fail(function(e) {
+		      	      // there was a insert problem 
+		      	      console.error('fetchCampaignData',campaign,e);
+		      	  });
+		      } else {
+		      	  _self.fetchCampaignDeactivated(campaign);
+		      }
+		  });				  
+    },
+    
+    sync: function(){	
+	var _self = this;
+	_self.fetchMetaData();
+	for(var x = 0; x < _self.campaigns.length; x++){
+	    _self.fetchCampaignData(_self.campaigns[x])
+	}
+	_self.lsSet('lastSyncTime', (new Date).toJSON());	
+    },
+    
     sendStat: function(key){
 	if(key.match(/^\w+$/))
 	    $.get('http://thinkcontext.org/s/?' + key);
@@ -263,8 +288,8 @@ Ext.prototype = {
 	var _self = this;
 	var req ;
 	var campaign, hmatch;
+	_self.debug && console.log(handle);
 	if(request.handle.match(/^domain:/)){
-	    _self.debug && console.log(handle);
 	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
@@ -346,7 +371,6 @@ Ext.prototype = {
     },
     
     sendNotification: function(title,message){
-	// port me
 	// chrome.notifications.create(
 	//     result._id
 	//     , {type: "basic"
@@ -405,31 +429,11 @@ Ext.prototype = {
 	    }, []);
     },
     
-    fetchCampaignsActions: function(){
-	var _self = this;
-	$.getJSON(_self.campaignsActionsUrl,
-	      function(data){
-		  var insert = [], req;
-		  for(var i = 0; i < data.rows.length; i++){
-		      delete data.rows[i].value._rev;  // save some space
-		      insert.push(data.rows[i].value);		      
-		  }
-		  if(insert.length > 0){
-		      req = _self.db.put('thing',insert);
-		      req.done();
-		      req.fail(function(e) {
-			  console.error('error inserting initial campaign/action list',e);
-		      });		      
-		  }
-	      });
-    },
-
     initialCamps: function(){
 	var _self = this;
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	_self.fetchCampaignsActions();
 	var newCamps = ['congress','climatecounts'];
 	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
@@ -471,27 +475,34 @@ var tc = new Ext();
 //     });
 
 
-if(s.loadReason == 'upgrade'){
-    tc.initialCamps();
-    tc.setVersionTime();
-    tc.getSubscribed();
-    //tc.sync(0);  // uncomment me
-    //tabs.open(data.url('update.html'));
-} else if(s.loadReason == 'install'){
-    tc.initialCamps();
-    tc.setVersionTime();
-    tc.getSubscribed();
-    //tc.sync(0);  // uncomment me
-    //tabs.open(data.url('install.html'));
+if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
+	var url;
+	tc.initialCamps();
+	tc.setVersionTime();
+	tc.getSubscribed();
+	tc.sync();
+    if(s.loadReason == 'install'){
+	url = "options.html?install";
+    }else if(s.loadReason == "update"){
+	url = "options.html?update";
+	// port me
+	// remove websql tables
+	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	// olddb.transaction(function(tx){
+	//     tx.executeSql('drop table template',[]); 
+	//     tx.executeSql('drop table place',[]); 
+	//     tx.executeSql('drop table place_data',[]); 
+	//     tx.executeSql('drop table results',[]); 
+	// });
+    }
+    //    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
 }
-
 
 // port me
 // chrome.notifications.onClicked.addListener(
 //     function(notificationId){
 // 	chrome.tabs.create({url:"options.html"});
 //     });
-
 
 // browser specific
 // function onRequest(request, sender, callback) {
@@ -534,6 +545,6 @@ pageMod.PageMod({
 	    } else {
  		console.log("couldn't get a handle",request);
 	    }
-	}   		  
-		 )}});
+	})
+    }});
 		
