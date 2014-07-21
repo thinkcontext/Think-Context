@@ -1,5 +1,5 @@
 var ydn = require('./ydn.db-1.0.2.js');
-
+var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
 var pageMod = require("sdk/page-mod");
@@ -12,18 +12,9 @@ clearTimeout = time.clearTimeout;
 setInterval = time.setInterval;
 clearInterval = time.clearInterval;
 
-// var db = new ydn.db.Storage('tc');
-// console.log(db.getName());
-// var clog = function(r) { console.log(r.value); }
-
-// db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"});
-// db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
-
-// db.get("store1", "id1").done(clog);
-
 function Ext(){
     var _self = this;
-    _self.debug = 0;
+    _self.debug = 1;
     _self.schema = { 
 	stores: [
 	    {
@@ -67,12 +58,12 @@ function Ext(){
     var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
     if(lastSyncTime == 0){
-	// we haven't done a sync before do it immediately
-	_self.sync();
+    	// we haven't done a sync before do it immediately
+    	_self.sync();
     } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-	// we haven't done one in 4 hrs so do one 
-	// but wait a little bit first to not lag browser start
-	setTimeout(
+    	// we haven't done one in 4 hrs so do one 
+    	// but wait a little bit first to not lag browser start
+    	setTimeout(
     	    function(){
     		_self.sync();
     	    }
@@ -80,10 +71,16 @@ function Ext(){
     }
     
     setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);}
+    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+
+    setTimeout(function(){ 
+	for(var x in _self.campaigns){
+	    console.log(x);
+	}
+    }, 5000);
+}
 
 Ext.prototype = {
-
     resetDB: function(callback){
 	var _self = this, campaign;
 	_self.lsRm('lastSyncTime');
@@ -94,7 +91,6 @@ Ext.prototype = {
 	    _self.lsRm('seq' + campaign);
 	    _self.lsRm('dea' + campaign);
 	}
-
 	_self.db.clear('thing').done(
 	    function(){
 		if(typeof callback == 'function')
@@ -177,98 +173,110 @@ Ext.prototype = {
     fetchMetaDeactivated: function(){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
-	$.getJSON(_self.metaDeactivatedUrl, 
-		  {startkey: metaDeact,
-		   rando: Math.random() // remove me, pierces cache
-		  } ,
-		  function(data){
-		      var rows = data.rows;
-		      if(rows.length > 0){
-			  for(var x = 0; x < rows.length; x++){
-			      _self.db.remove('thing', rows[x].key).done();
-			  }
-			  _self.lsSet('metadea', rows[rows.length -1].key);
-		      }
-		      setTimeout(function(){_self.getSubscribed();},500);
-		  });
+	Request({
+	    url:_self.metaDeactivatedUrl, 
+	    content: {startkey: metaDeact,
+		      rando: Math.random() // remove me, pierces cache
+		     } ,
+	    onComplete: function(response){
+		var data = response.json;
+		var rows = data.rows;
+		if(rows.length > 0){
+		    for(var x = 0; x < rows.length; x++){
+			_self.db.remove('thing', rows[x].key).done();
+		    }
+		    _self.lsSet('metadea', rows[rows.length -1].key);
+		}
+		setTimeout(function(){_self.getSubscribed();},500);
+	    }	
+	}).get();
     },
     
     fetchMetaData: function(){
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
-	$.getJSON(_self.metaUrl,
-		  { include_docs: true,
-		    startkey: metaSeq,
-		    rando: Math.random() // remove me, pierces cache 
-		  },		  
-		  function(data){
-		      var rows = data.rows;
-		      if(rows.length > 0){
-			  var insert = rows.map( function(x){ return x.doc } );
-		      	  req = _self.db.put('thing',insert);
-			  req.done(
-			      function(){
-				  _self.lsSet('metaseq', rows[rows.length -1].key);
-				  _self.fetchMetaDeactivated();
-			      }
-			  );
-			  req.fail(function(e) {
-			      // there was a insert problem 
-			      console.error('fetchMetaData',e);
-			  });
-		      } else {
-			  _self.fetchMetaDeactivated();
-		      }		      
-		  });
+	Request({
+	    url: _self.metaUrl,
+	    content: { include_docs: true,
+		       startkey: metaSeq,
+		       rando: Math.random() // remove me, pierces cache 
+		     },
+	    onComplete: function(response){
+		var data = response.json;
+		var rows = data.rows;
+		if(rows.length > 0){
+		    console.error("fetchMetaData",rows.length);
+		    var insert = rows.map( function(x){ return x.doc } );
+		    req = _self.db.put('thing',insert);
+		    req.done(
+		    	function(){
+		    	    _self.lsSet('metaseq', rows[rows.length -1].key);
+		    	    _self.fetchMetaDeactivated();
+		    	}
+		    );
+		    req.fail(function(e) {
+		    	// there was a insert problem 
+		    	console.error('fetchMetaData',e);
+		    });
+		} else {
+		    _self.fetchMetaDeactivated();
+	    	}		      
+	    }
+	}).get();
     },
-
+    
     fetchCampaignDeactivated: function(campaign){
 	var _self = this;
 	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
-	$.getJSON(_self.deactivateUrl, 
-		  {startkey: JSON.stringify([ campaign, campDeact ]),
-		   endkey: JSON.stringify([ campaign, {} ]),
-		   rando: Math.random() // remove me, pierces cache
-		  } ,
-		  function(data){
-		      var rows = data.rows;
-		      if(rows.length > 0){
-			  for(var x = 0; x < rows.length; x++){
-			      _self.db.remove('thing',rows[x].key).done();
-			  }
-			  _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
-		      }
-		  });
+	Request({
+	    url: _self.deactivateUrl, 
+	    content: {
+		startkey: JSON.stringify([ campaign, campDeact ]),
+		endkey: JSON.stringify([ campaign, {} ]),
+		rando: Math.random() // remove me, pierces cache
+	    } ,
+	    onComplete: function(response){
+		var data = response.json;
+		var rows = data.rows;
+		if(rows.length > 0){
+		    for(var x = 0; x < rows.length; x++){
+			_self.db.remove('thing',rows[x].key).done();
+		    }
+		    _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
+		}
+	    }}).get();
     },
 
     fetchCampaignData: function(campaign){
 	var _self = this;
 	var campSeq = parseInt(_self.lsGet('seq' + campaign)) || 0;
-	$.getJSON(_self.dataUrl, 
-		  {include_docs: true,
-		   startkey: JSON.stringify([ campaign, campSeq ]),
-		   endkey: JSON.stringify([ campaign, {} ]),
-		   rando: Math.random() // remove me, pierces cache
-		  } ,
-		  function(data){
-		      var rows = data.rows;
-		      if(rows.length > 0){
-			  var insert = rows.map( function(x){ return x.doc } );
-		      	  req = _self.db.put('thing',insert);
-		      	  req.done(
-			      function(){
-		      		  _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
-		      		  _self.fetchCampaignDeactivated(campaign);
-			      }
-		      	  );
-		      	  req.fail(function(e) {
-		      	      // there was a insert problem 
-		      	      console.error('fetchCampaignData',campaign,e);
-		      	  });
-		      } else {
-		      	  _self.fetchCampaignDeactivated(campaign);
-		      }
-		  });				  
+	Request({url: _self.dataUrl, 
+		 content: 
+		 {include_docs: true,
+		  startkey: JSON.stringify([ campaign, campSeq ]),
+		  endkey: JSON.stringify([ campaign, {} ]),
+		  rando: Math.random() // remove me, pierces cache
+		 } ,
+		 onComplete: function(response){
+		     var data = response.json;
+		     var rows = data.rows;
+		     if(rows.length > 0){
+			 var insert = rows.map( function(x){ return x.doc } );
+		      	 req = _self.db.put('thing',insert);
+		      	 req.done(
+			     function(){
+		      		 _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
+		      		 _self.fetchCampaignDeactivated(campaign);
+			     }
+		      	 );
+		      	 req.fail(function(e) {
+		      	     // there was a insert problem 
+		      	     console.error('fetchCampaignData',campaign,e);
+		      	 });
+		     } else {
+		      	 _self.fetchCampaignDeactivated(campaign);
+		     }
+		 }}).get();				  
     },
     
     sync: function(){	
@@ -282,7 +290,7 @@ Ext.prototype = {
     
     sendStat: function(key){
 	if(key.match(/^\w+$/))
-	    $.get('http://thinkcontext.org/s/?' + key);
+	    Request({url:'http://thinkcontext.org/s/?' + key}).get();
     },
     lookup: function(handle,request,callback){
 	var _self = this;
@@ -409,16 +417,16 @@ Ext.prototype = {
 	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
 	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
 	    // its been a month so lets check    
-	    $.getJSON(_self.versionURL,
-		      function(results){
-			  if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
-			      _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
-			  }
-		      });
+	    Request({url:_self.versionURL,
+		     onComplete: function(response){
+			 var results = response.json;
+			 if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
+			     _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
+			 }
+		     }}).get();
 	} else {
 	    _self.setVersionTime();
-	}
-
+	}	
     },
     
     uniqueArray:  function(a) {
@@ -534,17 +542,17 @@ pageMod.PageMod({
 	,data.url('reverse.js')
 	,data.url('google-search.js')],
     onAttach: function(worker){
-	worker.on('message', function(request){
-	    if(request.kind == 'pageA'){
-		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-		// 	chrome.pageAction.show(sender.tab.id);
-	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
- 		tc.sendStat(request.key);
-	    } else if(request.handle){
-		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
-	    } else {
- 		console.log("couldn't get a handle",request);
-	    }
-	})
-    }});
-		
+	// worker.on('message', function(request){
+	//     if(request.kind == 'pageA'){
+	// 	// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	// 	// 	chrome.pageAction.show(sender.tab.id);
+	//     } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+ 	// 	tc.sendStat(request.key);
+	//     } else if(request.handle){
+	// 	tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+	//     } else {
+ 	// 	console.log("couldn't get a handle",request);
+	//     }
+	// });
+    }
+});		
