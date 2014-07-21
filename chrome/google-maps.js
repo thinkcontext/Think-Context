@@ -1,10 +1,11 @@
-tc.googleMaps = {};
-tc.googleMaps.doit = function(){
-
-
-    // sidebar
-    tc.searchLinkExam("div.one span.pp-headline-authority-page"
-		      , 'google-search'
+if (window.top === window && !tc.found && document.domain.match(/(^|\.)maps\.google\.com$/)) {
+    tc.found = true;
+    tc.googleMaps = {};
+    tc.googleMaps.doit = function(){	
+	
+	// sidebar
+	tc.searchLinkExam("div.one span.pp-headline-authority-page"
+			  , 'google-search'
 			  , function(x){
 			      var ret;
 			      var z = x.parentElement.parentElement.parentElement.parentElement;
@@ -16,14 +17,15 @@ tc.googleMaps.doit = function(){
 			      }
 			      return ret;
 			  }
-		      , function(x){return x.textContent});	
-
-    // in map popup dialogs
-
-    tc.searchLinkExam("div.gmnoprint td.basicinfo div#iwhomepage a"
-		      , 'google-search'
-		      , null
-		      , function(x){return x.textContent});	
-    
-};
-window.setInterval(tc.googleMaps.doit,750);
+			  , function(x){return x.textContent});	
+	
+	// in map popup dialogs
+	
+	tc.searchLinkExam("div.gmnoprint td.basicinfo div#iwhomepage a"
+			  , 'google-search'
+			  , null
+			  , function(x){return x.textContent});	
+	
+    };
+    window.setInterval(tc.googleMaps.doit,750);
+}

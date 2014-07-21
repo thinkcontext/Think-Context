@@ -1,4 +1,4 @@
-var ydn = require('./ydn.db-1.0.2.js');
+var ydn = require('./ydn.db-isw-sql-e-cur-qry-dev.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -51,33 +51,27 @@ function Ext(){
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.actions = {};
     _self.campaigns = {};
-    _self.getSubscribed();
-    _self.getOptions();
-    _self.getNotifications();
+    // _self.getSubscribed();
+    // _self.getOptions();
+    // _self.getNotifications();
 
-    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
+    // var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
-    if(lastSyncTime == 0){
-    	// we haven't done a sync before do it immediately
-    	_self.sync();
-    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    	// we haven't done one in 4 hrs so do one 
-    	// but wait a little bit first to not lag browser start
-    	setTimeout(
-    	    function(){
-    		_self.sync();
-    	    }
-    	    , 5 * 60 * 1000); // 5 minutes 
-    }
+    // if(lastSyncTime == 0){
+    // 	// we haven't done a sync before do it immediately
+    // 	_self.sync();
+    // } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    // 	// we haven't done one in 4 hrs so do one 
+    // 	// but wait a little bit first to not lag browser start
+    // 	setTimeout(
+    // 	    function(){
+    // 		_self.sync();
+    // 	    }
+    // 	    , 5 * 60 * 1000); // 5 minutes 
+    // }
     
-    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
-
-    setTimeout(function(){ 
-	for(var x in _self.campaigns){
-	    console.log(x);
-	}
-    }, 5000);
+    // setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+    // setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 }
 
 Ext.prototype = {
@@ -206,12 +200,24 @@ Ext.prototype = {
 		var rows = data.rows;
 		if(rows.length > 0){
 		    console.error("fetchMetaData",rows.length);
-		    var insert = rows.map( function(x){ return x.doc } );
+		    var insert = rows.map( function(x){ console.log(x.doc._id); return x.doc; } );
 		    req = _self.db.put('thing',insert);
 		    req.done(
 		    	function(){
+			    console.log('fetchMetaData insert success');
 		    	    _self.lsSet('metaseq', rows[rows.length -1].key);
 		    	    _self.fetchMetaDeactivated();
+			    var q = _self.db.from('thing').list(100);
+			    q.fail(
+				function(e){ console.error("fail", e.message)});
+			    q.done(
+				function(results){
+				    console.log('done',results.length);
+				    for(var i in results){
+					console.log(i,results[i]._id);
+				    }	
+				});
+			    q = _self.db.get('thing','698d0b705c647d2525120c19710b7ce4').done(function(r){console.log('f',r['_id']); });
 		    	}
 		    );
 		    req.fail(function(e) {
@@ -296,15 +302,16 @@ Ext.prototype = {
 	var _self = this;
 	var req ;
 	var campaign, hmatch;
-	_self.debug && console.log(handle);
+	_self.debug && console.log('lookup',handle);
 	if(request.handle.match(/^domain:/)){
-	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
+	    req = _self.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
 		    _self.debug && console.log(results,handle);
 		    request.results = [];
 		    for(var i in results){
 			for(var k in results[i].handles){
+			    console.log('handle',results[i].handles[k]);
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				hmatch = results[i].handles[k];
 				for(var j in results[i].campaigns){
@@ -325,7 +332,7 @@ Ext.prototype = {
 		    return;			    		
 		});
 	} else {
-	    req = tc.db.from('thing').where('handles','=',handle);
+	    req = _self.db.from('thing').where('handles','=',handle);
 	    req.list(1).done(
 		function(results){
 		    if(results[0]){
@@ -370,6 +377,7 @@ Ext.prototype = {
 		}		
 	    }
 	}
+	_self.debug && console.log('resultsPrep',request.handle);
 	callback(request);
     },
 
@@ -542,17 +550,42 @@ pageMod.PageMod({
 	,data.url('reverse.js')
 	,data.url('google-search.js')],
     onAttach: function(worker){
-	// worker.on('message', function(request){
-	//     if(request.kind == 'pageA'){
-	// 	// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-	// 	// 	chrome.pageAction.show(sender.tab.id);
-	//     } else if(request.kind == 'sendstat' && !sender.tab.incognito){
- 	// 	tc.sendStat(request.key);
-	//     } else if(request.handle){
-	// 	tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
-	//     } else {
- 	// 	console.log("couldn't get a handle",request);
-	//     }
-	// });
+	worker.on('message', function(request){
+	    if(request.kind == 'pageA'){
+		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+		// 	chrome.pageAction.show(sender.tab.id);
+	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+ 		tc.sendStat(request.key);
+	    } else if(request.handle){
+		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+	    } else {
+ 		console.log("couldn't get a handle",request);
+	    }
+	});
     }
 });		
+
+// console.log("test");
+// q = tc.db.get('thing','698d0b705c647d2525120c19710b7ce4').done(function(r){console.log('f',r['_id']); });
+// handle = "domain:warbyparker.com";
+// req = tc.db.from('thing').where('handles','^','domain'); //handle.split('/')[0]);
+// req.list(100).done(
+//     function(results){
+// 	console.log("done");
+// 	for(var i = 0; i < results.length; i++){
+// 	    for(var j in results[i]){
+// 		console.log("res",j,results[i][j]);
+// 	    }
+// 	}
+//     }
+// );
+
+// tc.fetchMetaData();
+
+var db = new ydn.db.Storage('test');
+console.log(db.getName());
+var clog = function(r) { console.log(r.value); }
+//db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"}).done(function(x){ console.log("put done",x) });
+// q.fail(function(x){ console.log("put fail",x) });
+//db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
+db.get("store1", "id1").done(clog);

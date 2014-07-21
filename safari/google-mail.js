@@ -3,15 +3,14 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)mail\.goo
     tc.gmail = {};
     
     tc.gmail.pageExamine = function(){
-	tc.searchLinkExam("a[href*='googleadservices.com/pagead/aclk'].vd, div.aBD a.mr"
-			  , 'gmail'
-			  , null
-			  , function(x){return x.textContent});		
+	tc.handleExamine("a[href*='googleadservices.com/pagead/aclk'].vd, div.aBD a.mr"
+			 ,'urlfrag'
+			 , function(x){return x.textContent});		
     }
     
-    var $observerSummaryRoot = $("body");
+    tc.gmail.$observerSummaryRoot = $("body");
     tc.gmail.summaryCallback = function(summaries){
-	$observerSummaryRoot.mutationSummary("disconnect");
+	tc.gmail.$observerSummaryRoot.mutationSummary("disconnect");
 	tc.gmail.doOb();
     }
     
@@ -22,11 +21,11 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)mail\.goo
     }
     
     tc.gmail.observe = function(){
-	$observerSummaryRoot.mutationSummary("connect"
-					     , summaryCallback
-					     , [{element: 'div.adC'}]
+	tc.gmail.$observerSummaryRoot.mutationSummary("connect"
+					     , tc.gmail.summaryCallback
+					     , [{element: 'div'}]
 					    );
     }
     
-    tc.gmail.doOb();
+    $(document).ready(tc.gmail.doOb);
 }

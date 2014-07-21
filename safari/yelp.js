@@ -1,10 +1,11 @@
-if (window.top === window && !tc.found && document.domain.match(/(^|\.)expedia\.com$/)) {
+if (window.top === window && !tc.found && document.domain.match(/(^|\.)yelp\.com$/)) {
+    tc.debug == 2 && console.log("yelp");
     tc.found = true;
     tc.yelp = {};
-    var $observerSummaryRoot = $("body");
+    tc.yelp.$observerSummaryRoot = $("body");
     
     tc.yelp.summaryCallback = function(summaries){
-	$observerSummaryRoot.mutationSummary("disconnect");
+	tc.yelp.$observerSummaryRoot.mutationSummary("disconnect");
 	tc.yelp.doOb();
     }
     
@@ -15,7 +16,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)expedia\.
     }
     
     tc.yelp.observe = function(){
-	$observerSummaryRoot.mutationSummary("connect"
+	tc.yelp.$observerSummaryRoot.mutationSummary("connect"
 					     , tc.yelp.summaryCallback
 					     , [{ element:"div" }]);
     }
