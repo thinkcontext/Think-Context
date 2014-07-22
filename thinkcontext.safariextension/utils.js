@@ -1,6 +1,6 @@
 var tc = {};
 tc.found = false;
-tc.debug = 0;
+tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
@@ -308,17 +308,17 @@ tc.urlHandle = function(url){
 
 //for congress, names frequently appear as either
 tc.stCanon = function(st){
-    return st.replace(/[áéíóúÉñÑ]/g,
+    return st.replace(/[Ã¡Ã©Ã­Ã³ÃºÃ‰Ã±Ã‘]/g,
 		      function(m){
 			  return {
-			      'á': 'a',
-			      'é': 'e',
-			      'í': 'i',
-			      'ó': 'o',
-			      'ú': 'u',
-			      'É': 'E',
-			      'ñ': 'n',
-			      'Ñ': 'N'
+			      'Ã¡': 'a',
+			      'Ã©': 'e',
+			      'Ã­': 'i',
+			      'Ã³': 'o',
+			      'Ãº': 'u',
+			      'Ã‰': 'E',
+			      'Ã±': 'n',
+			      'Ã‘': 'N'
 			  }[m]
 		      });
 }
