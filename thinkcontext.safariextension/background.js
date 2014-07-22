@@ -1,5 +1,6 @@
 function Ext(){
     var _self = this;
+    _self.version = "1.0"
     _self.debug = 0;
     _self.schema = { 
 	stores: [
@@ -267,7 +268,7 @@ Ext.prototype = {
 	var campaign, hmatch;
 	_self.debug && console.log('lookup',handle);
 	if(request.handle.match(/^domain:/)){
-	    req = tc.db.from('thing').where('handles','^',handle.split('/')[0]);
+	    req = _self.db.from('thing').where('handles','^',handle.split('/')[0]);
 	    req.list(100).done(
 		function(results){
 		    _self.debug && console.log(results,handle);
@@ -294,7 +295,7 @@ Ext.prototype = {
 		    return;			    		
 		});
 	} else {
-	    req = tc.db.from('thing').where('handles','=',handle);
+	    req = _self.db.from('thing').where('handles','=',handle);
 	    req.list(1).done(
 		function(results){
 		    if(results[0]){
@@ -348,14 +349,14 @@ Ext.prototype = {
     },
     
     sendNotification: function(title,message){
-	chrome.notifications.create(
-	    result._id
-	    , {type: "basic"
-	       , title: title
-	       , message: message
-	       , iconUrl: 'icons/tc-64.png'
-	      }
-	    , function(x){}	    );
+	// chrome.notifications.create(
+	//     result._id
+	//     , {type: "basic"
+	//        , title: title
+	//        , message: message
+	//        , iconUrl: 'icons/tc-64.png'
+	//       }
+	//     , function(x){}	    );
     },
     
     getNotifications: function(){
@@ -383,7 +384,7 @@ Ext.prototype = {
     },
     
     checkOldVersion: function(){	
-	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
+	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = _self.version;
 	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
 	    // its been a month so lets check    
 	    $.getJSON(_self.versionURL,
@@ -448,8 +449,8 @@ var tc = new Ext();
 // browser specific
 function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
-	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-	chrome.pageAction.show(sender.tab.id);
+	// chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+	// chrome.pageAction.show(sender.tab.id);
     } else if(request.kind == 'sendstat' && !sender.tab.incognito){
 	tc.sendStat(request.key);
     } else if(request.handle){
@@ -459,11 +460,11 @@ function onRequest(request, sender, callback) {
     }   
 }
 
-chrome.extension.onRequest.addListener(onRequest);
-chrome.pageAction.onClicked.addListener(
-    function(tab){
-	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
-    });
+// chrome.extension.onRequest.addListener(onRequest);
+// chrome.pageAction.onClicked.addListener(
+//     function(tab){
+// 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
+//     });
 
 chrome.runtime.onInstalled.addListener(
     function(details){
@@ -488,7 +489,7 @@ chrome.runtime.onInstalled.addListener(
 	setTimeout(function(){chrome.tabs.create({url:url})}, 1000);	
     });
 
-chrome.notifications.onClicked.addListener(
-    function(notificationId){
-	chrome.tabs.create({url:"options.html"});
-    });
+// chrome.notifications.onClicked.addListener(
+//     function(notificationId){
+// 	chrome.tabs.create({url:"options.html"});
+//     });
