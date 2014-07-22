@@ -1,4 +1,4 @@
-var ydn = require('./ydn.db-isw-sql-e-cur-qry-dev.js');
+var ydn = require('./ydn.db-isw-core-qry.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -580,12 +580,12 @@ pageMod.PageMod({
 //     }
 // );
 
-// tc.fetchMetaData();
+// // tc.fetchMetaData();
 
-var db = new ydn.db.Storage('test');
-console.log(db.getName());
-var clog = function(r) { console.log(r.value); }
-//db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"}).done(function(x){ console.log("put done",x) });
-// q.fail(function(x){ console.log("put fail",x) });
-//db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
-db.get("store1", "id1").done(clog);
+// var db = new ydn.db.Storage('test');
+// console.log(db.getName());
+// var clog = function(r) { console.log(r.value); }
+// //db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"}).done(function(x){ console.log("put done",x) });
+// // q.fail(function(x){ console.log("put fail",x) });
+// //db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
+// db.get("store1", "id1").done(clog);
