@@ -162,7 +162,7 @@ tc.insertPrev = function(n,request){
 	d = dd.dialog;
 
     	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
-    	    .append($('<img>', { src: dd.icon }));
+    	    .append($('<img>', { src: dd.icon, height: n.offsetHeight - 2, width: n.offsetHeight - 2 }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";
 	
