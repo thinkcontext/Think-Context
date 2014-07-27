@@ -22,8 +22,10 @@ tc.registerResponse = function(kind, func){
 }
 
 if(window.top === window){ // don't listen in an iframe
-    chrome.extension.onMessage.addListener(
-	function(request, sender, sendResponse){
+    safari.self.addEventListener(
+	"message"
+	,function(e){
+	    var request = e.message;
 	    if(request.kind == 'tcPopD')
 		if(tc.popD.dialog('isOpen')){
 		    tc.popD.dialog('close');
@@ -40,7 +42,7 @@ tc.onResponse = function(request){
 }
 tc.sendMessage = function(request){
     tc.debug  && console.log('sendMessage',request);
-    chrome.extension.sendRequest(request, tc.onResponse);
+    safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
 }
 
 tc.popSend = function(){
