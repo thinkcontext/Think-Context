@@ -161,8 +161,13 @@ tc.insertPrev = function(n,request){
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
 	d = dd.dialog;
 
-    	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
-    	    .append($('<img>', { src: dd.icon, height: n.offsetHeight - 2, width: n.offsetHeight - 2 }));
+	var oh = n.offsetHeight - 2;
+	if(oh > 16)
+	    oh = 16;
+	else if(oh < 0)
+	    oh = 14;
+	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
+    	    .append($('<img>', { src: dd.icon, height: oh, width: oh }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";
 	

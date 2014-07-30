@@ -1,4 +1,4 @@
-var ydn = require('./ydn.db-isw-core-qry.js');
+var ydn = require('./ydn.db-isw-sql-e-cur-qry-dev.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -14,7 +14,7 @@ clearInterval = time.clearInterval;
 
 function Ext(){
     var _self = this;
-    _self.debug = 1;
+    _self.debug = 2;
     _self.schema = { 
 	stores: [
 	    {
@@ -103,6 +103,7 @@ Ext.prototype = {
     },
 
     getSubscribed: function(){
+	console.log('getSubscribed');
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
 	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
@@ -150,15 +151,17 @@ Ext.prototype = {
     },
 
     getAvailableCampaigns: function(callback){
+	console.log("getAvailableCampaigns");
 	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','campaign');
 	req.list(1000).done(
 	    function(results){
-		_self.debug >= 2 && console.log('getCampaigns result',results);
+		_self.debug >= 2 && console.log('getCampaigns result',results.length);
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
 		    ret[campaign] = results[i];
+		    console.log("tid",campaign);
 		}
 		callback(ret);
 	    });
@@ -187,6 +190,7 @@ Ext.prototype = {
     },
     
     fetchMetaData: function(){
+	console.log('fetchMetaData');
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	Request({
@@ -200,9 +204,8 @@ Ext.prototype = {
 		var rows = data.rows;
 		if(rows.length > 0){
 		    console.error("fetchMetaData",rows.length);
-		    var insert = rows.map( function(x){ console.log(x.doc._id); return x.doc; } );
-		    req = _self.db.put('thing',insert);
-		    req.done(
+		    var insert = rows.map( function(x){ return x.doc; } );
+		    req = _self.db.put('thing',insert).done(
 		    	function(){
 			    console.log('fetchMetaData insert success');
 		    	    _self.lsSet('metaseq', rows[rows.length -1].key);
@@ -492,25 +495,26 @@ var tc = new Ext();
 
 
 if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
-	var url;
-	tc.initialCamps();
-	tc.setVersionTime();
-	tc.getSubscribed();
-	tc.sync();
-    if(s.loadReason == 'install'){
-	url = "options.html?install";
-    }else if(s.loadReason == "update"){
-	url = "options.html?update";
-	// port me
-	// remove websql tables
-	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	// olddb.transaction(function(tx){
-	//     tx.executeSql('drop table template',[]); 
-	//     tx.executeSql('drop table place',[]); 
-	//     tx.executeSql('drop table place_data',[]); 
-	//     tx.executeSql('drop table results',[]); 
-	// });
-    }
+    console.log('loadReason',s.loadReason);
+    var url;
+    // tc.initialCamps();
+    // tc.setVersionTime();
+    // tc.getSubscribed();
+    // tc.sync();
+    // if(s.loadReason == 'install'){
+    // 	url = "options.html?install";
+    // }else if(s.loadReason == "update"){
+    // 	url = "options.html?update";
+    // 	// port me
+    // 	// remove websql tables
+    // 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+    // 	// olddb.transaction(function(tx){
+    // 	//     tx.executeSql('drop table template',[]); 
+    // 	//     tx.executeSql('drop table place',[]); 
+    // 	//     tx.executeSql('drop table place_data',[]); 
+    // 	//     tx.executeSql('drop table results',[]); 
+    // 	// });
+    //}
     //    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
 }
 
@@ -534,58 +538,48 @@ if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
 //     }   
 // }
 
-pageMod.PageMod({
-    include : ["*.www.google.com",
-	       "*.maps.google.com"],
-    attachTo: "top",
-    contentStyleFile: data.url("jquery-ui.css"),
-    contentScriptWhen:  'ready',
-    contentScriptFile: [
-	data.url('jquery-2.0.3.min.js')
-	,data.url('jquery-ui-1.9.2.custom.min.js')
-	,data.url('ejs_production.js') 
-	,data.url('mutation-summary.js')
-	,data.url('jquery.mutation-summary.js')
-	,data.url('utils.js')
-	,data.url('reverse.js')
-	,data.url('google-search.js')],
-    onAttach: function(worker){
-	worker.on('message', function(request){
-	    if(request.kind == 'pageA'){
-		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-		// 	chrome.pageAction.show(sender.tab.id);
-	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
- 		tc.sendStat(request.key);
-	    } else if(request.handle){
-		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
-	    } else {
- 		console.log("couldn't get a handle",request);
-	    }
-	});
-    }
-});		
-
-// console.log("test");
-// q = tc.db.get('thing','698d0b705c647d2525120c19710b7ce4').done(function(r){console.log('f',r['_id']); });
-// handle = "domain:warbyparker.com";
-// req = tc.db.from('thing').where('handles','^','domain'); //handle.split('/')[0]);
-// req.list(100).done(
-//     function(results){
-// 	console.log("done");
-// 	for(var i = 0; i < results.length; i++){
-// 	    for(var j in results[i]){
-// 		console.log("res",j,results[i][j]);
+// pageMod.PageMod({
+//     include : ["*.www.google.com",
+// 	       "*.maps.google.com"],
+//     attachTo: "top",
+//     contentStyleFile: data.url("jquery-ui.css"),
+//     contentScriptWhen:  'ready',
+//     contentScriptFile: [
+// 	data.url('jquery-2.0.3.min.js')
+// 	,data.url('jquery-ui-1.9.2.custom.min.js')
+// 	,data.url('ejs_production.js') 
+// 	,data.url('mutation-summary.js')
+// 	,data.url('jquery.mutation-summary.js')
+// 	,data.url('utils.js')
+// 	,data.url('reverse.js')
+// 	,data.url('google-search.js')],
+//     onAttach: function(worker){
+// 	worker.on('message', function(request){
+// 	    if(request.kind == 'pageA'){
+// 		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+// 		// 	chrome.pageAction.show(sender.tab.id);
+// 	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+//  		tc.sendStat(request.key);
+// 	    } else if(request.handle){
+// 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+// 	    } else {
+//  		console.log("couldn't get a handle",request);
 // 	    }
-// 	}
+// 	});
 //     }
-// );
+// });		
 
-// // tc.fetchMetaData();
-
-// var db = new ydn.db.Storage('test');
-// console.log(db.getName());
-// var clog = function(r) { console.log(r.value); }
-// //db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"}).done(function(x){ console.log("put done",x) });
-// // q.fail(function(x){ console.log("put fail",x) });
-// //db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
-// db.get("store1", "id1").done(clog);
+var db = new ydn.db.Storage('test');
+console.log(db.getName());
+var clog = function(r) { console.log(r.value); }
+q = db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"});
+q.done(function(x){ console.log("put done",x) });
+q.fail(function(x){ console.log("put fail",x) });
+//db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
+db.get("store1", "id1").done(clog);
+db.from('store1').list(100).done(
+    function(results){
+	console.log('done',results.length);
+	for(var i in results){
+	    console.log(i,results[i].id);
+	}});
