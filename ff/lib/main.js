@@ -1,4 +1,4 @@
-var ydn = require('./ydn.db-isw-sql-e-cur-qry-dev.js');
+var ydn = require('./ydn.db-isw-core-e-cur-qry-dev-raw.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -578,6 +578,12 @@ q.fail(function(x){ console.log("put fail",x) });
 //db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
 db.get("store1", "id1").done(clog);
 db.from('store1').list(100).done(
+    function(results){
+	console.log('done',results.length);
+	for(var i in results){
+	    console.log(i,results[i].id);
+	}});
+db.values('store1').done(
     function(results){
 	console.log('done',results.length);
 	for(var i in results){

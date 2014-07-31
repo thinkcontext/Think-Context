@@ -151,7 +151,7 @@ Ext.prototype = {
 	    });
     },
 
-    fetchMetaDeactivated: function(){
+    fetchMetaDeactivated: function(callback){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	$.getJSON(_self.metaDeactivatedUrl, 
@@ -166,11 +166,13 @@ Ext.prototype = {
 			  }
 			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
+		      if(callback)
+			  callback();
 		      setTimeout(function(){_self.getSubscribed();},500);
 		  });
     },
     
-    fetchMetaData: function(){
+    fetchMetaData: function(callback){
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	$.getJSON(_self.metaUrl,
@@ -194,7 +196,7 @@ Ext.prototype = {
 			      console.error('fetchMetaData',e);
 			  });
 		      } else {
-			  _self.fetchMetaDeactivated();
+			  _self.fetchMetaDeactivated(callback);
 		      }		      
 		  });
     },
@@ -250,7 +252,7 @@ Ext.prototype = {
     
     sync: function(){	
 	var _self = this;
-	_self.fetchMetaData();
+	_self.fetchMetaData(null);
 	for(var x = 0; x < _self.campaigns.length; x++){
 	    _self.fetchCampaignData(_self.campaigns[x])
 	}
@@ -471,7 +473,6 @@ chrome.runtime.onInstalled.addListener(
 	tc.initialCamps();
 	tc.setVersionTime();
 	tc.getSubscribed();
-	tc.sync();
 	if(details.reason == "install"){	    
 	    url = "options.html?install";
 	}else if(details.reason == "update"){
@@ -485,7 +486,8 @@ chrome.runtime.onInstalled.addListener(
 		tx.executeSql('drop table results',[]); 
 	    });
 	}
-	setTimeout(function(){chrome.tabs.create({url:url})}, 1000);	
+	tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
+	setTimeout(function(){	tc.sync();}, 15000);	
     });
 
 chrome.notifications.onClicked.addListener(
