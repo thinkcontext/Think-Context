@@ -1,4 +1,5 @@
-var ydn = require('./ydn.db-isw-core-e-cur-qry-dev-raw.js');
+var ydn = require('./ydn.db-isw-core-qry-dev.js');
+ydn.debug.log('ydn-db', 'finest');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;

@@ -1,0 +1,184 @@
+{"name":"YDN-DB Test"
+ , "version": "0.97"
+ , "description":"YDN-DB Test"
+ , "manifest_version": 2
+ , "permissions": ["http://127.0.0.1:5984/*"
+		   , "http://tcdata.iriscouch.com/*"
+		   , "http://*.thinkcontext.org/*"
+		   , "https://*.thinkcontext.org/*"		   
+		   , "notifications"
+		  ]
+ , "page_action": { "default_title": "thinkContext - Click for more info" }
+ , "options_page": "options.html"
+ , "background": {"scripts": ["jquery-2.0.3.min.js"
+			      ,"ydn.db-1.0.2.js"
+			      ,"ejs_production.js"
+			      ,"background.js"]}
+ , "content_scripts": [
+     {"css": ["jquery-ui.css"]
+      , "matches": ["http://*.twitter.com/*"
+       		    ,"https://*.twitter.com/*"
+		   ]
+      ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","twitter.js"]
+     }
+     ,{"css": ["jquery-ui.css"]
+      , "matches": ["http://*.duckduckgo.com/*"
+       		    ,"https://*.duckduckgo.com/*"
+		   ]
+      ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","duckduckgo.js"]
+     }
+     , {
+	 "css": ["jquery-ui.css"],
+	 "matches": ["*://www.google.com/*"
+		     ,"*://maps.google.com/*"
+		    ],
+	 "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","google-search.js"]
+     }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["*://www.bing.com/search*"]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","bing-search.js"]
+       }
+     , { "all_frames": true,
+	 "css": ["jquery-ui.css"],
+	 "matches": ["http://*.search.yahoo.com/*","https://*.search.yahoo.com/*","*://goodsearch.com/*"],
+	 "js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yahoo-search.js"]
+       }
+     ,{ "all_frames": true
+	, "css": ["jquery-ui.css"]
+	, "matches": ["http://*.adsonar.com/*"
+		      ,"http://*.msn.com/*"
+		      ,"http://*.doubleclick.net/pagead/*"
+		      ,"http://*.overture.com/*"
+		     ]
+	,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","iframe.js"]
+      }
+     ,{"css": ["jquery-ui.css"]
+       , "matches": ["http://*.facebook.com/*"
+       		     ,"https://*.facebook.com/*"
+		    ]
+       ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","facebook.js"]
+      }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.yelp.com/*"
+       		       ,"https://*.yelp.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","yelp.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.tripadvisor.com/*"
+       		       ,"https://*.tripadvisor.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","tripadvisor.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.imdb.com/*"
+       		       ,"https://*.imdb.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","imdb.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.hotels.com/*"
+       		       ,"https://*.hotels.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","hcom.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.orbitz.com/*"
+       		       ,"https://*.orbitz.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","orbitz.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.expedia.com/*"
+       		       ,"https://*.expedia.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","expedia.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.kayak.com/*"
+       		       ,"https://*.kayak.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","kayak.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["*://en.wikipedia.org/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","wikipedia.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.priceline.com/*"
+       		       ,"https://*.priceline.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","priceline.js"]
+       }
+     , { "css": ["jquery-ui.css"], "matches": ["*://*/*"]
+     	 ,"exclude_globs": ["*://mail.google.com/*"
+			    ,"*://maps.google.com/*"
+			    ,"*://www.google.com/*"
+			    ,"*://www.bing.com/search*"
+			    ,"*://www.bing.com/"
+			    ,"*://twitter.com/*"
+			    ,"*://facebook.com/*"
+			    ,"*://www.facebook.com/*"
+			    ,"*://en.wikipedia.org/*"
+			    ,"http://*.duckduckgo.com/*"
+       			    ,"https://*.duckduckgo.com/*"
+			    ,"http://*.yahoo.com/*"
+			    ,"https://*.yahoo.com/*"
+			    ,"http://*.adsonar.com/*"
+			    ,"http://*.msn.com/*"
+			    ,"http://*.doubleclick.net/pagead/*"
+			    ,"http://*.overture.com/*"
+			    ,"http://*.yelp.com/*"
+       			    ,"https://*.yelp.com/*"
+			    ,"http://*.tripadvisor.com/*"
+       			    ,"https://*.tripadvisor.com/*"
+			    ,"http://*.imdb.com/*"
+       			    ,"https://*.imdb.com/*"
+			    ,"http://*.hotels.com/*"
+       			    ,"https://*.hotels.com/*"
+			    ,"http://*.orbitz.com/*"
+       			    ,"https://*.orbitz.com/*"
+			    ,"http://*.expedia.com/*"
+       			    ,"https://*.expedia.com/*"
+			    ,"http://*.kayak.com/*"
+       			    ,"https://*.kayak.com/*"
+			    ,"http://*.priceline.com/*"
+       			    ,"https://*.priceline.com/*"
+			    ,"http://*.washingtonpost.com/*"
+			    ,"http://*.nytimes.com/*"
+			    ,"http://online.wsj.com/*"
+			    ,"http://news.yahoo.com/*"
+			    ,"http://*.cnn.com/*"
+			    ,"http://*.boston.com/*"
+			    ,"http://*.npr.org/*"
+			    ,"http://*.foxnews.com/*"
+			    ,"http://*.huffingtonpost.com/*"
+			    ,"http://*.usatoday.com/*"
+			    ,"http://*.abcnews.go.com/*"
+			    ,"http://*.latimes.com/*"
+			    ,"http://*.nbcnews.com/*"
+			    ,"http://news.msn.com/*"
+			   ] 
+	 ,"js": ["jquery-2.0.3.min.js","mutation-summary.js","jquery.mutation-summary.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","reverse.js"]
+       }
+     , { "css": ["jquery-ui.css"]
+	 , "matches": ["http://*.washingtonpost.com/*"
+		       ,"http://*.nytimes.com/*"
+		       ,"http://online.wsj.com/*"
+		       ,"http://news.yahoo.com/*"
+		       ,"http://*.cnn.com/*"
+		       ,"http://*.boston.com/*"
+		       ,"http://*.npr.org/*"
+		       ,"http://*.foxnews.com/*"
+		       ,"http://*.huffingtonpost.com/*"
+		       ,"http://*.usatoday.com/*"
+		       ,"http://*.abcnews.go.com/*"
+		       ,"http://*.latimes.com/*"
+		       ,"http://*.nbcnews.com/*"
+		       ,"http://news.msn.com/*"
+		      ]
+	 ,"js": ["jquery-2.0.3.min.js","jquery-ui-1.9.2.custom.min.js","ejs_production.js","utils.js","congress.js"]
+       }     
+ ] 
+}
