@@ -1,0 +1,321 @@
+/*
+ * jQuery UI CSS Framework 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+
+/* Layout helpers
+----------------------------------*/
+.subv-ui-helper-hidden { display: none !important ; }
+.subv-ui-helper-hidden-accessible { position: absolute !important !important ; clip: rect(1px 1px 1px 1px) !important ; clip: rect(1px,1px,1px,1px) !important ; }
+.subv-ui-helper-reset { margin: 0 !important ; padding: 0 !important ; border: 0 !important ; outline: 0 !important ; line-height: 1.3 !important ; text-decoration: none !important ; font-size: 100% !important ; list-style: none !important ; }
+.subv-ui-helper-clearfix:after { content: "." !important ; display: block !important ; height: 0 !important ; clear: both !important ; visibility: hidden !important ; }
+.subv-ui-helper-clearfix { display: inline-block !important ; }
+/* required comment for clearfix to work in Opera \*/
+* html .subv-ui-helper-clearfix { height:1% !important ; }
+.subv-ui-helper-clearfix { display:block !important ; }
+/* end clearfix */
+.subv-ui-helper-zfix { width: 100% !important ; height: 100% !important ; top: 0 !important ; left: 0 !important ; position: absolute !important ; opacity: 0 !important ; filter:Alpha(Opacity=0) !important ; }
+
+
+/* Interaction Cues
+----------------------------------*/
+.subv-ui-state-disabled { cursor: default !important !important ; }
+
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.subv-ui-icon { display: block !important ; overflow: hidden !important ; background-repeat: no-repeat !important ; }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Overlays */
+.subv-ui-widget-overlay { position: absolute !important ; top: 0 !important ; left: 0 !important ; width: 100% !important ; height: 100% !important ; }
+
+
+/*
+ * jQuery UI CSS Framework 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Trebuchet%20MS,%20Tahoma,%20Verdana,%20Arial,%20sans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=6px&bgColorHeader=ffffff&bgTextureHeader=23_fine_grain.png&bgImgOpacityHeader=15&borderColorHeader=d4d1bf&fcHeader=453821&iconColorHeader=b83400&bgColorContent=eceadf&bgTextureContent=23_fine_grain.png&bgImgOpacityContent=10&borderColorContent=d9d6c4&fcContent=1f1f1f&iconColorContent=222222&bgColorDefault=f8f7f6&bgTextureDefault=23_fine_grain.png&bgImgOpacityDefault=10&borderColorDefault=cbc7bd&fcDefault=654b24&iconColorDefault=b83400&bgColorHover=654b24&bgTextureHover=23_fine_grain.png&bgImgOpacityHover=65&borderColorHover=654b24&fcHover=ffffff&iconColorHover=ffffff&bgColorActive=eceadf&bgTextureActive=23_fine_grain.png&bgImgOpacityActive=15&borderColorActive=d9d6c4&fcActive=140f06&iconColorActive=8c291d&bgColorHighlight=f7f3de&bgTextureHighlight=23_fine_grain.png&bgImgOpacityHighlight=15&borderColorHighlight=b2a266&fcHighlight=3a3427&iconColorHighlight=3572ac&bgColorError=b83400&bgTextureError=23_fine_grain.png&bgImgOpacityError=68&borderColorError=681818&fcError=ffffff&iconColorError=fbdb93&bgColorOverlay=6e4f1c&bgTextureOverlay=16_diagonal_maze.png&bgImgOpacityOverlay=20&opacityOverlay=60&bgColorShadow=000000&bgTextureShadow=16_diagonal_maze.png&bgImgOpacityShadow=40&opacityShadow=60&thicknessShadow=5px&offsetTopShadow=0&offsetLeftShadow=-10px&cornerRadiusShadow=18px
+ */
+
+
+/* Component containers
+----------------------------------*/
+.subv-ui-widget { font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif !important ; font-size: 12px !important ; }
+.subv-ui-widget .subv-ui-widget { font-size: 12px !important ; }
+.subv-ui-widget input, .subv-ui-widget select, .subv-ui-widget textarea, .subv-ui-widget button { font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif !important ; font-size: 1em !important ; }
+.subv-ui-widget-content { text-align: left !important ; border: 1px solid #d9d6c4 !important ; background: #eceadf ; color: #1f1f1f !important ; } 
+.subv-ui-widget-content a { color: #1f1f1f !important ; }
+.subv-ui-widget-header { border: 1px solid #d4d1bf !important ; background: #ffffff; color: #453821 !important ; font-weight: bold !important ; } 
+.subv-ui-widget-header a { color: #453821 !important ; }
+
+/* Interaction states
+----------------------------------*/
+.subv-ui-state-default, .subv-ui-widget-content .subv-ui-state-default, .subv-ui-widget-header .subv-ui-state-default { border: 1px solid #cbc7bd !important ; background: #f8f7f6 !important ; font-weight: bold !important ; color: #654b24 !important ; }
+.subv-ui-state-default a, .subv-ui-state-default a:link, .subv-ui-state-default a:visited { color: #654b24 !important ; text-decoration: none !important ; }
+/*.subv-ui-state-hover, .subv-ui-widget-content .subv-ui-state-hover, .subv-ui-widget-header .subv-ui-state-hover, .subv-ui-state-focus, .subv-ui-widget-content .subv-ui-state-focus, .subv-ui-widget-header .subv-ui-state-focus { border: 1px solid #654b24 !important ; background: #654b24 !important ; font-weight: bold !important ; color: #ffffff !important ; }*/
+.subv-ui-state-hover a, .subv-ui-state-hover a:hover { color: #ffffff !important ; text-decoration: none !important ; }
+.subv-ui-widget-content a:link { color: #660  !important ; text-decoration: underline !important ; }
+.subv-ui-widget-content a:hover { text-decoration: underline !important ; }
+.subv-ui-widget-content a:visited { color: #669  !important ; }
+.subv-ui-state-active, .subv-ui-widget-content .subv-ui-state-active, .subv-ui-widget-header .subv-ui-state-active { border: 1px solid #d9d6c4 !important ; background: #eceadf !important ; font-weight: bold !important ; color: #140f06 !important ; }
+.subv-ui-state-active a, .subv-ui-state-active a:link, .subv-ui-state-active a:visited { color: #140f06 !important ; text-decoration: none !important ; }
+.subv-ui-widget :active { outline: none !important ; }
+
+/* Interaction Cues
+----------------------------------*/
+.subv-ui-state-highlight, .subv-ui-widget-content .subv-ui-state-highlight, .subv-ui-widget-header .subv-ui-state-highlight  {border: 1px solid #b2a266 !important ; background: #f7f3de !important ; color: #3a3427 !important ; }
+.subv-ui-state-highlight a, .subv-ui-widget-content .subv-ui-state-highlight a,.subv-ui-widget-header .subv-ui-state-highlight a { color: #3a3427 !important ; }
+.subv-ui-state-error, .subv-ui-widget-content .subv-ui-state-error, .subv-ui-widget-header .subv-ui-state-error {border: 1px solid #681818 !important ; background: #b83400 !important ; color: #ffffff !important ; }
+.subv-ui-state-error a, .subv-ui-widget-content .subv-ui-state-error a, .subv-ui-widget-header .subv-ui-state-error a { color: #ffffff !important ; }
+.subv-ui-state-error-text, .subv-ui-widget-content .subv-ui-state-error-text, .subv-ui-widget-header .subv-ui-state-error-text { color: #ffffff !important ; }
+.subv-ui-priority-primary, .subv-ui-widget-content .subv-ui-priority-primary, .subv-ui-widget-header .subv-ui-priority-primary { font-weight: bold !important ; }
+.subv-ui-priority-secondary, .subv-ui-widget-content .subv-ui-priority-secondary,  .subv-ui-widget-header .subv-ui-priority-secondary { opacity: .7 !important ; filter:Alpha(Opacity=70) !important ; font-weight: normal !important ; }
+.subv-ui-state-disabled, .subv-ui-widget-content .subv-ui-state-disabled, .subv-ui-widget-header .subv-ui-state-disabled { opacity: .35 !important ; filter:Alpha(Opacity=35) !important ; background-image: none !important ; }
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.subv-ui-icon { width: 16px !important ; height: 16px !important ; background: white !important ; }
+.subv-ui-widget-content .subv-ui-icon {background: white !important ; }
+.subv-ui-widget-header .subv-ui-icon {background: white !important ; }
+.subv-ui-state-default .subv-ui-icon { background: white !important ; }
+.subv-ui-state-hover .subv-ui-icon, .subv-ui-state-focus .subv-ui-icon {background: !important ; }
+.subv-ui-state-active .subv-ui-icon {background: white !important ; }
+.subv-ui-state-highlight .subv-ui-icon {background: white !important ; }
+.subv-ui-state-error .subv-ui-icon, .subv-ui-state-error-text .subv-ui-icon {background: white})
+
+/* positioning */
+.subv-ui-icon-carat-1-n { background-position: 0 0 !important ; }
+.subv-ui-icon-carat-1-ne { background-position: -16px 0 !important ; }
+.subv-ui-icon-carat-1-e { background-position: -32px 0 !important ; }
+.subv-ui-icon-carat-1-se { background-position: -48px 0 !important ; }
+.subv-ui-icon-carat-1-s { background-position: -64px 0 !important ; }
+.subv-ui-icon-carat-1-sw { background-position: -80px 0 !important ; }
+.subv-ui-icon-carat-1-w { background-position: -96px 0 !important ; }
+.subv-ui-icon-carat-1-nw { background-position: -112px 0 !important ; }
+.subv-ui-icon-carat-2-n-s { background-position: -128px 0 !important ; }
+.subv-ui-icon-carat-2-e-w { background-position: -144px 0 !important ; }
+.subv-ui-icon-triangle-1-n { background-position: 0 -16px !important ; }
+.subv-ui-icon-triangle-1-ne { background-position: -16px -16px !important ; }
+.subv-ui-icon-triangle-1-e { background-position: -32px -16px !important ; }
+.subv-ui-icon-triangle-1-se { background-position: -48px -16px !important ; }
+.subv-ui-icon-triangle-1-s { background-position: -64px -16px !important ; }
+.subv-ui-icon-triangle-1-sw { background-position: -80px -16px !important ; }
+.subv-ui-icon-triangle-1-w { background-position: -96px -16px !important ; }
+.subv-ui-icon-triangle-1-nw { background-position: -112px -16px !important ; }
+.subv-ui-icon-triangle-2-n-s { background-position: -128px -16px !important ; }
+.subv-ui-icon-triangle-2-e-w { background-position: -144px -16px !important ; }
+.subv-ui-icon-arrow-1-n { background-position: 0 -32px !important ; }
+.subv-ui-icon-arrow-1-ne { background-position: -16px -32px !important ; }
+.subv-ui-icon-arrow-1-e { background-position: -32px -32px !important ; }
+.subv-ui-icon-arrow-1-se { background-position: -48px -32px !important ; }
+.subv-ui-icon-arrow-1-s { background-position: -64px -32px !important ; }
+.subv-ui-icon-arrow-1-sw { background-position: -80px -32px !important ; }
+.subv-ui-icon-arrow-1-w { background-position: -96px -32px !important ; }
+.subv-ui-icon-arrow-1-nw { background-position: -112px -32px !important ; }
+.subv-ui-icon-arrow-2-n-s { background-position: -128px -32px !important ; }
+.subv-ui-icon-arrow-2-ne-sw { background-position: -144px -32px !important ; }
+.subv-ui-icon-arrow-2-e-w { background-position: -160px -32px !important ; }
+.subv-ui-icon-arrow-2-se-nw { background-position: -176px -32px !important ; }
+.subv-ui-icon-arrowstop-1-n { background-position: -192px -32px !important ; }
+.subv-ui-icon-arrowstop-1-e { background-position: -208px -32px !important ; }
+.subv-ui-icon-arrowstop-1-s { background-position: -224px -32px !important ; }
+.subv-ui-icon-arrowstop-1-w { background-position: -240px -32px !important ; }
+.subv-ui-icon-arrowthick-1-n { background-position: 0 -48px !important ; }
+.subv-ui-icon-arrowthick-1-ne { background-position: -16px -48px !important ; }
+.subv-ui-icon-arrowthick-1-e { background-position: -32px -48px !important ; }
+.subv-ui-icon-arrowthick-1-se { background-position: -48px -48px !important ; }
+.subv-ui-icon-arrowthick-1-s { background-position: -64px -48px !important ; }
+.subv-ui-icon-arrowthick-1-sw { background-position: -80px -48px !important ; }
+.subv-ui-icon-arrowthick-1-w { background-position: -96px -48px !important ; }
+.subv-ui-icon-arrowthick-1-nw { background-position: -112px -48px !important ; }
+.subv-ui-icon-arrowthick-2-n-s { background-position: -128px -48px !important ; }
+.subv-ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px !important ; }
+.subv-ui-icon-arrowthick-2-e-w { background-position: -160px -48px !important ; }
+.subv-ui-icon-arrowthick-2-se-nw { background-position: -176px -48px !important ; }
+.subv-ui-icon-arrowthickstop-1-n { background-position: -192px -48px !important ; }
+.subv-ui-icon-arrowthickstop-1-e { background-position: -208px -48px !important ; }
+.subv-ui-icon-arrowthickstop-1-s { background-position: -224px -48px !important ; }
+.subv-ui-icon-arrowthickstop-1-w { background-position: -240px -48px !important ; }
+.subv-ui-icon-arrowreturnthick-1-w { background-position: 0 -64px !important ; }
+.subv-ui-icon-arrowreturnthick-1-n { background-position: -16px -64px !important ; }
+.subv-ui-icon-arrowreturnthick-1-e { background-position: -32px -64px !important ; }
+.subv-ui-icon-arrowreturnthick-1-s { background-position: -48px -64px !important ; }
+.subv-ui-icon-arrowreturn-1-w { background-position: -64px -64px !important ; }
+.subv-ui-icon-arrowreturn-1-n { background-position: -80px -64px !important ; }
+.subv-ui-icon-arrowreturn-1-e { background-position: -96px -64px !important ; }
+.subv-ui-icon-arrowreturn-1-s { background-position: -112px -64px !important ; }
+.subv-ui-icon-arrowrefresh-1-w { background-position: -128px -64px !important ; }
+.subv-ui-icon-arrowrefresh-1-n { background-position: -144px -64px !important ; }
+.subv-ui-icon-arrowrefresh-1-e { background-position: -160px -64px !important ; }
+.subv-ui-icon-arrowrefresh-1-s { background-position: -176px -64px !important ; }
+.subv-ui-icon-arrow-4 { background-position: 0 -80px !important ; }
+.subv-ui-icon-arrow-4-diag { background-position: -16px -80px !important ; }
+.subv-ui-icon-extlink { background-position: -32px -80px !important ; }
+.subv-ui-icon-newwin { background-position: -48px -80px !important ; }
+.subv-ui-icon-refresh { background-position: -64px -80px !important ; }
+.subv-ui-icon-shuffle { background-position: -80px -80px !important ; }
+.subv-ui-icon-transfer-e-w { background-position: -96px -80px !important ; }
+.subv-ui-icon-transferthick-e-w { background-position: -112px -80px !important ; }
+.subv-ui-icon-folder-collapsed { background-position: 0 -96px !important ; }
+.subv-ui-icon-folder-open { background-position: -16px -96px !important ; }
+.subv-ui-icon-document { background-position: -32px -96px !important ; }
+.subv-ui-icon-document-b { background-position: -48px -96px !important ; }
+.subv-ui-icon-note { background-position: -64px -96px !important ; }
+.subv-ui-icon-mail-closed { background-position: -80px -96px !important ; }
+.subv-ui-icon-mail-open { background-position: -96px -96px !important ; }
+.subv-ui-icon-suitcase { background-position: -112px -96px !important ; }
+.subv-ui-icon-comment { background-position: -128px -96px !important ; }
+.subv-ui-icon-person { background-position: -144px -96px !important ; }
+.subv-ui-icon-print { background-position: -160px -96px !important ; }
+.subv-ui-icon-trash { background-position: -176px -96px !important ; }
+.subv-ui-icon-locked { background-position: -192px -96px !important ; }
+.subv-ui-icon-unlocked { background-position: -208px -96px !important ; }
+.subv-ui-icon-bookmark { background-position: -224px -96px !important ; }
+.subv-ui-icon-tag { background-position: -240px -96px !important ; }
+.subv-ui-icon-home { background-position: 0 -112px !important ; }
+.subv-ui-icon-flag { background-position: -16px -112px !important ; }
+.subv-ui-icon-calendar { background-position: -32px -112px !important ; }
+.subv-ui-icon-cart { background-position: -48px -112px !important ; }
+.subv-ui-icon-pencil { background-position: -64px -112px !important ; }
+.subv-ui-icon-clock { background-position: -80px -112px !important ; }
+.subv-ui-icon-disk { background-position: -96px -112px !important ; }
+.subv-ui-icon-calculator { background-position: -112px -112px !important ; }
+.subv-ui-icon-zoomin { background-position: -128px -112px !important ; }
+.subv-ui-icon-zoomout { background-position: -144px -112px !important ; }
+.subv-ui-icon-search { background-position: -160px -112px !important ; }
+.subv-ui-icon-wrench { background-position: -176px -112px !important ; }
+.subv-ui-icon-gear { background-position: -192px -112px !important ; }
+.subv-ui-icon-heart { background-position: -208px -112px !important ; }
+.subv-ui-icon-star { background-position: -224px -112px !important ; }
+.subv-ui-icon-link { background-position: -240px -112px !important ; }
+.subv-ui-icon-cancel { background-position: 0 -128px !important ; }
+.subv-ui-icon-plus { background-position: -16px -128px !important ; }
+.subv-ui-icon-plusthick { background-position: -32px -128px !important ; }
+.subv-ui-icon-minus { background-position: -48px -128px !important ; }
+.subv-ui-icon-minusthick { background-position: -64px -128px !important ; }
+.subv-ui-icon-close { background-position: -80px -128px !important ; }
+.subv-ui-icon-closethick { background-position: -96px -128px !important ; }
+.subv-ui-icon-key { background-position: -112px -128px !important ; }
+.subv-ui-icon-lightbulb { background-position: -128px -128px !important ; }
+.subv-ui-icon-scissors { background-position: -144px -128px !important ; }
+.subv-ui-icon-clipboard { background-position: -160px -128px !important ; }
+.subv-ui-icon-copy { background-position: -176px -128px !important ; }
+.subv-ui-icon-contact { background-position: -192px -128px !important ; }
+.subv-ui-icon-image { background-position: -208px -128px !important ; }
+.subv-ui-icon-video { background-position: -224px -128px !important ; }
+.subv-ui-icon-script { background-position: -240px -128px !important ; }
+.subv-ui-icon-alert { background-position: 0 -144px !important ; }
+.subv-ui-icon-info { background-position: -16px -144px !important ; }
+.subv-ui-icon-notice { background-position: -32px -144px !important ; }
+.subv-ui-icon-help { background-position: -48px -144px !important ; }
+.subv-ui-icon-check { background-position: -64px -144px !important ; }
+.subv-ui-icon-bullet { background-position: -80px -144px !important ; }
+.subv-ui-icon-radio-off { background-position: -96px -144px !important ; }
+.subv-ui-icon-radio-on { background-position: -112px -144px !important ; }
+.subv-ui-icon-pin-w { background-position: -128px -144px !important ; }
+.subv-ui-icon-pin-s { background-position: -144px -144px !important ; }
+.subv-ui-icon-play { background-position: 0 -160px !important ; }
+.subv-ui-icon-pause { background-position: -16px -160px !important ; }
+.subv-ui-icon-seek-next { background-position: -32px -160px !important ; }
+.subv-ui-icon-seek-prev { background-position: -48px -160px !important ; }
+.subv-ui-icon-seek-end { background-position: -64px -160px !important ; }
+.subv-ui-icon-seek-start { background-position: -80px -160px !important ; }
+/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
+.subv-ui-icon-seek-first { background-position: -80px -160px !important ; }
+.subv-ui-icon-stop { background-position: -96px -160px !important ; }
+.subv-ui-icon-eject { background-position: -112px -160px !important ; }
+.subv-ui-icon-volume-off { background-position: -128px -160px !important ; }
+.subv-ui-icon-volume-on { background-position: -144px -160px !important ; }
+.subv-ui-icon-power { background-position: 0 -176px !important ; }
+.subv-ui-icon-signal-diag { background-position: -16px -176px !important ; }
+.subv-ui-icon-signal { background-position: -32px -176px !important ; }
+.subv-ui-icon-battery-0 { background-position: -48px -176px !important ; }
+.subv-ui-icon-battery-1 { background-position: -64px -176px !important ; }
+.subv-ui-icon-battery-2 { background-position: -80px -176px !important ; }
+.subv-ui-icon-battery-3 { background-position: -96px -176px !important ; }
+.subv-ui-icon-circle-plus { background-position: 0 -192px !important ; }
+.subv-ui-icon-circle-minus { background-position: -16px -192px !important ; }
+.subv-ui-icon-circle-close { background-position: -32px -192px !important ; }
+.subv-ui-icon-circle-triangle-e { background-position: -48px -192px !important ; }
+.subv-ui-icon-circle-triangle-s { background-position: -64px -192px !important ; }
+.subv-ui-icon-circle-triangle-w { background-position: -80px -192px !important ; }
+.subv-ui-icon-circle-triangle-n { background-position: -96px -192px !important ; }
+.subv-ui-icon-circle-arrow-e { background-position: -112px -192px !important ; }
+.subv-ui-icon-circle-arrow-s { background-position: -128px -192px !important ; }
+.subv-ui-icon-circle-arrow-w { background-position: -144px -192px !important ; }
+.subv-ui-icon-circle-arrow-n { background-position: -160px -192px !important ; }
+.subv-ui-icon-circle-zoomin { background-position: -176px -192px !important ; }
+.subv-ui-icon-circle-zoomout { background-position: -192px -192px !important ; }
+.subv-ui-icon-circle-check { background-position: -208px -192px !important ; }
+.subv-ui-icon-circlesmall-plus { background-position: 0 -208px !important ; }
+.subv-ui-icon-circlesmall-minus { background-position: -16px -208px !important ; }
+.subv-ui-icon-circlesmall-close { background-position: -32px -208px !important ; }
+.subv-ui-icon-squaresmall-plus { background-position: -48px -208px !important ; }
+.subv-ui-icon-squaresmall-minus { background-position: -64px -208px !important ; }
+.subv-ui-icon-squaresmall-close { background-position: -80px -208px !important ; }
+.subv-ui-icon-grip-dotted-vertical { background-position: 0 -224px !important ; }
+.subv-ui-icon-grip-dotted-horizontal { background-position: -16px -224px !important ; }
+.subv-ui-icon-grip-solid-vertical { background-position: -32px -224px !important ; }
+.subv-ui-icon-grip-solid-horizontal { background-position: -48px -224px !important ; }
+.subv-ui-icon-gripsmall-diagonal-se { background-position: -64px -224px !important ; }
+.subv-ui-icon-grip-diagonal-se { background-position: -80px -224px !important ; }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.subv-ui-corner-all, .subv-ui-corner-top, .subv-ui-corner-left, .subv-ui-corner-tl { -moz-border-radius-topleft: 6px !important ; -webkit-border-top-left-radius: 6px !important ; -khtml-border-top-left-radius: 6px !important ; border-top-left-radius: 6px !important ; }
+.subv-ui-corner-all, .subv-ui-corner-top, .subv-ui-corner-right, .subv-ui-corner-tr { -moz-border-radius-topright: 6px !important ; -webkit-border-top-right-radius: 6px !important ; -khtml-border-top-right-radius: 6px !important ; border-top-right-radius: 6px !important ; }
+.subv-ui-corner-all, .subv-ui-corner-bottom, .subv-ui-corner-left, .subv-ui-corner-bl { -moz-border-radius-bottomleft: 6px !important ; -webkit-border-bottom-left-radius: 6px !important ; -khtml-border-bottom-left-radius: 6px !important ; border-bottom-left-radius: 6px !important ; }
+.subv-ui-corner-all, .subv-ui-corner-bottom, .subv-ui-corner-right, .subv-ui-corner-br { -moz-border-radius-bottomright: 6px !important ; -webkit-border-bottom-right-radius: 6px !important ; -khtml-border-bottom-right-radius: 6px !important ; border-bottom-right-radius: 6px !important ; }
+
+/* Overlays */
+.subv-ui-widget-overlay { background: #6e4f1c !important ; opacity: .60;filter:Alpha(Opacity=60) !important ; }
+.subv-ui-widget-shadow { margin: 0 0 0 -10px !important ; padding: 5px !important ; background: #000000 !important ; opacity: .60;filter:Alpha(Opacity=60) !important ; -moz-border-radius: 18px !important ; -khtml-border-radius: 18px !important ; -webkit-border-radius: 18px !important ; border-radius: 18px !important ; }/*
+ * jQuery UI Dialog 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Dialog#theming
+ */
+.subv-ui-dialog { position: absolute !important ; padding: .2em !important ; width: 300px !important ; overflow: hidden !important ; }
+.subv-ui-dialog .subv-ui-dialog-titlebar { padding: .4em 1em !important ; position: relative !important ;  }
+.subv-ui-dialog .subv-ui-dialog-title { float: left !important ; margin: .1em 16px .1em 0 !important ; } 
+.subv-ui-dialog .subv-ui-dialog-titlebar-close { position: absolute !important ; right: .3em !important ; top: 50% !important ; width: 19px !important ; margin: -10px 0 0 0 !important ; padding: 1px !important ; height: 18px !important ; }
+.subv-ui-dialog .subv-ui-dialog-titlebar-close span { display: block !important ; margin: 1px !important ; }
+.subv-ui-dialog .subv-ui-dialog-titlebar-close:hover, .subv-ui-dialog .subv-ui-dialog-titlebar-close:focus { padding: 0 !important ; }
+.subv-ui-dialog .subv-ui-dialog-content { position: relative !important ; border: 0 !important ; padding: .5em 1em !important ; background: none !important ; overflow-y: scroll !important ; zoom: 1 !important ; }
+.subv-ui-dialog .subv-ui-dialog-buttonpane { text-align: left !important ; border-width: 1px 0 0 0 !important ; background-image: none !important ; margin: .5em 0 0 0 !important ; padding: .3em 1em .5em .4em !important ; }
+.subv-ui-dialog .subv-ui-dialog-buttonpane .subv-ui-dialog-buttonset { float: right !important ; }
+.subv-ui-dialog .subv-ui-dialog-buttonpane button { margin: .5em .4em .5em 0 !important ; cursor: pointer !important ; }
+.subv-ui-dialog .subv-ui-resizable-se { width: 14px !important ; height: 14px !important ; right: 3px !important ; bottom: 3px !important ; }
+.subv-ui-draggable .subv-ui-dialog-titlebar { cursor: move !important ; }
+.tc-camp { margin-bottom: 3px }
+
+.thinkcontext { padding:0px; }
+.thinkcontext ul { padding: 8px; margin: 0px; }
+.thinkcontext li { line-height: 1.1em !important ;}
+.thinkcontext img { display:inline !important ; float:none !important ; margin:0px !important ; }
+.thinkcontext span { display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; }
+.thinkcontext hr {border: solid medium gray; margin: 3px; display: block;}
