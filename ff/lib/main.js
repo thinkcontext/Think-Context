@@ -1,5 +1,4 @@
-var ydn = require('./ydn.db-isw-core-qry-dev.js');
-ydn.debug.log('ydn-db', 'finest');
+var dbjs = require('./db.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -16,45 +15,62 @@ clearInterval = time.clearInterval;
 function Ext(){
     var _self = this;
     _self.debug = 2;
-    _self.schema = { 
-	stores: [
-	    {
-		name: 'thing'
-		, keyPath: '_id'
-		, indexes: [
-		    { name: 'handles'
-		      , keyPath: 'handles'
-		      , multiEntry: true
-		    }
-		    , { name: 'type'
-			, keyPath: 'type'
-		      }
-		    , { name: 'campaigns'
-			, keyPath: 'campaign_list'
-			, multiEntry: true
-		      }
-		    , { name: 'notification_date'
-			,keyPath: 'notification_date'
-		      }
-		]
+    _self.schema = {
+	thing: {
+	    key: { keyPath: '_id' , autoIncrement: true },
+	    // Optionally add indexes
+	    indexes: {
+                handles: { multiEntry: true },
+                type: { },
+		campaign_list: { multiEntry: true },
+		notification_date: {}		
 	    }
-	]
-	, version: 15
+        }
     };
     _self.dbName = 'tc';
-    _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
     _self.couch = 'http://127.0.0.1:5984/tc';
-//    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    //    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
     _self.metaDeactivatedUrl = _self.couch + '/_design/seq/_view/metaDeactivated';
     _self.versionUrl = 'http://www.thinkcontext.org/version.json'
     _self.actions = {};
-    _self.campaigns = {};
-    // _self.getSubscribed();
-    // _self.getOptions();
-    // _self.getNotifications();
+    _self.campaigns = {};    
+    
+    dbjs.open({server:_self.dbName,
+	       version: 1
+	       , schema:_self.schema})
+	.done( function(db){
+	    _self.db = db;
+	    _self.getSubscribed();
+	    _self.getOptions();
+	    _self.getNotifications();
+	    
+	    if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
+		console.log('loadReason',s.loadReason);
+		var url;
+		_self.initialCamps();
+		_self.setVersionTime();
+		// if(s.loadReason == 'install'){
+		// 	url = "options.html?install";
+		// }else if(s.loadReason == "update"){
+		// 	url = "options.html?update";
+		// 	// port me
+		// 	// remove websql tables
+		// 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+		// 	// olddb.transaction(function(tx){
+		// 	//     tx.executeSql('drop table template',[]); 
+		// 	//     tx.executeSql('drop table place',[]); 
+		// 	//     tx.executeSql('drop table place_data',[]); 
+		// 	//     tx.executeSql('drop table results',[]); 
+		// 	// });
+		//}
+		//    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
+	    }
+	    _self.sync();
+	});
+    
 
     // var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
@@ -86,7 +102,7 @@ Ext.prototype = {
 	    _self.lsRm('seq' + campaign);
 	    _self.lsRm('dea' + campaign);
 	}
-	_self.db.clear('thing').done(
+	_self.db.thing.clear().done(
 	    function(){
 		if(typeof callback == 'function')
 		    callback();
@@ -139,8 +155,7 @@ Ext.prototype = {
     
     getAvailableActions: function(callback){
 	var _self = this, ret = {};
-	var req = this.db.from('thing').where('type','=','action');
-	req.list(1000).done(
+	_self.db.thing.query('type').only('action').execute().done(
 	    function(results){
 		var action;
 		for(var i in results){
@@ -150,19 +165,17 @@ Ext.prototype = {
 		callback(ret);
 	    });
     },
-
+    
     getAvailableCampaigns: function(callback){
 	console.log("getAvailableCampaigns");
 	var _self = this, ret = {};
-	var req = this.db.from('thing').where('type','=','campaign');
-	req.list(1000).done(
+	_self.db.thing.query('type').only('campaign').execute().done(
 	    function(results){
 		_self.debug >= 2 && console.log('getCampaigns result',results.length);
 		var campaign;
 		for(var i in results){
 		    campaign = results[i].tid
 		    ret[campaign] = results[i];
-		    console.log("tid",campaign);
 		}
 		callback(ret);
 	    });
@@ -181,7 +194,7 @@ Ext.prototype = {
 		var rows = data.rows;
 		if(rows.length > 0){
 		    for(var x = 0; x < rows.length; x++){
-			_self.db.remove('thing', rows[x].key).done();
+			_self.db.thing.remove(rows[x].key).done();
 		    }
 		    _self.lsSet('metadea', rows[rows.length -1].key);
 		}
@@ -206,22 +219,21 @@ Ext.prototype = {
 		if(rows.length > 0){
 		    console.error("fetchMetaData",rows.length);
 		    var insert = rows.map( function(x){ return x.doc; } );
-		    req = _self.db.put('thing',insert).done(
+		    req = _self.db.thing.add(insert).done(
 		    	function(){
 			    console.log('fetchMetaData insert success');
-		    	    _self.lsSet('metaseq', rows[rows.length -1].key);
-		    	    _self.fetchMetaDeactivated();
-			    var q = _self.db.from('thing').list(100);
-			    q.fail(
-				function(e){ console.error("fail", e.message)});
-			    q.done(
-				function(results){
-				    console.log('done',results.length);
-				    for(var i in results){
-					console.log(i,results[i]._id);
-				    }	
-				});
-			    q = _self.db.get('thing','698d0b705c647d2525120c19710b7ce4').done(function(r){console.log('f',r['_id']); });
+		    	    // _self.lsSet('metaseq', rows[rows.length -1].key);
+		    	    // _self.fetchMetaDeactivated();
+			    // var q = _self.db.from('thing').list(100);
+			    // q.fail(
+			    // 	function(e){ console.error("fail", e.message)});
+			    // q.done(
+			    // 	function(results){
+			    // 	    console.log('done',results.length);
+			    // 	    for(var i in results){
+			    // 		console.log(i,results[i]._id);
+			    // 	    }	
+			    // 	});
 		    	}
 		    );
 		    req.fail(function(e) {
@@ -250,7 +262,7 @@ Ext.prototype = {
 		var rows = data.rows;
 		if(rows.length > 0){
 		    for(var x = 0; x < rows.length; x++){
-			_self.db.remove('thing',rows[x].key).done();
+			_self.db.thing.remove(rows[x].key).done();
 		    }
 		    _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
 		}
@@ -272,16 +284,16 @@ Ext.prototype = {
 		     var rows = data.rows;
 		     if(rows.length > 0){
 			 var insert = rows.map( function(x){ return x.doc } );
-		      	 req = _self.db.put('thing',insert);
+		      	 req = _self.db.thing.add(insert);
 		      	 req.done(
 			     function(){
 		      		 _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
 		      		 _self.fetchCampaignDeactivated(campaign);
 			     }
 		      	 );
-		      	 req.fail(function(e) {
+		      	 req.fail(function(e,x) {
 		      	     // there was a insert problem 
-		      	     console.error('fetchCampaignData',campaign,e);
+		      	     console.error('fetchCampaignData fail',campaign,x.results);
 		      	 });
 		     } else {
 		      	 _self.fetchCampaignDeactivated(campaign);
@@ -291,8 +303,10 @@ Ext.prototype = {
     
     sync: function(){	
 	var _self = this;
+	_self.debug && console.log('sync',_self.campaigns);
 	_self.fetchMetaData();
 	for(var x = 0; x < _self.campaigns.length; x++){
+	    _self.debug >= 2 && console.log('sync camp',_self.campaigns[x]);
 	    _self.fetchCampaignData(_self.campaigns[x])
 	}
 	_self.lsSet('lastSyncTime', (new Date).toJSON());	
@@ -308,8 +322,8 @@ Ext.prototype = {
 	var campaign, hmatch;
 	_self.debug && console.log('lookup',handle);
 	if(request.handle.match(/^domain:/)){
-	    req = _self.db.from('thing').where('handles','^',handle.split('/')[0]);
-	    req.list(100).done(
+	    req = _self.db.thing.query('handles').bound(handle.split('/')[0],handle.split('/')[0] + '}').execute();
+	    req.done(
 		function(results){
 		    _self.debug && console.log(results,handle);
 		    request.results = [];
@@ -336,8 +350,7 @@ Ext.prototype = {
 		    return;			    		
 		});
 	} else {
-	    req = _self.db.from('thing').where('handles','=',handle);
-	    req.list(1).done(
+	    req = _self.db.thing.query('handles').only(handle).execute().done(
 		function(results){
 		    if(results[0]){
 			for(var j in results[0].campaigns){
@@ -408,7 +421,7 @@ Ext.prototype = {
 	if(lnt){
 	    if(now - new Date(lnt) > 7 * 24 * 3600 * 1000){  // one week
 		_self.checkOldVersion();
-		_self.db.from('thing').where('type','=','notification').list(1000).done(
+		_self.db.thing.query('type').only('notification').execute().done(
 		    function(results){
 			var result;
 			for(var i in results){
@@ -483,7 +496,20 @@ Ext.prototype = {
 	if(j)
 	    ret = new Date(j);
 	return ret;
-    }
+    },
+    getJSON: function(url,content,func){
+	// simulate jQuery's $.getJSON
+	Request({url: url,
+		 content: content,
+		 onComplete: function(response){
+		     func(response.json);
+		 }
+		}).get();
+    },
+    get: function(url){
+	// simulate jQuery's $.get
+	Request({url:url}).get();
+    }        
 }
 
 var tc = new Ext();
@@ -493,31 +519,6 @@ var tc = new Ext();
 //     function(tab){
 // 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
 //     });
-
-
-if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
-    console.log('loadReason',s.loadReason);
-    var url;
-    // tc.initialCamps();
-    // tc.setVersionTime();
-    // tc.getSubscribed();
-    // tc.sync();
-    // if(s.loadReason == 'install'){
-    // 	url = "options.html?install";
-    // }else if(s.loadReason == "update"){
-    // 	url = "options.html?update";
-    // 	// port me
-    // 	// remove websql tables
-    // 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-    // 	// olddb.transaction(function(tx){
-    // 	//     tx.executeSql('drop table template',[]); 
-    // 	//     tx.executeSql('drop table place',[]); 
-    // 	//     tx.executeSql('drop table place_data',[]); 
-    // 	//     tx.executeSql('drop table results',[]); 
-    // 	// });
-    //}
-    //    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
-}
 
 // port me
 // chrome.notifications.onClicked.addListener(
@@ -539,54 +540,39 @@ if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
 //     }   
 // }
 
-// pageMod.PageMod({
-//     include : ["*.www.google.com",
-// 	       "*.maps.google.com"],
-//     attachTo: "top",
-//     contentStyleFile: data.url("jquery-ui.css"),
-//     contentScriptWhen:  'ready',
-//     contentScriptFile: [
-// 	data.url('jquery-2.0.3.min.js')
-// 	,data.url('jquery-ui-1.9.2.custom.min.js')
-// 	,data.url('ejs_production.js') 
-// 	,data.url('mutation-summary.js')
-// 	,data.url('jquery.mutation-summary.js')
-// 	,data.url('utils.js')
-// 	,data.url('reverse.js')
-// 	,data.url('google-search.js')],
-//     onAttach: function(worker){
-// 	worker.on('message', function(request){
-// 	    if(request.kind == 'pageA'){
-// 		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-// 		// 	chrome.pageAction.show(sender.tab.id);
-// 	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
-//  		tc.sendStat(request.key);
-// 	    } else if(request.handle){
-// 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
-// 	    } else {
-//  		console.log("couldn't get a handle",request);
-// 	    }
-// 	});
-//     }
-// });		
+pageMod.PageMod({
+    include : ["*.www.google.com",
+	       "*.maps.google.com"],
+    attachTo: "top",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.3.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('mutation-summary.js')
+	,data.url('jquery.mutation-summary.js')
+	,data.url('utils.js')
+	,data.url('reverse.js')
+	,data.url('google-search.js')],
+    onAttach: function(worker){
+	worker.on('message', function(request){
+	    if(request.kind == 'pageA'){
+		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
+		// 	chrome.pageAction.show(sender.tab.id);
+	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+ 		tc.sendStat(request.key);
+	    } else if(request.handle){
+		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+	    } else {
+ 		console.log("couldn't get a handle",request);
+	    }
+	});
+    }
+});		
 
-var db = new ydn.db.Storage('test');
-console.log(db.getName());
-var clog = function(r) { console.log(r.value); }
-q = db.put({name: "store1", keyPath: "id"}, {id: "id1", value: "value1"});
-q.done(function(x){ console.log("put done",x) });
-q.fail(function(x){ console.log("put fail",x) });
-//db.put({name: "store1", keyPath: "id"}, {id: "id2", value: "value2"});
-db.get("store1", "id1").done(clog);
-db.from('store1').list(100).done(
-    function(results){
-	console.log('done',results.length);
-	for(var i in results){
-	    console.log(i,results[i].id);
-	}});
-db.values('store1').done(
-    function(results){
-	console.log('done',results.length);
-	for(var i in results){
-	    console.log(i,results[i].id);
-	}});
+setTimeout(function(){
+    console.log('campaigns',tc.campaigns);
+    tc.db.thing.query('handles').bound('domain:leahy','domain:leahy}').execute().done(function(x){console.log('domain',x)});
+    tc.db.thing.query('handles').only('facebook:senatorpatrickleahy').execute().done(function(x){console.log('fb',x)})
+}, 5000);
