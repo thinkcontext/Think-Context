@@ -3,7 +3,7 @@ function Ext(){
     _self.debug = 2;
     _self.schema = {
 	thing: {
-	    key: { keyPath: '_id' , autoIncrement: true },
+	    key: { keyPath: '_id' },
 	    // Optionally add indexes
 	    indexes: {
                 handles: { multiEntry: true },
@@ -25,7 +25,7 @@ function Ext(){
     _self.campaigns = {};    
     
     db.open({server:_self.dbName,
-	       version: 1
+	       version: 2
 	       , schema:_self.schema})
 	.done( function(db){
 	    _self.db = db;
@@ -33,25 +33,26 @@ function Ext(){
 	    _self.getOptions();
 	    _self.getNotifications();
 	    
+	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
+
+	    if(lastSyncTime == 0){
+    		// we haven't done a sync before do it immediately
+    		_self.sync();
+	    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    		// we haven't done one in 4 hrs so do one 
+    		// but wait a little bit first to not lag browser start
+    		setTimeout(
+    		    function(){
+    			_self.sync();
+    		    }
+    		    , 5 * 60 * 1000); // 5 minutes 
+	    }
+	    
+	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 	});    
 
-    // var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
-    // if(lastSyncTime == 0){
-    // 	// we haven't done a sync before do it immediately
-    // 	_self.sync();
-    // } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    // 	// we haven't done one in 4 hrs so do one 
-    // 	// but wait a little bit first to not lag browser start
-    // 	setTimeout(
-    // 	    function(){
-    // 		_self.sync();
-    // 	    }
-    // 	    , 5 * 60 * 1000); // 5 minutes 
-    // }
-    
-    // setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-    // setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 }
 
 Ext.prototype = {

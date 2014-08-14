@@ -157,9 +157,9 @@
                 if ( record.item && record.key ) {
                     var key = record.key;
                     record = record.item;
-                    req = store.add( record , key );
+                    req = store.put( record , key );
                 } else {
-                    req = store.add( record );
+                    req = store.put( record );
                 }
 
                 req.onsuccess = function ( e ) {
