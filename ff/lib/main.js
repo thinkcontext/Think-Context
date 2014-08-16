@@ -17,7 +17,7 @@ function Ext(){
     _self.debug = 2;
     _self.schema = {
 	thing: {
-	    key: { keyPath: '_id' , autoIncrement: true },
+	    key: { keyPath: '_id' },
 	    // Optionally add indexes
 	    indexes: {
                 handles: { multiEntry: true },
@@ -39,56 +39,33 @@ function Ext(){
     _self.campaigns = {};    
     
     dbjs.open({server:_self.dbName,
-	       version: 1
+	       version: 2
 	       , schema:_self.schema})
 	.done( function(db){
 	    _self.db = db;
+	    _self.onInstallUpdate();
 	    _self.getSubscribed();
 	    _self.getOptions();
 	    _self.getNotifications();
 	    
-	    if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
-		console.log('loadReason',s.loadReason);
-		var url;
-		_self.initialCamps();
-		_self.setVersionTime();
-		// if(s.loadReason == 'install'){
-		// 	url = "options.html?install";
-		// }else if(s.loadReason == "update"){
-		// 	url = "options.html?update";
-		// 	// port me
-		// 	// remove websql tables
-		// 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-		// 	// olddb.transaction(function(tx){
-		// 	//     tx.executeSql('drop table template',[]); 
-		// 	//     tx.executeSql('drop table place',[]); 
-		// 	//     tx.executeSql('drop table place_data',[]); 
-		// 	//     tx.executeSql('drop table results',[]); 
-		// 	// });
-		//}
-		//    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
+	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
+	    
+	    if(lastSyncTime == 0 && _self.getVersionTime()){
+    		// we haven't done a sync before do it immediately
+    		_self.sync();
+	    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    		// we haven't done one in 4 hrs so do one 
+    		// but wait a little bit first to not lag browser start
+    		setTimeout(
+    		    function(){
+    			_self.sync();
+    		    }
+    		    , 5 * 60 * 1000); // 5 minutes 
 	    }
-	    _self.sync();
-	});
-    
-
-    // var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-
-    // if(lastSyncTime == 0){
-    // 	// we haven't done a sync before do it immediately
-    // 	_self.sync();
-    // } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    // 	// we haven't done one in 4 hrs so do one 
-    // 	// but wait a little bit first to not lag browser start
-    // 	setTimeout(
-    // 	    function(){
-    // 		_self.sync();
-    // 	    }
-    // 	    , 5 * 60 * 1000); // 5 minutes 
-    // }
-    
-    // setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-    // setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+	    
+	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+	});    
 }
 
 Ext.prototype = {
@@ -184,121 +161,99 @@ Ext.prototype = {
     fetchMetaDeactivated: function(){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
-	Request({
-	    url:_self.metaDeactivatedUrl, 
-	    content: {startkey: metaDeact,
-		      rando: Math.random() // remove me, pierces cache
-		     } ,
-	    onComplete: function(response){
-		var data = response.json;
-		var rows = data.rows;
-		if(rows.length > 0){
-		    for(var x = 0; x < rows.length; x++){
-			_self.db.thing.remove(rows[x].key).done();
-		    }
-		    _self.lsSet('metadea', rows[rows.length -1].key);
-		}
-		setTimeout(function(){_self.getSubscribed();},500);
-	    }	
-	}).get();
+	_self.getJSON(_self.metaDeactivatedUrl, 
+		  {startkey: metaDeact,
+		   rando: Math.random() // remove me, pierces cache
+		  } ,
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  for(var x = 0; x < rows.length; x++){
+			      _self.db.thing.remove(rows[x].key).done();
+			  }
+			  _self.lsSet('metadea', rows[rows.length -1].key);
+		      }
+		      setTimeout(function(){_self.getSubscribed();},500);
+		  });
     },
     
     fetchMetaData: function(){
 	console.log('fetchMetaData');
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
-	Request({
-	    url: _self.metaUrl,
-	    content: { include_docs: true,
-		       startkey: metaSeq,
-		       rando: Math.random() // remove me, pierces cache 
-		     },
-	    onComplete: function(response){
-		var data = response.json;
-		var rows = data.rows;
-		if(rows.length > 0){
-		    console.error("fetchMetaData",rows.length);
-		    var insert = rows.map( function(x){ return x.doc; } );
-		    req = _self.db.thing.add(insert).done(
-		    	function(){
-			    console.log('fetchMetaData insert success');
-		    	    // _self.lsSet('metaseq', rows[rows.length -1].key);
-		    	    // _self.fetchMetaDeactivated();
-			    // var q = _self.db.from('thing').list(100);
-			    // q.fail(
-			    // 	function(e){ console.error("fail", e.message)});
-			    // q.done(
-			    // 	function(results){
-			    // 	    console.log('done',results.length);
-			    // 	    for(var i in results){
-			    // 		console.log(i,results[i]._id);
-			    // 	    }	
-			    // 	});
-		    	}
-		    );
-		    req.fail(function(e) {
-		    	// there was a insert problem 
-		    	console.error('fetchMetaData',e);
-		    });
-		} else {
-		    _self.fetchMetaDeactivated();
-	    	}		      
-	    }
-	}).get();
+	_self.getJSON(_self.metaUrl,
+		  { include_docs: true,
+		    startkey: metaSeq,
+		    rando: Math.random() // remove me, pierces cache 
+		  },		  
+		  function(data){
+		      var rows = data.rows;
+		      if(rows.length > 0){
+			  console.error("fetchMetaData",rows.length);
+			  var insert = rows.map( function(x){ return x.doc; } );
+			  req = _self.db.thing.add(insert).done(
+		    	      function(){
+				  console.log('fetchMetaData insert success');
+		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
+		    		  _self.fetchMetaDeactivated();
+		    	      }
+			  );
+			  req.fail(function(e) {
+		    	      // there was a insert problem 
+		    	      console.error('fetchMetaData',e);
+			  });
+		      } else {
+			  _self.fetchMetaDeactivated();
+	    	      }		      
+	    });
+
     },
     
     fetchCampaignDeactivated: function(campaign){
 	var _self = this;
 	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
-	Request({
-	    url: _self.deactivateUrl, 
-	    content: {
-		startkey: JSON.stringify([ campaign, campDeact ]),
-		endkey: JSON.stringify([ campaign, {} ]),
-		rando: Math.random() // remove me, pierces cache
-	    } ,
-	    onComplete: function(response){
-		var data = response.json;
-		var rows = data.rows;
-		if(rows.length > 0){
-		    for(var x = 0; x < rows.length; x++){
-			_self.db.thing.remove(rows[x].key).done();
-		    }
-		    _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
-		}
-	    }}).get();
+	_self.getJSON(_self.deactivateUrl, 
+		      {startkey: JSON.stringify([ campaign, campDeact ]),
+		       endkey: JSON.stringify([ campaign, {} ]),
+		       rando: Math.random() // remove me, pierces cache
+		      } ,
+		      function(data){
+			  var rows = data.rows;
+			  if(rows.length > 0){
+			      for(var x = 0; x < rows.length; x++){
+				  _self.db.thing.remove(rows[x].key).done();
+			      }
+			      _self.lsSet('dea' + campaign, rows[rows.length -1].key[1] + 1);
+			  }});		  
     },
 
     fetchCampaignData: function(campaign){
 	var _self = this;
 	var campSeq = parseInt(_self.lsGet('seq' + campaign)) || 0;
-	Request({url: _self.dataUrl, 
-		 content: 
-		 {include_docs: true,
-		  startkey: JSON.stringify([ campaign, campSeq ]),
-		  endkey: JSON.stringify([ campaign, {} ]),
-		  rando: Math.random() // remove me, pierces cache
-		 } ,
-		 onComplete: function(response){
-		     var data = response.json;
-		     var rows = data.rows;
-		     if(rows.length > 0){
-			 var insert = rows.map( function(x){ return x.doc } );
-		      	 req = _self.db.thing.add(insert);
-		      	 req.done(
-			     function(){
-		      		 _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
-		      		 _self.fetchCampaignDeactivated(campaign);
-			     }
-		      	 );
-		      	 req.fail(function(e,x) {
-		      	     // there was a insert problem 
-		      	     console.error('fetchCampaignData fail',campaign,x.results);
-		      	 });
-		     } else {
-		      	 _self.fetchCampaignDeactivated(campaign);
-		     }
-		 }}).get();				  
+	_self.getJSON(_self.dataUrl, 
+		      {include_docs: true,
+		       startkey: JSON.stringify([ campaign, campSeq ]),
+		       endkey: JSON.stringify([ campaign, {} ]),
+		       rando: Math.random() // remove me, pierces cache
+		      } ,
+		      function(data){
+			  var rows = data.rows;
+			  if(rows.length > 0){
+			      var insert = rows.map( function(x){ return x.doc } );
+		      	      req = _self.db.thing.add(insert);
+		      	      req.done(
+				  function(){
+		      		      _self.lsSet('seq' + campaign, rows[rows.length -1].key[1] + 1);
+		      		      _self.fetchCampaignDeactivated(campaign);
+				  }
+		      	      );
+		      	      req.fail(function(e,x) {
+		      		  // there was a insert problem 
+		      		  console.error('fetchCampaignData fail',campaign,x);
+		      	      });
+			  } else {
+		      	      _self.fetchCampaignDeactivated(campaign);
+			  }});
     },
     
     sync: function(){	
@@ -314,7 +269,7 @@ Ext.prototype = {
     
     sendStat: function(key){
 	if(key.match(/^\w+$/))
-	    Request({url:'http://thinkcontext.org/s/?' + key}).get();
+	    this.get('http://thinkcontext.org/s/?' + key);
     },
     lookup: function(handle,request,callback){
 	var _self = this;
@@ -442,13 +397,12 @@ Ext.prototype = {
 	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
 	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
 	    // its been a month so lets check    
-	    Request({url:_self.versionURL,
-		     onComplete: function(response){
-			 var results = response.json;
-			 if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
-			     _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
-			 }
-		     }}).get();
+	    _self.getJSON(_self.versionURL,
+			  function(results){
+			      var results = response.json;
+			      if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
+				  _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
+			      }});
 	} else {
 	    _self.setVersionTime();
 	}	
@@ -490,8 +444,12 @@ Ext.prototype = {
 	var _self = this, d = new Date;
 	_self.lsSet('versionTime', d.toJSON());
     },
+    setVersionTime: function(){
+	var _self = this, d = new Date;
+	_self.lsSet('versionTime', d.toJSON());
+    },
     getVersionTime: function(){
-	var _self = this, j, ret;
+	var _self = this, j, ret = null;
 	j = _self.lsGet('versionTime');
 	if(j)
 	    ret = new Date(j);
@@ -509,12 +467,38 @@ Ext.prototype = {
     get: function(url){
 	// simulate jQuery's $.get
 	Request({url:url}).get();
-    }        
+    },        
+    onInstallUpdate: function(){
+	var _self = this;
+	if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
+	    console.log('loadReason',s.loadReason);
+	    var url;
+	    _self.initialCamps();
+	    _self.setVersionTime();
+	    // if(s.loadReason == 'install'){
+	    // 	url = "options.html?install";
+	    // }else if(s.loadReason == "update"){
+	    // 	url = "options.html?update";
+	    // 	// port me
+	    // 	// remove websql tables
+	    // 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	    // 	// olddb.transaction(function(tx){
+	    // 	//     tx.executeSql('drop table template',[]); 
+	    // 	//     tx.executeSql('drop table place',[]); 
+	    // 	//     tx.executeSql('drop table place_data',[]); 
+	    // 	//     tx.executeSql('drop table results',[]); 
+	    // 	// });
+	    //}
+	    //    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
+	}
+    }
 }
 
 var tc = new Ext();
 
 // port me
+
+
 // chrome.pageAction.onClicked.addListener(
 //     function(tab){
 // 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
@@ -573,6 +557,5 @@ pageMod.PageMod({
 
 setTimeout(function(){
     console.log('campaigns',tc.campaigns);
-    tc.db.thing.query('handles').bound('domain:leahy','domain:leahy}').execute().done(function(x){console.log('domain',x)});
-    tc.db.thing.query('handles').only('facebook:senatorpatrickleahy').execute().done(function(x){console.log('fb',x)})
+    tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
 }, 5000);

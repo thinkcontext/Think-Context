@@ -34,8 +34,8 @@ function Ext(){
 	    _self.getNotifications();
 	    
 	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-
-	    if(lastSyncTime == 0){
+	    
+	    if(lastSyncTime == 0 && _self.getVersionTime()){
     		// we haven't done a sync before do it immediately
     		_self.sync();
 	    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
@@ -181,18 +181,8 @@ Ext.prototype = {
 			  req = _self.db.thing.add(insert).done(
 		    	      function(){
 				  console.log('fetchMetaData insert success');
-		    		  // _self.lsSet('metaseq', rows[rows.length -1].key);
-		    		  // _self.fetchMetaDeactivated();
-				  // var q = _self.db.from('thing').list(100);
-				  // q.fail(
-				  // 	function(e){ console.error("fail", e.message)});
-				  // q.done(
-				  // 	function(results){
-				  // 	    console.log('done',results.length);
-				  // 	    for(var i in results){
-				  // 		console.log(i,results[i]._id);
-				  // 	    }	
-			    // 	});
+		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
+		    		  _self.fetchMetaDeactivated();
 		    	      }
 			  );
 			  req.fail(function(e) {
@@ -220,7 +210,7 @@ Ext.prototype = {
 			      for(var x = 0; x < rows.length; x++){
 				  _self.db.thing.remove(rows[x].key).done();
 			      }
-			      _self.lsSet('dea' + campaign, rows[rows.length -1].key[1]);
+			      _self.lsSet('dea' + campaign, rows[rows.length -1].key[1] + 1);
 			  }});		  
     },
 
@@ -240,7 +230,7 @@ Ext.prototype = {
 		      	      req = _self.db.thing.add(insert);
 		      	      req.done(
 				  function(){
-		      		      _self.lsSet('seq' + campaign, rows[rows.length -1].key[1]);
+		      		      _self.lsSet('seq' + campaign, rows[rows.length -1].key[1] + 1);
 		      		      _self.fetchCampaignDeactivated(campaign);
 				  }
 		      	      );
@@ -356,14 +346,14 @@ Ext.prototype = {
     },
     
     sendNotification: function(title,message){
-	// chrome.notifications.create(
-	//     result._id
-	//     , {type: "basic"
-	//        , title: title
-	//        , message: message
-	//        , iconUrl: 'icons/tc-64.png'
-	//       }
-	//     , function(x){}	    );
+	chrome.notifications.create(
+	    result._id
+	    , {type: "basic"
+	       , title: title
+	       , message: message
+	       , iconUrl: 'icons/tc-64.png'
+	      }
+	    , function(x){}	    );
     },
     
     getNotifications: function(){
@@ -441,12 +431,8 @@ Ext.prototype = {
 	var _self = this, d = new Date;
 	_self.lsSet('versionTime', d.toJSON());
     },
-    setVersionTime: function(){
-	var _self = this, d = new Date;
-	_self.lsSet('versionTime', d.toJSON());
-    },
     getVersionTime: function(){
-	var _self = this, j, ret;
+	var _self = this, j, ret = null;
 	j = _self.lsGet('versionTime');
 	if(j)
 	    ret = new Date(j);
