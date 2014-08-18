@@ -51,8 +51,6 @@ function Ext(){
 	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
 	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 	});    
-
-
 }
 
 Ext.prototype = {

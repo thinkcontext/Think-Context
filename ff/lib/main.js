@@ -11,6 +11,7 @@ setTimeout = time.setTimeout;
 clearTimeout = time.clearTimeout;
 setInterval = time.setInterval;
 clearInterval = time.clearInterval;
+var ui = require("sdk/ui");
 var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
 
 function Ext(){
@@ -87,13 +88,17 @@ Ext.prototype = {
 	    });
     },
 
-    saveCampaigns: function(campaigns){
+    saveOptions: function(request){
 	var _self = this;
-	campaigns = _self.uniqueArray(campaigns.sort());
+	var campaigns = _self.uniqueArray(request.campaigns.sort());
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
 	    _self.resetDB( function(){ _self.sync() });
+	}
+	if(request.options.opt_popD != _self.opt_popD){
+	    _self.opt_popD = request.options.opt_popD;
+	    _self.lsSet('opt_popD',_self.opt_popD);
 	}
     },
 
@@ -131,6 +136,22 @@ Ext.prototype = {
 	}
     },
     
+    sendOptions: function(callback){
+	var _self = this;
+	var ret = { campaigns: _self.campaigns, options: {opt_popD: _self.opt_popd }};
+	_self.getAvailableCampaigns(
+	    function(x){ 
+		ret.availableCampaigns = [];
+		for(var z in x){
+		    ret.availableCampaigns.push(x[z]);
+		}
+		_self.getAvailableActions(
+		    function(y){ 
+			ret.availableActions = y;
+			callback(ret);
+		    })});
+    },
+
     getAvailableActions: function(callback){
 	var _self = this, ret = {};
 	_self.db.thing.query('type').only('action').execute().done(
@@ -511,10 +532,31 @@ var tc = new Ext();
 // 	chrome.tabs.create({url:"options.html"});
 //     });
 
+pageMod.PageMod(
+    { include:[ "resource://*" ],
+      attachTo: "top",
+      contentScriptWhen:  'ready',
+      contentScriptFile: [ data.url('jquery-2.0.3.min.js'),
+			   data.url('options.js') ],
+      onAttach: function(worker){
+	  worker.on('message', function(request){
+	      if(request.kind == 'sendOptions'){
+		  tc.sendOptions(
+		      function(r){
+			  console.log('sendOptions worker message',r);
+			  worker.postMessage(r);
+		      }
+		  );
+	      } else if(request.kind == 'saveOptions'){
+		  tc.saveOptions(request);
+ 	      }
+	  });
+      }
+    }
+);
 
 pageMod.PageMod({
-    include : ["*.www.google.com",
-	       "*.maps.google.com"],
+    include : ["http://*","https://"],
     attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
@@ -532,10 +574,7 @@ pageMod.PageMod({
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
-	    if(request.kind == 'pageA'){
-		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-		// 	chrome.pageAction.show(sender.tab.id);
-	    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
+	    if(request.kind == 'sendstat' && !sender.tab.incognito){
  		tc.sendStat(request.key);
 	    } else if(request.handle){
 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
@@ -545,6 +584,15 @@ pageMod.PageMod({
 	});
     }
 });		
+
+var action_button = ui.ActionButton({
+  id: "tcOptions",
+  label: "thinkContext Options",
+  icon: "./tc-16.png",
+  onClick: function(state) {
+      tabs.open(data.url('options.html'));
+  }
+});
 
 var tabWorkers = {};
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
@@ -654,8 +702,13 @@ urlHandle = function(url){
 }
 
 
-// setTimeout(function(){
-//     console.log('campaigns',tc.campaigns);
-//     tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
-// }, 5000);
+setTimeout(function(){
+    console.log('setTimeout');
+    tc.sendOptions(function(x){
+	console.log('sendOptions',x);
+    });
+
+     console.log('campaigns',tc.campaigns);
+     tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
+}, 5000);
 
