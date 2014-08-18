@@ -27,8 +27,8 @@ function Ext(){
     db.open({server:_self.dbName,
 	       version: 2
 	       , schema:_self.schema})
-	.done( function(db){
-	    _self.db = db;
+	.done( function(dbjs){
+	    _self.db = dbjs;
 	    _self.getSubscribed();
 	    _self.getOptions();
 	    _self.getNotifications();

@@ -21,6 +21,17 @@ tc.registerResponse = function(kind, func){
     tc.responses[kind] = func;
 }
 
+// ff
+
+tc.registerResponse('tcPopD'
+		    ,function(r){
+			if(tc.popD.dialog('isOpen')){
+			    tc.popD.dialog('close');
+			} else {
+			    tc.popD.dialog('open');
+			}
+		    });
+
 // if(window.top === window){ // don't listen in an iframe
 //     chrome.extension.onMessage.addListener(
 // 	function(request, sender, sendResponse){
@@ -90,7 +101,7 @@ tc.onPop = function(request){
 	if(autoOpen){
 	    d.dialog('open');
 	}
-	tc.sendMessage({kind:'pageA',icon:dd.icon});
+
 	$('div#tcpopd a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});

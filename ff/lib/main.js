@@ -1,4 +1,4 @@
-var dbjs = require('./db.js');
+var db = require('./db.js');
 var Request = require('sdk/request').Request;
 var s = require("sdk/self");
 var data = s.data;
@@ -11,6 +11,7 @@ setTimeout = time.setTimeout;
 clearTimeout = time.clearTimeout;
 setInterval = time.setInterval;
 clearInterval = time.clearInterval;
+var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
 
 function Ext(){
     var _self = this;
@@ -38,11 +39,11 @@ function Ext(){
     _self.actions = {};
     _self.campaigns = {};    
     
-    dbjs.open({server:_self.dbName,
+    db.open({server:_self.dbName,
 	       version: 2
 	       , schema:_self.schema})
-	.done( function(db){
-	    _self.db = db;
+	.done( function(dbjs){
+	    _self.db = dbjs;
 	    _self.onInstallUpdate();
 	    _self.getSubscribed();
 	    _self.getOptions();
@@ -510,19 +511,6 @@ var tc = new Ext();
 // 	chrome.tabs.create({url:"options.html"});
 //     });
 
-// browser specific
-// function onRequest(request, sender, callback) {
-//     if(request.kind == 'pageA'){
-// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
-// 	chrome.pageAction.show(sender.tab.id);
-//     } else if(request.kind == 'sendstat' && !sender.tab.incognito){
-// 	tc.sendStat(request.key);
-//     } else if(request.handle){
-// 	tc.lookup(request.handle,request,callback);
-//     } else {
-// 	console.log("couldn't get a handle",request);
-//     }   
-// }
 
 pageMod.PageMod({
     include : ["*.www.google.com",
@@ -538,8 +526,11 @@ pageMod.PageMod({
 	,data.url('jquery.mutation-summary.js')
 	,data.url('utils.js')
 	,data.url('reverse.js')
-	,data.url('google-search.js')],
+	,data.url('google-search.js')
+
+],
     onAttach: function(worker){
+	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
 	    if(request.kind == 'pageA'){
 		// 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
@@ -555,7 +546,116 @@ pageMod.PageMod({
     }
 });		
 
-setTimeout(function(){
-    console.log('campaigns',tc.campaigns);
-    tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
-}, 5000);
+var tabWorkers = {};
+var urlbarButton = require("urlbarbutton").UrlbarButton, button;
+button = urlbarButton({id: 'tcpopd'
+		       , onClick: function(){
+			   tabWorkers[tabs.activeTab.id].postMessage({kind:'tcPopD'});
+		       }
+		      });
+
+var buttonTab = function(tab) {
+    button.setVisibility(false,tab.url);
+    button.setImage(false,tab.url);
+    var handle = new urlHandle(tab.url);
+    if(handle.handle){
+	tc.lookup(handle.handle,
+		  { kind: 'link',
+		    handle: handle.handle		    
+		  },
+		  function(r){
+		      var results = r.results;
+		      console.log('buttonTab results',results);
+		      var icon,result;
+		      for(var i in results){
+			  result = results[i];
+			  for(var j in result.campaigns){
+			      campaign = result.campaigns[j];
+			      if(campaign.status == 'D' || ! campaign.action || typeof campaign.action != 'object')
+				  continue;
+			      if(icon){
+				  icon = defaultIcon;
+			      } else {
+				  icon = campaign.action.icon;
+			      }
+			  }
+		      }
+		      console.log('buttonTab icon',icon);
+		      button.setImage(icon,tab.url);
+		      button.setVisibility(true,tab.url);
+		  });
+    }
+};
+
+var buttonTabClose = function(tab){
+    delete tabWorkers[tab.id];
+};
+
+tabs.on('ready', buttonTab);
+tabs.on('activate', buttonTab);
+tabs.on('close',buttonTabClose);
+
+urlHandle = function(url){
+    tc.debug >= 2 && console.log('urlHandle',url);
+    url = url.trim();
+    if(!url.match(/^https?:\/\/\w/))
+	return null;
+    this.url = url;
+    var m, sp = url.split('/');
+    var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
+    var path = sp.slice(3).join('/');
+    this.domain = domain;
+    this.path = path;
+    
+    if(domain == 'twitter.com' && (m = path.match(/^(\w+)/))){
+	this.kind = 'twitter';
+	this.hval = m[1].toLowerCase();
+    } else if(domain == 'tripadvisor.com' && (m = path.match(/_Review-(g[0-9]+-d[0-9]+)/))){
+	this.kind = 'tripadvisor';
+	this.hval = m[1];
+    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/^([^\?\/\#]+)/)))){
+	this.kind = 'facebook';
+	this.hval = m[1].toLowerCase();
+    } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
+	this.kind = 'yelp';
+	this.hval = m[1];
+    } else if(domain == 'hotels.com' && (m = path.match(/ho([0-9]+)/))){
+	this.kind = 'hcom';
+	this.hval = m[1];
+    } else if(domain == 'orbitz.com' && (m = path.match(/(h[0-9]+)/))){
+	this.kind = 'orbitz';
+	this.hval = m[1];
+    } else if(domain == 'expedia.com' && (m = path.match(/(h[0-9]+)/))){
+	this.kind = 'expedia';
+	this.hval = m[1];
+    } else if(domain == 'kayak.com' && (m = path.match(/([0-9]+).ksp/))){
+	this.kind = 'kayak';
+	this.hval = m[1];
+    } else if(domain == 'priceline.com' && (m = path.match(/-([0-9]{5,10})-/))){
+	this.kind = 'priceline';
+	this.hval = m[1];
+    } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
+	this.kind = 'imdb';
+	this.hval = m[1];
+    } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
+	this.kind = 'gplus';
+	this.hval = m[1];
+    } else if(domain == 'en.wikipedia.org' && (m = path.match(/wiki\/([\w]+)/))){
+	this.kind = 'wiki'
+	this.hval = m[1];
+    } else {
+	this.kind = 'domain';
+	this.hval = domain + '/' + path;
+    }
+    if(this.kind && this.hval)
+	this.handle = this.kind + ':' + this.hval;
+    else 
+    	return null;
+}
+
+
+// setTimeout(function(){
+//     console.log('campaigns',tc.campaigns);
+//     tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
+// }, 5000);
+
