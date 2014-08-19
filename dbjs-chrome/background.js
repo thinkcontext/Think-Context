@@ -343,9 +343,10 @@ Ext.prototype = {
 	_self.popd = _self.lsGet('opt_popD');
     },
     
-    sendNotification: function(title,message){
+    sendNotification: function(id,title,message){
+	this.debug && console.log('sendNotification',title,message);
 	chrome.notifications.create(
-	    result._id
+	    id
 	    , {type: "basic"
 	       , title: title
 	       , message: message
@@ -356,20 +357,22 @@ Ext.prototype = {
     
     getNotifications: function(){
 	var _self = this;
-	var lnt = _self.lsGet('lastnotifytime');
+	var lnt = new Date(_self.lsGet('lastnotifytime')||0);
 	var now = new Date;
 	if(lnt){
-	    if(now - new Date(lnt) > 7 * 24 * 3600 * 1000){  // one week
+	    if(now - lnt > 7 * 24 * 3600 * 1000){  // one week
 		_self.checkOldVersion();
 		_self.db.thing.query('type').only('notification').execute().done(
 		    function(results){
 			var result;
+			console.log('notification results',results);
 			for(var i in results){
 			    result = results[i];
-			    if(result.notification_date >= lnt && result.kind == 'meta'){
-				_self.sendNotification(result.title,result.text);
+			    if(result.notification_date >= lnt.toJSON()){
+				_self.sendNotification(result._id,result.title,result.text);
 			    }
 			}
+			_self.lsSet('lastnotifytime',now.toJSON());
 		    }
 		);
 	    }
@@ -386,7 +389,7 @@ Ext.prototype = {
 			  function(results){
 			      var results = response.json;
 			      if(results.releaseDate - vt > 1000 * 3600 * 24 * 14 && results.version != currentVersion){
-				  _self.sendNotification("New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
+				  _self.sendNotification(1,"New Version Available","A new version is available and the one installed is more than 2 weeks out of date");
 			      }});
 	} else {
 	    _self.setVersionTime();

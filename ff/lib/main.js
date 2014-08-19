@@ -381,15 +381,14 @@ Ext.prototype = {
 	_self.popD = _self.lsGet('opt_popD');
     },
     
-    sendNotification: function(title,message){
-	// chrome.notifications.create(
-	//     result._id
-	//     , {type: "basic"
-	//        , title: title
-	//        , message: message
-	//        , iconUrl: 'icons/tc-64.png'
-	//       }
-	//     , function(x){}	    );
+	sendNotification: function(title,message){
+		notifications.notify(
+	    { title: title
+	    	, message: message
+	        , iconUrl: 'icons/tc-64.png'
+	        , onClick: function(x){ 
+	        	tabs.open(data.url('options.html'));
+	         }});
     },
     
     getNotifications: function(){
