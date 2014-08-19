@@ -60,7 +60,7 @@ function onResponse(message){
     		.appendTo("#campaigns");    	
 	}
 	if(opt_popD != null){
-	    $("[name='popD'] option[value='" + val + "']").map(
+	    $("[name='popD'] option[value='" + opt_popD + "']").map(
 		function(){
 		    this.selected = true;
 		});

@@ -91,6 +91,7 @@ Ext.prototype = {
     saveOptions: function(request){
 	var _self = this;
 	var campaigns = _self.uniqueArray(request.campaigns.sort());
+	console.log('saveOptions',request.options);
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
@@ -138,7 +139,7 @@ Ext.prototype = {
     
     sendOptions: function(callback){
 	var _self = this;
-	var ret = { campaigns: _self.campaigns, options: {opt_popD: _self.opt_popd }};
+	var ret = { campaigns: _self.campaigns, options: {opt_popD: _self.opt_popD }};
 	_self.getAvailableCampaigns(
 	    function(x){ 
 		ret.availableCampaigns = [];
@@ -347,7 +348,7 @@ Ext.prototype = {
     resultsPrep: function(request,callback,hmatch){
 	var _self = this;
 	if(request.kind == 'pop'){
-	    switch(_self.popd){
+	    switch(_self.popD){
 	    case 'never':
 		request.popD = false;
 		break;
@@ -377,7 +378,7 @@ Ext.prototype = {
 
     getOptions: function(){
 	var _self = this;
-	_self.popd = _self.lsGet('opt_popD');
+	_self.popD = _self.lsGet('opt_popD');
     },
     
     sendNotification: function(title,message){
