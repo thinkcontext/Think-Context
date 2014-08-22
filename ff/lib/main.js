@@ -20,7 +20,6 @@ function Ext(){
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
-	    // Optionally add indexes
 	    indexes: {
                 handles: { multiEntry: true },
                 type: { },
@@ -91,7 +90,6 @@ Ext.prototype = {
     saveOptions: function(request){
 	var _self = this;
 	var campaigns = _self.uniqueArray(request.campaigns.sort());
-	console.log('saveOptions',request.options);
 	if(campaigns.join(',') != _self.campaigns.join(',')){
 	    _self.lsSet('campaigns',JSON.stringify(campaigns));
 	    _self.campaigns = campaigns;
@@ -104,7 +102,6 @@ Ext.prototype = {
     },
 
     getSubscribed: function(){
-	console.log('getSubscribed');
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
 	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
@@ -129,7 +126,6 @@ Ext.prototype = {
 				    if(actions.indexOf(a.tid) >= 0)
 					_self.actions[a.tid] = a;
 				}
-				
 			    }
 			);
 		    }
@@ -167,7 +163,6 @@ Ext.prototype = {
     },
     
     getAvailableCampaigns: function(callback){
-	console.log("getAvailableCampaigns");
 	var _self = this, ret = {};
 	_self.db.thing.query('type').only('campaign').execute().done(
 	    function(results){
@@ -201,7 +196,6 @@ Ext.prototype = {
     },
     
     fetchMetaData: function(){
-	console.log('fetchMetaData');
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaUrl,
@@ -212,11 +206,9 @@ Ext.prototype = {
 		  function(data){
 		      var rows = data.rows;
 		      if(rows.length > 0){
-			  console.error("fetchMetaData",rows.length);
 			  var insert = rows.map( function(x){ return x.doc; } );
 			  req = _self.db.thing.add(insert).done(
 		    	      function(){
-				  console.log('fetchMetaData insert success');
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
 		    		  _self.fetchMetaDeactivated();
 		    	      }
@@ -229,7 +221,6 @@ Ext.prototype = {
 			  _self.fetchMetaDeactivated();
 	    	      }		      
 	    });
-
     },
     
     fetchCampaignDeactivated: function(campaign){
@@ -272,7 +263,7 @@ Ext.prototype = {
 		      	      );
 		      	      req.fail(function(e,x) {
 		      		  // there was a insert problem 
-		      		  console.error('fetchCampaignData fail',campaign,x);
+		      		  console.error('fetchCampaignData fail',campaign);
 		      	      });
 			  } else {
 		      	      _self.fetchCampaignDeactivated(campaign);
@@ -307,7 +298,6 @@ Ext.prototype = {
 		    request.results = [];
 		    for(var i in results){
 			for(var k in results[i].handles){
-			    console.log('handle',results[i].handles[k]);
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				hmatch = results[i].handles[k];
 				for(var j in results[i].campaigns){
@@ -381,32 +371,33 @@ Ext.prototype = {
 	_self.popD = _self.lsGet('opt_popD');
     },
     
-	sendNotification: function(title,message){
-		notifications.notify(
+    sendNotification: function(title,message){
+	notifications.notify(
 	    { title: title
-	    	, message: message
-	        , iconUrl: 'icons/tc-64.png'
-	        , onClick: function(x){ 
-	        	tabs.open(data.url('options.html'));
-	         }});
+	      , message: message
+	      , iconUrl: 'icons/tc-64.png'
+	      , onClick: function(x){ 
+	          tabs.open(data.url('options.html'));
+	      }});
     },
     
     getNotifications: function(){
 	var _self = this;
-	var lnt = _self.lsGet('lastnotifytime');
+	var lnt = new Date(_self.lsGet('lastnotifytime')||0);
 	var now = new Date;
 	if(lnt){
-	    if(now - new Date(lnt) > 7 * 24 * 3600 * 1000){  // one week
+	    if(now - lnt > 7 * 24 * 3600 * 1000){  // one week
 		_self.checkOldVersion();
 		_self.db.thing.query('type').only('notification').execute().done(
 		    function(results){
 			var result;
 			for(var i in results){
 			    result = results[i];
-			    if(result.notification_date >= lnt && result.kind == 'meta'){
-				_self.sendNotification(result.title,result.text);
+			    if(result.notification_date >= lnt.toJSON()){
+				_self.sendNotification(result._id,result.title,result.text);
 			    }
 			}
+			_self.lsSet('lastnotifytime',now.toJSON());
 		    }
 		);
 	    }
@@ -416,7 +407,7 @@ Ext.prototype = {
     },
     
     checkOldVersion: function(){	
-	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
+	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = s.version;
 	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
 	    // its been a month so lets check    
 	    _self.getJSON(_self.versionURL,
@@ -461,10 +452,6 @@ Ext.prototype = {
     },
     lsRm: function(x){
 	ss.storage[x] = null;
-    },
-    setVersionTime: function(){
-	var _self = this, d = new Date;
-	_self.lsSet('versionTime', d.toJSON());
     },
     setVersionTime: function(){
 	var _self = this, d = new Date;
@@ -518,20 +505,6 @@ Ext.prototype = {
 
 var tc = new Ext();
 
-// port me
-
-
-// chrome.pageAction.onClicked.addListener(
-//     function(tab){
-// 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
-//     });
-
-// port me
-// chrome.notifications.onClicked.addListener(
-//     function(notificationId){
-// 	chrome.tabs.create({url:"options.html"});
-//     });
-
 pageMod.PageMod(
     { include:[ "resource://*" ],
       attachTo: "top",
@@ -543,7 +516,6 @@ pageMod.PageMod(
 	      if(request.kind == 'sendOptions'){
 		  tc.sendOptions(
 		      function(r){
-			  console.log('sendOptions worker message',r);
 			  worker.postMessage(r);
 		      }
 		  );
@@ -613,7 +585,6 @@ var buttonTab = function(tab) {
 		  },
 		  function(r){
 		      var results = r.results;
-		      console.log('buttonTab results',results);
 		      var icon,result;
 		      for(var i in results){
 			  result = results[i];
@@ -628,7 +599,6 @@ var buttonTab = function(tab) {
 			      }
 			  }
 		      }
-		      console.log('buttonTab icon',icon);
 		      button.setImage(icon,tab.url);
 		      button.setVisibility(true,tab.url);
 		  });
@@ -701,14 +671,12 @@ urlHandle = function(url){
     	return null;
 }
 
+// setTimeout(function(){
+//     tc.sendOptions(function(x){
+// 	console.log('sendOptions',x);
+//     });
 
-setTimeout(function(){
-    console.log('setTimeout');
-    tc.sendOptions(function(x){
-	console.log('sendOptions',x);
-    });
-
-     console.log('campaigns',tc.campaigns);
-     tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
-}, 5000);
+//      console.log('campaigns',tc.campaigns);
+//      tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
+// }, 5000);
 

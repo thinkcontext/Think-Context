@@ -4,7 +4,6 @@ function Ext(){
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
-	    // Optionally add indexes
 	    indexes: {
                 handles: { multiEntry: true },
                 type: { },
@@ -107,7 +106,6 @@ Ext.prototype = {
 				    if(actions.indexOf(a.tid) >= 0)
 					_self.actions[a.tid] = a;
 				}
-				
 			    }
 			);
 		    }
@@ -174,11 +172,9 @@ Ext.prototype = {
 		  function(data){
 		      var rows = data.rows;
 		      if(rows.length > 0){
-			  console.error("fetchMetaData",rows.length);
 			  var insert = rows.map( function(x){ return x.doc; } );
 			  req = _self.db.thing.add(insert).done(
 		    	      function(){
-				  console.log('fetchMetaData insert success');
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
 		    		  _self.fetchMetaDeactivated();
 		    	      }
@@ -191,7 +187,6 @@ Ext.prototype = {
 			  _self.fetchMetaDeactivated();
 	    	      }		      
 	    });
-
     },
     
     fetchCampaignDeactivated: function(campaign){
