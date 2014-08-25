@@ -484,21 +484,22 @@ Ext.prototype = {
 	    var url;
 	    _self.initialCamps();
 	    _self.setVersionTime();
-	    // if(s.loadReason == 'install'){
-	    // 	url = "options.html?install";
-	    // }else if(s.loadReason == "update"){
-	    // 	url = "options.html?update";
-	    // 	// port me
-	    // 	// remove websql tables
-	    // 	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	    // 	// olddb.transaction(function(tx){
-	    // 	//     tx.executeSql('drop table template',[]); 
-	    // 	//     tx.executeSql('drop table place',[]); 
-	    // 	//     tx.executeSql('drop table place_data',[]); 
-	    // 	//     tx.executeSql('drop table results',[]); 
-	    // 	// });
-	    //}
-	    //    setTimeout(function(){tabs.open(data.url(url))}, 1000);	
+	    if(s.loadReason == 'install'){
+	    	url = "options.html?install";
+	    }else if(s.loadReason == "update"){
+	    	url = "options.html?update";
+	    	// port me
+	    	// remove websql tables
+	    	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	    	// olddb.transaction(function(tx){
+	    	//     tx.executeSql('drop table template',[]); 
+	    	//     tx.executeSql('drop table place',[]); 
+	    	//     tx.executeSql('drop table place_data',[]); 
+	    	//     tx.executeSql('drop table results',[]); 
+	    	// });
+	    }
+	    tc.fetchMetaData(function(){tabs.open(data.url(url))});
+	    setTimeout(function(){	tc.sync();}, 15000);	
 	}
     }
 }
@@ -540,9 +541,26 @@ pageMod.PageMod({
 	,data.url('jquery.mutation-summary.js')
 	,data.url('utils.js')
 	,data.url('reverse.js')
-	,data.url('google-search.js')
-
-],
+	,data.url("bing-search.js")
+	,data.url("congress.js")
+	,data.url("duckduckgo.js")
+	,data.url("expedia.js")
+	,data.url("facebook.js")
+	,data.url("google-mail.js")
+	,data.url("google-maps.js")
+	,data.url("google-place-page.js")
+	,data.url("google-search.js")
+	,data.url("hcom.js")
+	,data.url("imdb.js")
+	,data.url("kayak.js")
+	,data.url("orbitz.js")
+	,data.url("priceline.js")
+	,data.url("tripadvisor.js")
+	,data.url("twitter.js")
+	,data.url("wikipedia.js")
+	,data.url("yahoo-search.js")
+	,data.url("yelp.js")
+    ],
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
