@@ -1,8 +1,23 @@
+if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
 var tc = {};
 tc.found = false;
 tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
+
+    safari.self.addEventListener(
+	"message"
+	,function(e){
+	    if(e.message.kind == 'tcPopD')
+		if(tc.popD.dialog('isOpen')){
+		    tc.popD.dialog('close');
+		} else {
+		    tc.popD.dialog('open');
+		}				     
+	}
+	, false);
+
+
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
 tc.defaultTitle = "thinkContext";
 
@@ -323,4 +338,6 @@ tc.stCanon = function(st){
 			      'Ñ': 'N'
 			  }[m]
 		      });
+}
+
 }
