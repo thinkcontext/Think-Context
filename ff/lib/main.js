@@ -486,17 +486,18 @@ Ext.prototype = {
 	    _self.setVersionTime();
 	    if(s.loadReason == 'install'){
 	    	url = "options.html?install";
-	    }else if(s.loadReason == "update"){
+		// ff uses "upgrade" chrome uses "update"
+	    }else if(s.loadReason == "upgrade"){
 	    	url = "options.html?update";
-	    	// port me
+
 	    	// remove websql tables
-	    	// var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	    	// olddb.transaction(function(tx){
-	    	//     tx.executeSql('drop table template',[]); 
-	    	//     tx.executeSql('drop table place',[]); 
-	    	//     tx.executeSql('drop table place_data',[]); 
-	    	//     tx.executeSql('drop table results',[]); 
-	    	// });
+		var sql = require("sqlite");
+		sql.connect('thinkcontext');
+		sql.execute("drop table template",{}, null, null);
+		sql.execute("drop table place",{}, null, null);
+		sql.execute("drop table place_data",{}, null, null);
+		sql.execute("drop table results",{}, null, null);
+		sql = null;
 	    }
 	    tc.fetchMetaData(function(){tabs.open(data.url(url))});
 	    setTimeout(function(){	tc.sync();}, 15000);	
@@ -529,7 +530,7 @@ pageMod.PageMod(
 );
 
 pageMod.PageMod({
-    include : ["http://*","https://"],
+    include : ["http://*","https://*"],
     attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
@@ -563,6 +564,7 @@ pageMod.PageMod({
     ],
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;
+	console.log("worker",tabWorkers);
 	worker.on('message', function(request){
 	    if(request.kind == 'sendstat' && !sender.tab.incognito){
  		tc.sendStat(request.key);
@@ -588,6 +590,7 @@ var tabWorkers = {};
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 button = urlbarButton({id: 'tcpopd'
 		       , onClick: function(){
+			   console.log("tabworksers",tabs.activeTab.id,tabWorkers);
 			   tabWorkers[tabs.activeTab.id].postMessage({kind:'tcPopD'});
 		       }
 		      });
