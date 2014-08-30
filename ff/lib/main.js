@@ -16,7 +16,7 @@ var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAA
 
 function Ext(){
     var _self = this;
-    _self.debug = 2;
+    _self.debug = 0;
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
@@ -29,8 +29,8 @@ function Ext(){
         }
     };
     _self.dbName = 'tc';
-    _self.couch = 'http://127.0.0.1:5984/tc';
-    //    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    //_self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -207,7 +207,8 @@ Ext.prototype = {
 		      var rows = data.rows;
 		      if(rows.length > 0){
 			  var insert = rows.map( function(x){ return x.doc; } );
-			  req = _self.db.thing.add(insert).done(
+			  var req = _self.db.thing.add(insert)
+			  req.done(
 		    	      function(){
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
 		    		  _self.fetchMetaDeactivated();
@@ -215,7 +216,7 @@ Ext.prototype = {
 			  );
 			  req.fail(function(e) {
 		    	      // there was a insert problem 
-		    	      console.error('fetchMetaData',e);
+			      console.error('fetchMetaData fail',e);
 			  });
 		      } else {
 			  _self.fetchMetaDeactivated();
@@ -263,7 +264,6 @@ Ext.prototype = {
 		      	      );
 		      	      req.fail(function(e,x) {
 		      		  // there was a insert problem 
-		      		  console.error('fetchCampaignData fail',campaign);
 		      	      });
 			  } else {
 		      	      _self.fetchCampaignDeactivated(campaign);
@@ -434,7 +434,7 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts'];
+	var newCamps = ['congress','climatecounts','politifact','whoprofits','naacp'];
 	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){
@@ -480,7 +480,6 @@ Ext.prototype = {
     onInstallUpdate: function(){
 	var _self = this;
 	if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
-	    console.log('loadReason',s.loadReason);
 	    var url;
 	    _self.initialCamps();
 	    _self.setVersionTime();
@@ -564,7 +563,6 @@ pageMod.PageMod({
     ],
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;
-	console.log("worker",tabWorkers);
 	worker.on('message', function(request){
 	    if(request.kind == 'sendstat' && !sender.tab.incognito){
  		tc.sendStat(request.key);
@@ -590,7 +588,6 @@ var tabWorkers = {};
 var urlbarButton = require("urlbarbutton").UrlbarButton, button;
 button = urlbarButton({id: 'tcpopd'
 		       , onClick: function(){
-			   console.log("tabworksers",tabs.activeTab.id,tabWorkers);
 			   tabWorkers[tabs.activeTab.id].postMessage({kind:'tcPopD'});
 		       }
 		      });

@@ -1,6 +1,6 @@
 var tc = {};
 tc.found = false;
-tc.debug = 1;
+tc.debug = 0;
 tc.responses = {};
 tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
@@ -172,8 +172,13 @@ tc.insertPrev = function(n,request){
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
 	d = dd.dialog;
 
-    	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
-    	    .append($('<img>', { src: dd.icon }));
+	var oh = n.offsetHeight - 2;
+	if(oh > 16)
+	    oh = 16;
+	else if(oh < 0)
+	    oh = 14;
+	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
+    	    .append($('<img>', { src: dd.icon, height: oh, width: oh }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";
 	
@@ -315,6 +320,23 @@ tc.urlHandle = function(url){
 	this.handle = this.kind + ':' + this.hval;
     else 
     	return null;
+}
+
+//for congress, names frequently appear as either
+tc.stCanon = function(st){
+    return st.replace(/[áéíóúÉñÑ]/g,
+		      function(m){
+			  return {
+			      'á': 'a',
+			      'é': 'e',
+			      'í': 'i',
+			      'ó': 'o',
+			      'ú': 'u',
+			      'É': 'E',
+			      'ñ': 'n',
+			      'Ñ': 'N'
+			  }[m]
+		      });
 }
 
 // browser specific

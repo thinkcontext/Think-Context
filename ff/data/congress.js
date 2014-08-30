@@ -4,15 +4,15 @@ tc.registerResponse('congress',tc.onLink);
 tc.congress = {};
 
 tc.congress.doit = function(){
-    tc.congressPattern = "((Rep|Sen|Speaker|Leader|Congressm|Congressw)([\\S]*))\\s+([A-Z][a-zA-Z\\'\\-]+ ([A-Z]\\. )?[A-Z][a-zA-Z\\'\\-]+)";
+    tc.congressPattern = "((Rep|Sen|Speaker|Leader|Congressm|Congressw)([\\S]*))[ ]+([A-ZáéíóúÉñÑ][a-zA-ZáéíóúÉñÑ\\'\\-]+ ([A-ZáéíóúÉñÑ]\\. )?[A-ZáéíóúÉñÑ][a-zA-ZáéíóúÉñÑ\\'\\-]+)";
     var cRe = new RegExp(tc.congressPattern,'g');
 
     // make a list of candidate matches
 
-    var cs = tc.uniqueArray(document.body.textContent.match(cRe));
+    var cs = tc.uniqueArray(document.body.textContent.match(cRe)).slice(0,250);
 
     var cong, cons, tn, cm, range, nn, tcid, mArray, name;
-    //console.log(cs);
+    tc.debug >= 2 && console.log('congress found',cs);
     for(var q in cs){
 	cong = cs[q];
 	// find all nodes that contain a candidate string
@@ -37,8 +37,7 @@ tc.congress.doit = function(){
 			    name = mArray[4];
 			    if(mArray[5])
 				name = name.replace(mArray[5],'');
-			    name = name.toLowerCase().replace(' ','');
-
+			    name = tc.stCanon(name.toLowerCase().replace(' ',''));
 			    nn.setAttribute('tcid',tcid);
 			    //nn.style.backgroundColor = 'yellow'; //helps w/ debugging
 			    range = document.createRange();
