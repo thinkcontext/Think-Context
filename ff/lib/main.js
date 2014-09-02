@@ -176,7 +176,7 @@ Ext.prototype = {
 	    });
     },
 
-    fetchMetaDeactivated: function(){
+    fetchMetaDeactivated: function(callback){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaDeactivatedUrl, 
@@ -191,11 +191,13 @@ Ext.prototype = {
 			  }
 			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
+		      if(typeof callback == 'function')
+			  callback();			  
 		      setTimeout(function(){_self.getSubscribed();},500);
 		  });
     },
     
-    fetchMetaData: function(){
+    fetchMetaData: function(callback){
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaUrl,
@@ -211,7 +213,7 @@ Ext.prototype = {
 			  req.done(
 		    	      function(){
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
-		    		  _self.fetchMetaDeactivated();
+		    		  _self.fetchMetaDeactivated(callback);
 		    	      }
 			  );
 			  req.fail(function(e) {
@@ -219,7 +221,7 @@ Ext.prototype = {
 			      console.error('fetchMetaData fail',e);
 			  });
 		      } else {
-			  _self.fetchMetaDeactivated();
+			  _self.fetchMetaDeactivated(callback);
 	    	      }		      
 	    });
     },
@@ -479,6 +481,7 @@ Ext.prototype = {
     },        
     onInstallUpdate: function(){
 	var _self = this;
+	console.log('loadReason',s.loadReason);
 	if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
 	    var url;
 	    _self.initialCamps();
@@ -498,7 +501,10 @@ Ext.prototype = {
 		sql.execute("drop table results",{}, null, null);
 		sql = null;
 	    }
-	    tc.fetchMetaData(function(){tabs.open(data.url(url))});
+	    tc.fetchMetaData(function(){
+		tabs.open(data.url(url));
+		console.log('tab',url);
+	    });
 	    setTimeout(function(){	tc.sync();}, 15000);	
 	}
     }
