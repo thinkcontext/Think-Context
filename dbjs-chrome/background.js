@@ -1,6 +1,6 @@
 function Ext(){
     var _self = this;
-    _self.debug = 2;
+    _self.debug = 0;
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
@@ -13,8 +13,8 @@ function Ext(){
         }
     };
     _self.dbName = 'tc';
-    _self.couch = 'http://127.0.0.1:5984/tc';
-    //    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    //_self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -81,7 +81,7 @@ Ext.prototype = {
     },
 
     getSubscribed: function(){
-	console.log('getSubscribed');
+	tc.debug >= 2 && console.log('getSubscribed');
 	var _self = this, c;
 	if(c = _self.lsGet('campaigns')){
 	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
@@ -127,7 +127,7 @@ Ext.prototype = {
     },
     
     getAvailableCampaigns: function(callback){
-	console.log("getAvailableCampaigns");
+	tc.debug >= 2 && console.log("getAvailableCampaigns");
 	var _self = this, ret = {};
 	_self.db.thing.query('type').only('campaign').execute().done(
 	    function(results){
@@ -146,7 +146,7 @@ Ext.prototype = {
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaDeactivatedUrl, 
 		  {startkey: metaDeact,
-		   rando: Math.random() // remove me, pierces cache
+		   //rando: Math.random() // remove me, pierces cache
 		  } ,
 		  function(data){
 		      var rows = data.rows;
@@ -161,13 +161,13 @@ Ext.prototype = {
     },
     
     fetchMetaData: function(){
-	console.log('fetchMetaData');
+	tc.debug >= 2 && console.log('fetchMetaData');
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaUrl,
 		  { include_docs: true,
 		    startkey: metaSeq,
-		    rando: Math.random() // remove me, pierces cache 
+		    //rando: Math.random() // remove me, pierces cache 
 		  },		  
 		  function(data){
 		      var rows = data.rows;
@@ -264,7 +264,6 @@ Ext.prototype = {
 		    request.results = [];
 		    for(var i in results){
 			for(var k in results[i].handles){
-			    console.log('handle',results[i].handles[k]);
 			    if(handle.indexOf(results[i].handles[k]) == 0){
 				hmatch = results[i].handles[k];
 				for(var j in results[i].campaigns){
@@ -360,7 +359,7 @@ Ext.prototype = {
 		_self.db.thing.query('type').only('notification').execute().done(
 		    function(results){
 			var result;
-			console.log('notification results',results);
+			//console.log('notification results',results);
 			for(var i in results){
 			    result = results[i];
 			    if(result.notification_date >= lnt.toJSON()){
@@ -467,18 +466,19 @@ chrome.runtime.onInstalled.addListener(
 	tc.setVersionTime();
 	if(details.reason == "install"){	    
 	    url = "options.html?install";
-	}else if(details.reason == "update"){
-	    url = "options.html?update";
-	    // remove websql tables
-	    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	    olddb.transaction(function(tx){
-		tx.executeSql('drop table template',[]); 
-		tx.executeSql('drop table place',[]); 
-		tx.executeSql('drop table place_data',[]); 
-		tx.executeSql('drop table results',[]); 
-	    });
+	    // uncomment for production
+	// }else if(details.reason == "update"){
+	//     url = "options.html?update";
+	//     // remove websql tables
+	//     var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	//     olddb.transaction(function(tx){
+	// 	tx.executeSql('drop table template',[]); 
+	// 	tx.executeSql('drop table place',[]); 
+	// 	tx.executeSql('drop table place_data',[]); 
+	// 	tx.executeSql('drop table results',[]); 
+	//     });
 	}
-	tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
+	//tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
 	setTimeout(function(){	tc.sync();}, 15000);	
     });
 
