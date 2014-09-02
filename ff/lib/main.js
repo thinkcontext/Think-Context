@@ -503,7 +503,6 @@ Ext.prototype = {
 	    }
 	    tc.fetchMetaData(function(){
 		tabs.open(data.url(url));
-		console.log('tab',url);
 	    });
 	    setTimeout(function(){	tc.sync();}, 15000);	
 	}
