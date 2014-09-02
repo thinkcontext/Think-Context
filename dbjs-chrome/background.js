@@ -141,7 +141,7 @@ Ext.prototype = {
 	    });
     },
 
-    fetchMetaDeactivated: function(){
+    fetchMetaDeactivated: function(callback){
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaDeactivatedUrl, 
@@ -156,11 +156,13 @@ Ext.prototype = {
 			  }
 			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
+		      if(typeof callback == 'function')
+			  callback();			  
 		      setTimeout(function(){_self.getSubscribed();},500);
 		  });
     },
     
-    fetchMetaData: function(){
+    fetchMetaData: function(callback){
 	tc.debug >= 2 && console.log('fetchMetaData');
 	var _self = this;
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
@@ -176,7 +178,7 @@ Ext.prototype = {
 			  req = _self.db.thing.add(insert).done(
 		    	      function(){
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
-		    		  _self.fetchMetaDeactivated();
+		    		  _self.fetchMetaDeactivated(callback);
 		    	      }
 			  );
 			  req.fail(function(e) {
@@ -184,7 +186,7 @@ Ext.prototype = {
 		    	      console.error('fetchMetaData',e);
 			  });
 		      } else {
-			  _self.fetchMetaDeactivated();
+			  _self.fetchMetaDeactivated(callback);
 	    	      }		      
 	    });
     },
