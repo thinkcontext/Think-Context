@@ -24,9 +24,10 @@ function Ext(){
     _self.campaigns = {};    
     
     db.open({server:_self.dbName,
-	       version: 2
+	       version: 16
 	       , schema:_self.schema})
 	.done( function(dbjs){
+	    tc.debug >= 2 && console.log("dbjs done");
 	    _self.db = dbjs;
 	    _self.getSubscribed();
 	    _self.getOptions();
@@ -468,6 +469,7 @@ chrome.runtime.onInstalled.addListener(
 	tc.setVersionTime();
 	if(details.reason == "install"){	    
 	    url = "options.html?install";
+	    tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
 	    // uncomment for production
 	// }else if(details.reason == "update"){
 	//     url = "options.html?update";
@@ -479,8 +481,9 @@ chrome.runtime.onInstalled.addListener(
 	// 	tx.executeSql('drop table place_data',[]); 
 	// 	tx.executeSql('drop table results',[]); 
 	//     });
-	}
 	//tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
+	}
+
 	setTimeout(function(){	tc.sync();}, 15000);	
     });
 

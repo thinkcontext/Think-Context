@@ -24,7 +24,7 @@ function Ext(){
     _self.campaigns = {};    
     
     db.open({server:_self.dbName,
-	       version: 2
+	       version: 17
 	       , schema:_self.schema})
 	.done( function(dbjs){
 	    _self.db = dbjs;
