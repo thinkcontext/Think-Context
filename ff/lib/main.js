@@ -187,7 +187,7 @@ Ext.prototype = {
 		      var rows = data.rows;
 		      if(rows.length > 0){
 			  for(var x = 0; x < rows.length; x++){
-			      _self.db.thing.remove(rows[x].key).done();
+			      _self.db.thing.remove(rows[x].id).done();
 			  }
 			  _self.lsSet('metadea', rows[rows.length -1].key);
 		      }
@@ -235,10 +235,14 @@ Ext.prototype = {
 		       rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
-			  var rows = data.rows;
+			  var rows = data.rows, req;
 			  if(rows.length > 0){
 			      for(var x = 0; x < rows.length; x++){
-				  _self.db.thing.remove(rows[x].key).done();
+				  req = _self.db.thing.remove(rows[x].id);
+				  req.fail(function(x){
+				      _self.debug >= 4 && console.log('fetchCampaignDeactivated fail',x)});
+				  req.done(function(x){
+				      _self.debug >= 3 && console.log('fetchCampaignDeactivated succeed',x)});
 			      }
 			      _self.lsSet('dea' + campaign, rows[rows.length -1].key[1] + 1);
 			  }});		  
