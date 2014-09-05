@@ -1,19 +1,23 @@
 if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
 var tc = {};
 tc.found = false;
-tc.debug = 1;
+tc.debug = 2;
 tc.responses = {};
 tc.popD = null;
 
     safari.self.addEventListener(
 	"message"
 	,function(e){
-	    if(e.message.kind == 'tcPopD')
+	    tc.debug >= 2 && console.log(e);
+	    if(e.message.kind == 'tcPopD'){
 		if(tc.popD.dialog('isOpen')){
 		    tc.popD.dialog('close');
 		} else {
 		    tc.popD.dialog('open');
-		}				     
+		}			
+	    } else {
+		tc.onResponse(e);
+	    }
 	}
 	, false);
 
@@ -36,25 +40,12 @@ tc.registerResponse = function(kind, func){
     tc.responses[kind] = func;
 }
 
-if(window.top === window){ // don't listen in an iframe
-    safari.self.addEventListener(
-	"message"
-	,function(e){
-	    var request = e.message;
-	    if(request.kind == 'tcPopD')
-		if(tc.popD.dialog('isOpen')){
-		    tc.popD.dialog('close');
-		} else {
-		    tc.popD.dialog('open');
-		}
-	}
-    );
-}
-
-tc.onResponse = function(request){
+tc.onResponse = function(e){
+    var request = e.message;
     tc.debug  && console.log('onResponse',request,tc.responses);
     tc.responses[request.kind](request);
 }
+
 tc.sendMessage = function(request){
     tc.debug  && console.log('sendMessage',request);
     safari.self.tab.dispatchMessage(request.kind, request, tc.onResponse);
@@ -82,7 +73,9 @@ tc.onPop = function(request){
     var autoOpen = window.top === window ? request.popD : null; // don't open in iframe
     var dd = tc.renderResults(request.results,'tcpopd');
     var d;
+    var r = tc.random();
     if(dd){
+
 	d = dd.dialog;
 	d.dialog({
 	    title: dd.title
@@ -107,7 +100,31 @@ tc.onPop = function(request){
 	if(autoOpen){
 	    d.dialog('open');
 	}
-	tc.sendMessage({kind:'pageA',icon:dd.icon});
+	
+	// safari specific
+	// since safari has no page action equivalent make a
+	// semi-transparent icon on the page to do the job instead
+	// normally we'd do
+	// 	tc.sendMessage({kind:'pageA',icon:dd.icon});
+
+	$('body').append($('<img>',
+			   { id: r
+			     ,src: dd.icon
+			     ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
+	$('#'+r).click(function(){
+	    console.log('click');
+            d.dialog('open');
+            $(window).resize(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+            $(window).scroll(function(){
+                d.dialog({position:  [window.innerWidth - 350
+				      , 25 ]}); });
+        });
+        $('#'+r).hover(function(){$(this).css('opacity','1.0')}
+                       , function(){$(this).css('opacity','0.4')});
+	// end safari specific
+
 	$('div#tcpopd a[tcstat]').click(function(){
 	    tc.sendMessage({kind: 'sendstat'
 	 		    , key: this.attributes['tcstat'].value});

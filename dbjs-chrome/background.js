@@ -176,7 +176,8 @@ Ext.prototype = {
 		      var rows = data.rows;
 		      if(rows.length > 0){
 			  var insert = rows.map( function(x){ return x.doc; } );
-			  req = _self.db.thing.add(insert).done(
+			  var req = _self.db.thing.add(insert);
+			  req.done(
 		    	      function(){
 		    		  _self.lsSet('metaseq', rows[rows.length -1].key + 1);
 		    		  _self.fetchMetaDeactivated(callback);
