@@ -355,15 +355,12 @@ Ext.prototype = {
     },
     
     sendNotification: function(id,title,message){
-	// this.debug && console.log('sendNotification',title,message);
-	// chrome.notifications.create(
-	//     id
-	//     , {type: "basic"
-	//        , title: title
-	//        , message: message
-	//        , iconUrl: 'icons/tc-64.png'
-	//       }
-	//     , function(x){}	    );
+	this.debug && console.log('sendNotification',title,message);
+	var n = new Notifications(
+	    title
+	    {body: message}
+	);
+	n.onclick = openOptions;
     },
     
     getNotifications: function(){
@@ -501,6 +498,7 @@ function restoreOptions(callback){
 }
 
 function openOptions(){
+    console.log('openOptions');
     var t = safari.application.activeBrowserWindow.openTab('foreground');
     t.url = safari.extension.baseURI + "options.html";
 }
