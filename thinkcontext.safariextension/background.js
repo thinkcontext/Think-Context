@@ -28,8 +28,8 @@ function Ext(){
     };
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
-    _self.couch = 'http://127.0.0.1:5984/tc';
-    //_self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    //_self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -357,9 +357,9 @@ Ext.prototype = {
     sendNotification: function(id,title,message){
 	this.debug && console.log('sendNotification',title,message);
 	var n = new Notifications(
-	    title
-	    {body: message}
-	);
+				  title,
+{body: message}
+				  );
 	n.onclick = openOptions;
     },
     
