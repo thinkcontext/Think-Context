@@ -1,5 +1,6 @@
 function Ext(){
     var _self = this;
+    _self.version = '1.00'
     _self.debug = 2;
     _self.schema = { 
 	stores: [
@@ -513,15 +514,26 @@ function openInstall(){
 
 safari.extension.settings.addEventListener("change", openOptions, false);
 
-if(!(localStorage.getItem('tcversion') == tcversion)){
-    localStorage.setItem('tcversion',tcversion);
-    if(localStorage.getItem('resultsversion')){
-        tc.simpleSql("drop table reverse");
-        tc.simpleSql("drop table source");    
-        openUpdate();
-      } else {
-        openInstall();
-    }
+if(! tc.lsGet('tcversion') ){
+    // new install
+    tc.initialCamps();
+    tc.setVersionTime();
+    tc.fetchMetaData(function(){ openInstall(); });
+    setTimeout(function(){	tc.sync();}, 15000);	
+} else if(tc.lsGet('tcversion') == tc.version){
+    // update
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();
+    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+    olddb.transaction(function(tx){
+	tx.executeSql('drop table template',[]); 
+	tx.executeSql('drop table place',[]); 
+	tx.executeSql('drop table place_data',[]); 
+	tx.executeSql('drop table results',[]); 
+    });
+    tc.fetchMetaData(function(){ openInstall(); });
+    setTimeout(function(){	tc.sync();}, 15000);	
 }      
 
 
