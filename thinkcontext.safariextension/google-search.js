@@ -1,4 +1,5 @@
 if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.com$/)) {
+    console.log('google-search',document.location.href);
     tc.found = true;
     tc.googleSearch = {};
     var $observerSummaryRoot = $("body");

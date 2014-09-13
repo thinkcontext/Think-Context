@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Builder Version</key>
-	<string>534.57.2</string>
+	<string>9537.77.4</string>
 	<key>CFBundleDisplayName</key>
 	<string>Think Context</string>
 	<key>CFBundleIdentifier</key>
@@ -34,6 +34,25 @@
 				<string>ejs_production.js</string>
 				<string>utils.js</string>
 				<string>reverse.js</string>
+				<string>bing-search.js</string>
+				<string>congress.js</string>
+				<string>duckduckgo.js</string>
+				<string>expedia.js</string>
+				<string>facebook.js</string>
+				<string>google-mail.js</string>
+				<string>google-maps.js</string>
+				<string>google-place-page.js</string>
+				<string>google-search.js</string>
+				<string>hcom.js</string>
+				<string>imdb.js</string>
+				<string>kayak.js</string>
+				<string>orbitz.js</string>
+				<string>priceline.js</string>
+				<string>tripadvisor.js</string>
+				<string>twitter.js</string>
+				<string>wikipedia.js</string>
+				<string>yahoo-search.js</string>
+				<string>yelp.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
