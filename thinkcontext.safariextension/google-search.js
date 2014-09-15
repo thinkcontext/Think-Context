@@ -1,5 +1,5 @@
-if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.com$/)) {
-    console.log('google-search',document.location.href);
+if (!document.baseURI.match(/^safari-extension/) && window.top === window && !tc.found && document.domain.match(/(^|\.)google\.com$/)) {
+    console.log('in',document.location.href,tc.found);
     tc.found = true;
     tc.googleSearch = {};
     var $observerSummaryRoot = $("body");
@@ -23,7 +23,9 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.c
 			    );
 	    
 	    //	result link	
-	    tc.handleExamine("ol#rso li.g div > h3 > a",null);
+	    tc.handleExamine("div#ires > ol li.g > h3 > a",null
+			     ,function(x){ var m;
+					   if((m = x.href.match(/q=(http[^\&]+)&/)) && m && m.length == 2){ return m[1] }});
 	}
     }else if((document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps') == 0) || document.location.hostname == 'maps.google.com'){
 	
@@ -100,6 +102,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.c
     }
     
     tc.googleSearch.doOb = function(){
+	console.log('doob');
 	tc.googleSearch.doit();
 	window.setTimeout(tc.googleSearch.doit,1000);    
 	window.setTimeout(tc.googleSearch.observe,500);

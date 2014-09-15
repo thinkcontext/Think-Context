@@ -88,6 +88,20 @@ Ext.prototype = {
 	}
     },
 
+    saveOptions: function(request){
+	var _self = this;
+	var campaigns = _self.uniqueArray(request.campaigns.sort());
+	if(campaigns.join(',') != _self.campaigns.join(',')){
+	    _self.lsSet('campaigns',JSON.stringify(campaigns));
+	    _self.campaigns = campaigns;
+	    _self.resetDB( function(){ _self.sync() });
+	}
+	if(request.options.opt_popD != _self.opt_popD){
+	    _self.opt_popD = request.options.opt_popD;
+	    _self.lsSet('opt_popD',_self.opt_popD);
+	}
+    },
+
     getSubscribed: function(){
 	var _self = this, c;
 	_self.debug >= 2 && console.log('getSubscribed');
@@ -121,6 +135,22 @@ Ext.prototype = {
 	}
     },
     
+    sendOptions: function(callback){
+	var _self = this;
+	var ret = { campaigns: _self.campaigns, options: {opt_popD: _self.opt_popD }};
+	_self.getAvailableCampaigns(
+	    function(x){ 
+		ret.availableCampaigns = [];
+		for(var z in x){
+		    ret.availableCampaigns.push(x[z]);
+		}
+		_self.getAvailableActions(
+		    function(y){ 
+			ret.availableActions = y;
+			callback(ret);
+		    })});
+    },
+
     getAvailableActions: function(callback){
 	var _self = this, ret = {};
 	var req = this.db.from('thing').where('type','=','action');
@@ -457,6 +487,7 @@ var tc = new Ext();
 // browser specific
 function onRequest(e){
     var request = e.message;
+    console.log(e);
     var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};
     
     if(request.kind == 'pageA'){
@@ -466,6 +497,15 @@ function onRequest(e){
 	tc.sendStat(request.key);
     } else if(request.handle){
 	tc.lookup(request.handle,request,callback);
+    } else if(request == 'sendOptions'){
+	tc.sendOptions(
+	    function(r){
+		console.log('sendOptions callback',r);
+		e.target.page.dispatchMessage('sendOptions',r);
+	    }
+	);
+    } else if(request.kind == 'saveOptions'){
+	tc.saveOptions(request);
     } else {
 	console.log("couldn't get a handle",request);
     }   
@@ -508,8 +548,8 @@ function openUpdate(){
     t.url = safari.extension.baseURI + "options.html?update";
 }
 function openInstall(){
-    var t = safari.application.activeBrowserWindow.openTab('foreground');
-    t.url = safari.extension.baseURI + "options.html?install";
+//    var t = safari.application.activeBrowserWindow.openTab('foreground');
+//    t.url = safari.extension.baseURI + "options.html?install";
 }
 
 safari.extension.settings.addEventListener("change", openOptions, false);

@@ -112,8 +112,8 @@ tc.onPop = function(request){
 			     ,src: dd.icon
 			     ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
 	$('#'+r).click(function(){
-	    console.log('click');
-            d.dialog('open');
+	    console.log('click',d);
+            console.log(d.dialog('open'));
             $(window).resize(function(){
                 d.dialog({position:  [window.innerWidth - 350
 				      , 25 ]}); });
@@ -123,6 +123,8 @@ tc.onPop = function(request){
         });
         $('#'+r).hover(function(){$(this).css('opacity','1.0')}
                        , function(){$(this).css('opacity','0.4')});
+
+
 	// end safari specific
 
 	$('div#tcpopd a[tcstat]').click(function(){
@@ -284,6 +286,8 @@ tc.fragHandle = function(frag){
 
 tc.urlHandle = function(url){
     tc.debug >= 2 && console.log('urlHandle',url);
+    if(! url)
+	return null;
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;
@@ -357,4 +361,7 @@ tc.stCanon = function(st){
 		      });
 }
 
+} else if(document.baseURI.match(/^safari-extension/)){
+    var tc = {};
+    tc.found = true;
 }
