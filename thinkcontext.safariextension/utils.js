@@ -112,14 +112,17 @@ tc.onPop = function(request){
 			     ,src: dd.icon
 			     ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
 	$('#'+r).click(function(){
-	    console.log('click',d);
-            console.log(d.dialog('open'));
-            $(window).resize(function(){
-                d.dialog({position:  [window.innerWidth - 350
-				      , 25 ]}); });
-            $(window).scroll(function(){
-                d.dialog({position:  [window.innerWidth - 350
-				      , 25 ]}); });
+	    console.log('click',$("#tcpopd"));
+	    // console.log('isOpen',$("#tcpopd").dialog('isOpen'));    
+            console.log('open',$("#tcpopd").dialog('open'));
+	    console.log($("#tcpopd").parent().css('display','block'));
+	    console.log($("#tcpopd").parent().css('display'));
+            // $(window).resize(function(){
+            //     d.dialog({position:  [window.innerWidth - 350
+	    // 			      , 25 ]}); });
+            // $(window).scroll(function(){
+            //     d.dialog({position:  [window.innerWidth - 350
+	    // 			      , 25 ]}); });
         });
         $('#'+r).hover(function(){$(this).css('opacity','1.0')}
                        , function(){$(this).css('opacity','0.4')});
@@ -365,3 +368,8 @@ tc.stCanon = function(st){
     var tc = {};
     tc.found = true;
 }
+
+// setTimeout(function(){ 
+//     console.log('isOpen',tc.popD.dialog('isOpen'));    
+//     console.log('open',tc.popD.dialog('open'));
+// },15000);

@@ -8,7 +8,6 @@ tc.congress.doit = function(){
     var cRe = new RegExp(tc.congressPattern,'g');
 
     // make a list of candidate matches
-
     var cs = tc.uniqueArray(document.body.textContent.match(cRe))
     if(cs && cs.length > 250)
 	cs = cs.slice(0,250);
