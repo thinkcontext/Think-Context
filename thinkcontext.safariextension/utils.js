@@ -114,9 +114,6 @@ tc.onPop = function(request){
 			     ,style: "z-index:10000000; position:fixed; top:25px; right:35px; display:inline; opacity:0.4; height:24px; width:24px"}));
 	$('#'+r).click(function(){
             d.dialog('open');
-	    $(window).click(function(){
-		d.dialog('close');
-	    });
             $(window).resize(function(){
                 d.dialog({position:  [window.innerWidth - 350
 	    			      , 25 ]}); });
