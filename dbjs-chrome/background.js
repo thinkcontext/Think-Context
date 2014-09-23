@@ -1,20 +1,9 @@
-function Ext(){
+function Ext(dbjs){
     var _self = this;
-    _self.debug = 0;
-    _self.schema = {
-	thing: {
-	    key: { keyPath: '_id' },
-	    indexes: {
-                handles: { multiEntry: true },
-                type: { },
-		campaign_list: { multiEntry: true },
-		notification_date: {}		
-	    }
-        }
-    };
+    _self.debug = 2;
     _self.dbName = 'tc';
-    _self.couch = 'http://127.0.0.1:5984/tc';
-    //_self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    //_self.couch = 'http://127.0.0.1:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -23,34 +12,23 @@ function Ext(){
     _self.actions = {};
     _self.campaigns = {};    
     
-    db.open({server:_self.dbName,
-	       version: 16
-	       , schema:_self.schema})
-	.done( function(dbjs){
-	    tc.debug >= 2 && console.log("dbjs done");
-	    _self.db = dbjs;
-	    _self.getSubscribed();
-	    _self.getOptions();
-	    _self.getNotifications();
-	    
-	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-	    
-	    if(lastSyncTime == 0 && _self.getVersionTime()){
-    		// we haven't done a sync before do it immediately
-    		_self.sync();
-	    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    		// we haven't done one in 4 hrs so do one 
-    		// but wait a little bit first to not lag browser start
-    		setTimeout(
-    		    function(){
-    			_self.sync();
-    		    }
-    		    , 5 * 60 * 1000); // 5 minutes 
-	    }
-	    
-	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
-	});    
+    _self.db = dbjs;
+    _self.getSubscribed();
+    _self.getOptions();
+    _self.getNotifications();
+    
+    setTimeout(function(){
+	var lastSyncTime = _self.lsGet('lastSyncTime')||0;	    
+	if((lastSyncTime == 0 && _self.getVersionTime()) ||
+	   ((new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000)){
+    	    // we haven't done one in 4 hrs or have never done one 
+    	    _self.sync();
+    	}
+    }
+    	       , 5 * 60 * 1000); // 5 minutes 
+    
+    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 }
 
 Ext.prototype = {
@@ -82,8 +60,8 @@ Ext.prototype = {
     },
 
     getSubscribed: function(){
-	tc.debug >= 2 && console.log('getSubscribed');
 	var _self = this, c;
+	_self.debug >= 2 && console.log('getSubscribed');
 	if(c = _self.lsGet('campaigns')){
 	    _self.campaigns = _self.uniqueArray(JSON.parse(c).sort());
 	    _self.getAvailableCampaigns(
@@ -128,8 +106,9 @@ Ext.prototype = {
     },
     
     getAvailableCampaigns: function(callback){
-	tc.debug >= 2 && console.log("getAvailableCampaigns");
 	var _self = this, ret = {};
+	_self.debug >= 2 && console.log("getAvailableCampaigns");
+	console.log(_self.db);
 	_self.db.thing.query('type').only('campaign').execute().done(
 	    function(results){
 		_self.debug >= 2 && console.log('getCampaigns result',results.length);
@@ -164,8 +143,8 @@ Ext.prototype = {
     },
     
     fetchMetaData: function(callback){
-	tc.debug >= 2 && console.log('fetchMetaData');
 	var _self = this;
+	_self.debug >= 2 && console.log('fetchMetaData');
 	var metaSeq = parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaUrl,
 		  { include_docs: true,
@@ -199,7 +178,7 @@ Ext.prototype = {
 	_self.getJSON(_self.deactivateUrl, 
 		      {startkey: JSON.stringify([ campaign, campDeact ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       rando: Math.random() // remove me, pierces cache
+		       //rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows, req;
@@ -222,7 +201,7 @@ Ext.prototype = {
 		      {include_docs: true,
 		       startkey: JSON.stringify([ campaign, campSeq ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       rando: Math.random() // remove me, pierces cache
+		       //rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows;
@@ -445,8 +424,25 @@ Ext.prototype = {
     get: $.get
 }
 
-var tc = new Ext();
-
+var tc;
+db.open({server:'tc'
+	 , version: 16
+	 , schema:
+	 {
+	     thing: {
+		 key: { keyPath: '_id' },
+		 indexes: {
+                     handles: { multiEntry: true },
+                     type: { },
+		     campaign_list: { multiEntry: true },
+		     notification_date: {}		
+		 }
+             }
+	 }
+	}).done( function(dbjs){
+	    console.log("dbjs done");
+	    tc = new Ext(dbjs);
+	    console.log(tc);	    
 // browser specific
 function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
@@ -469,24 +465,24 @@ chrome.pageAction.onClicked.addListener(
 
 chrome.runtime.onInstalled.addListener(
     function(details){
+	tc.debug >= 2 && console.log("onInstalled",details);
 	var url;
 	tc.initialCamps();
 	tc.setVersionTime();
 	if(details.reason == "install"){	    
 	    url = "options.html?install";
 	    tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
-	    // uncomment for production
-	// }else if(details.reason == "update"){
-	//     url = "options.html?update";
-	//     // remove websql tables
-	//     var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	//     olddb.transaction(function(tx){
-	// 	tx.executeSql('drop table template',[]); 
-	// 	tx.executeSql('drop table place',[]); 
-	// 	tx.executeSql('drop table place_data',[]); 
-	// 	tx.executeSql('drop table results',[]); 
-	//     });
-	//tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
+	}else if(details.reason == "update"){
+	    url = "options.html?update";
+	    // remove websql tables
+	    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+	    olddb.transaction(function(tx){
+		tx.executeSql('drop table template',[]); 
+		tx.executeSql('drop table place',[]); 
+		tx.executeSql('drop table place_data',[]); 
+		tx.executeSql('drop table results',[]); 
+	    });
+	    tc.resetDB(tc.fetchMetaData(function(){chrome.tabs.create({url:url})}));
 	}
 
 	setTimeout(function(){	tc.sync();}, 15000);	
@@ -496,3 +492,4 @@ chrome.notifications.onClicked.addListener(
     function(notificationId){
 	chrome.tabs.create({url:"options.html"});
     });
+	});

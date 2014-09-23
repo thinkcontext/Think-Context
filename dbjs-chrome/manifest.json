@@ -1,5 +1,5 @@
 {"name":"thinkContext test"
- , "version": "7.4"
+ , "version": "7.6"
  , "description":"thinkContext Test"
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
