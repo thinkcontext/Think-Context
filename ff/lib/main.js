@@ -440,8 +440,8 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts','politifact','whoprofits','naacp'];
-	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
+	var newCamps = ['congress','climatecounts','effback','politifact','naacp','whoprofits'];
+	[ 'opt_rush','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){
 		    newCamps.push(o.replace('opt_',''));

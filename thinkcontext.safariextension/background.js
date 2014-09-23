@@ -43,18 +43,19 @@ function Ext(){
     _self.getNotifications();
 
     var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-
-    if(lastSyncTime == 0){
-	// we haven't done a sync before do it immediately
-	_self.sync();
-    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-	// we haven't done one in 4 hrs so do one 
-	// but wait a little bit first to not lag browser start
-	setTimeout(
-    	    function(){
-    		_self.sync();
-    	    }
-    	    , 5 * 60 * 1000); // 5 minutes 
+    if(_self.lsGet('tcversion') == _self.version){	    
+	if(lastSyncTime == 0 && _self.getVersionTime()){
+	    // we haven't done a sync before do it immediately
+	    _self.sync();
+	} else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+	    // we haven't done one in 4 hrs so do one 
+	    // but wait a little bit first to not lag browser start
+	    setTimeout(
+    		function(){
+    		    _self.sync();
+    		}
+    		, 5 * 60 * 1000); // 5 minutes 
+	}
     }
     
     setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
@@ -448,8 +449,8 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts'];
-	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
+	var newCamps = ['congress','climatecounts','effback','politifact','naacp','whoprofits'];
+	[ 'opt_rush','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){
 		    newCamps.push(o.replace('opt_',''));
@@ -560,7 +561,7 @@ if(! tc.lsGet('tcversion') ){
     tc.setVersionTime();
     tc.fetchMetaData(function(){ openInstall(); });
     setTimeout(function(){	tc.sync();}, 15000);	
-} else if(tc.lsGet('tcversion') == tc.version){
+} else if(tc.lsGet('tcversion') != tc.version){
     // update
     tc.lsSet('tcversion',tc.version);
     tc.initialCamps();
@@ -575,40 +576,3 @@ if(! tc.lsGet('tcversion') ){
     tc.fetchMetaData(function(){ openInstall(); });
     setTimeout(function(){	tc.sync();}, 15000);	
 }      
-
-
-// chrome.extension.onRequest.addListener(onRequest);
-// chrome.pageAction.onClicked.addListener(
-//     function(tab){
-// 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
-//     });
-
-// chrome.runtime.onInstalled.addListener(
-//     function(details){
-// 	var url;
-// 	tc.initialCamps();
-// 	tc.setVersionTime();
-// 	if(details.reason == "install"){	    
-// 	    url = "options.html?install";
-// 	    tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
-// 	    // uncomment for production
-// 	// }else if(details.reason == "update"){
-// 	//     url = "options.html?update";
-// 	//     // remove websql tables
-// 	//     var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-// 	//     olddb.transaction(function(tx){
-// 	// 	tx.executeSql('drop table template',[]); 
-// 	// 	tx.executeSql('drop table place',[]); 
-// 	// 	tx.executeSql('drop table place_data',[]); 
-// 	// 	tx.executeSql('drop table results',[]); 
-// 	//     });
-// 	//tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
-// 	}
-
-// 	setTimeout(function(){	tc.sync();}, 15000);	
-//     });
-
-// chrome.notifications.onClicked.addListener(
-//     function(notificationId){
-// 	chrome.tabs.create({url:"options.html"});
-//     });

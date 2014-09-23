@@ -1,6 +1,18 @@
-function Ext(dbjs){
+function Ext(){
     var _self = this;
-    _self.debug = 2;
+    _self.version = '1.00'
+    _self.debug = 0;
+    _self.schema = {
+	thing: {
+	    key: { keyPath: '_id' },
+	    indexes: {
+                handles: { multiEntry: true },
+                type: { },
+		campaign_list: { multiEntry: true },
+		notification_date: {}		
+	    }
+        }
+    };
     _self.dbName = 'tc';
     //_self.couch = 'http://127.0.0.1:5984/tc';
     _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
@@ -12,23 +24,35 @@ function Ext(dbjs){
     _self.actions = {};
     _self.campaigns = {};    
     
-    _self.db = dbjs;
-    _self.getSubscribed();
-    _self.getOptions();
-    _self.getNotifications();
-    
-    setTimeout(function(){
-	var lastSyncTime = _self.lsGet('lastSyncTime')||0;	    
-	if((lastSyncTime == 0 && _self.getVersionTime()) ||
-	   ((new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000)){
-    	    // we haven't done one in 4 hrs or have never done one 
-    	    _self.sync();
-    	}
-    }
-    	       , 5 * 60 * 1000); // 5 minutes 
-    
-    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+    db.open({server:_self.dbName,
+	       version: 16
+	       , schema:_self.schema})
+	.done( function(dbjs){
+	    _self.debug >= 2 && console.log("dbjs done");
+	    _self.db = dbjs;
+	    _self.getSubscribed();
+	    _self.getOptions();
+	    _self.getNotifications();
+	    
+	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
+
+	    if(_self.lsGet('tcversion') == _self.version){	    
+		if(lastSyncTime == 0 && _self.getVersionTime()){
+    		    // we haven't done a sync before do it immediately
+    		    _self.sync();
+		} else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    		    // we haven't done one in 4 hrs so do one 
+    		    // but wait a little bit first to not lag browser start
+    		    setTimeout(
+    			function(){
+    			    _self.sync();
+    			}
+    			, 5 * 60 * 1000); // 5 minutes 
+		}
+	    }
+	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+	});    
 }
 
 Ext.prototype = {
@@ -108,7 +132,6 @@ Ext.prototype = {
     getAvailableCampaigns: function(callback){
 	var _self = this, ret = {};
 	_self.debug >= 2 && console.log("getAvailableCampaigns");
-	console.log(_self.db);
 	_self.db.thing.query('type').only('campaign').execute().done(
 	    function(results){
 		_self.debug >= 2 && console.log('getCampaigns result',results.length);
@@ -178,7 +201,7 @@ Ext.prototype = {
 	_self.getJSON(_self.deactivateUrl, 
 		      {startkey: JSON.stringify([ campaign, campDeact ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       //rando: Math.random() // remove me, pierces cache
+		       rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows, req;
@@ -201,7 +224,7 @@ Ext.prototype = {
 		      {include_docs: true,
 		       startkey: JSON.stringify([ campaign, campSeq ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       //rando: Math.random() // remove me, pierces cache
+		       rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows;
@@ -390,8 +413,8 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts'];
-	[ 'opt_rush','opt_green','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
+	var newCamps = ['congress','climatecounts','effback','politifact','naacp','whoprofits'];
+	[ 'opt_rush','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){
 		    newCamps.push(o.replace('opt_',''));
@@ -424,25 +447,8 @@ Ext.prototype = {
     get: $.get
 }
 
-var tc;
-db.open({server:'tc'
-	 , version: 16
-	 , schema:
-	 {
-	     thing: {
-		 key: { keyPath: '_id' },
-		 indexes: {
-                     handles: { multiEntry: true },
-                     type: { },
-		     campaign_list: { multiEntry: true },
-		     notification_date: {}		
-		 }
-             }
-	 }
-	}).done( function(dbjs){
-	    console.log("dbjs done");
-	    tc = new Ext(dbjs);
-	    console.log(tc);	    
+var tc = new Ext();
+
 // browser specific
 function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
@@ -463,33 +469,44 @@ chrome.pageAction.onClicked.addListener(
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
     });
 
-chrome.runtime.onInstalled.addListener(
-    function(details){
-	tc.debug >= 2 && console.log("onInstalled",details);
-	var url;
-	tc.initialCamps();
-	tc.setVersionTime();
-	if(details.reason == "install"){	    
-	    url = "options.html?install";
-	    tc.fetchMetaData(function(){chrome.tabs.create({url:url})});
-	}else if(details.reason == "update"){
-	    url = "options.html?update";
-	    // remove websql tables
-	    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-	    olddb.transaction(function(tx){
-		tx.executeSql('drop table template',[]); 
-		tx.executeSql('drop table place',[]); 
-		tx.executeSql('drop table place_data',[]); 
-		tx.executeSql('drop table results',[]); 
-	    });
-	    tc.resetDB(tc.fetchMetaData(function(){chrome.tabs.create({url:url})}));
-	}
+function openOptions(){
+    var url = "options.html";
+    chrome.tabs.create({url:url})
+}
+function openUpdate(){
+    var url = "options.html?update";
+    chrome.tabs.create({url:url})
+}
+function openInstall(){
+    var url = "options.html?install";
+    chrome.tabs.create({url:url})
+}
 
-	setTimeout(function(){	tc.sync();}, 15000);	
-    });
+if(! tc.lsGet('tcversion') ){
+    // new install
+    tc.initialCamps();
+    tc.setVersionTime();    
+    setTimeout(
+	function(){ 
+	    tc.resetDB(function(){tc.fetchMetaData(function(){ openInstall(); tc.sync();})});}, 7000);	
+} else if(tc.lsGet('tcversion') != tc.version){
+    // update
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();
+    // uncomment me for release
+    // var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+    // olddb.transaction(function(tx){
+    // 	tx.executeSql('drop table template',[]); 
+    // 	tx.executeSql('drop table place',[]); 
+    // 	tx.executeSql('drop table place_data',[]); 
+    // 	tx.executeSql('drop table results',[]); 
+    // });
+    //tc.fetchMetaData(function(){ openUpdate(); });
+    setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
+}      
 
 chrome.notifications.onClicked.addListener(
     function(notificationId){
-	chrome.tabs.create({url:"options.html"});
+	openOptions();
     });
-	});
