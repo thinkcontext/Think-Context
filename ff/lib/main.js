@@ -12,7 +12,7 @@ clearTimeout = time.clearTimeout;
 setInterval = time.setInterval;
 clearInterval = time.clearInterval;
 var ui = require("sdk/ui");
-var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMVAB0y8zw3HgAAALdJREFUKM+dkr0KwjAUhb8b7Y+og1pKi0pRsOAuvpqPJY6Cs4Mv4OSig6v6AnVodYhJqA0cAjn3yz25BAAlCoBDnvhAYZIHV4CZCAD0uz0ApiJbG6SJGEp6ACe94B6E0Wa98Gww++XYGG+XJ2V+S2f53vDnUpbzoPLmLtgY5RiNPJdv60j8fPhNoiJK2o1ACkIn6MHNZFzi6FVnuvrjJ0ALGFb77wdIxT1dXecs7aw+RFYfZl0VvgFaO1qED+ni6QAAAABJRU5ErkJggg=="; // infoI
+var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkSFTsC27HFFQAAAPxJREFUKM+F0r1KQ0EQBeAvcgkWYiEprKws5FZiYXELUfA5rEKwCBYpQkgh+ASWKX0XC99AEFQQbiGilSJ6UcFmhGXz48AWe2bOzsw52zIdBSpsxf0GV/i2II5Q4wf3cb7wiO480jkanKKT4GsY4wOTWZ0a7CfYMUbJvcI7eulOdXRKo44uRYIN8YQ27MVOnYxYYifDVmOywyLUe8BLVnQWjx0k2CvuUBYLFN7G+rzkUvi0Eer9FyvYDI4ifBpnRbd4y7ABnrH8B3RDwSopOske2w07+vkYk0gMQ710vEHkLmK9qeiFTw2u4zQxXj8ltWaQ2+FtmXzyS3ymRb8KQDZXemSofgAAAABJRU5ErkJggg=="; // infoI
 
 function Ext(){
     var _self = this;
@@ -569,6 +569,36 @@ pageMod.PageMod({
 	,data.url("wikipedia.js")
 	,data.url("yahoo-search.js")
 	,data.url("yelp.js")
+    ],
+    onAttach: function(worker){
+	tabWorkers[worker.tab.id] = worker;
+	worker.on('message', function(request){
+	    if(request.kind == 'sendstat' && !sender.tab.incognito){
+ 		tc.sendStat(request.key);
+	    } else if(request.handle){
+		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+	    } else {
+ 		console.log("couldn't get a handle",request);
+	    }
+	});
+    }
+});		
+
+pageMod.PageMod({
+    include : ["*.adsonar.com"
+	       ,"*.msn.com"
+	       ,"*.doubleclick.net"
+	       ,"*.overture.com"
+	      ],
+    attachTo: "frame",
+    contentStyleFile: data.url("jquery-ui.css"),
+    contentScriptWhen:  'ready',
+    contentScriptFile: [
+	data.url('jquery-2.0.3.min.js')
+	,data.url('jquery-ui-1.9.2.custom.min.js')
+	,data.url('ejs_production.js') 
+	,data.url('utils.js') 
+	,data.url('iframe.js') 
     ],
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;

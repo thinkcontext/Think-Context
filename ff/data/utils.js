@@ -32,19 +32,6 @@ tc.registerResponse('tcPopD'
 			}
 		    });
 
-// if(window.top === window){ // don't listen in an iframe
-//     chrome.extension.onMessage.addListener(
-// 	function(request, sender, sendResponse){
-// 	    if(request.kind == 'tcPopD')
-// 		if(tc.popD.dialog('isOpen')){
-// 		    tc.popD.dialog('close');
-// 		} else {
-// 		    tc.popD.dialog('open');
-// 		}
-// 	}
-//     );
-// }
-
 tc.onResponse = function(request){
     tc.debug  && console.log('onResponse',request,tc.responses);
     tc.responses[request.kind](request);
