@@ -505,6 +505,7 @@ if(! tc.lsGet('tcversion') ){
     //tc.fetchMetaData(function(){ openUpdate(); });
     setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
 }      
+tc.lsSet('tcversion',tc.version);
 
 chrome.notifications.onClicked.addListener(
     function(notificationId){
