@@ -1,6 +1,6 @@
 function Ext(){
     var _self = this;
-    _self.version = '1.00'
+    _self.version = chrome.runtime.getManifest().version;
     _self.debug = 0;
     _self.schema = {
 	thing: {
@@ -28,7 +28,6 @@ function Ext(){
 	       version: 16
 	       , schema:_self.schema})
 	.done( function(dbjs){
-	    _self.debug >= 2 && console.log("dbjs done");
 	    _self.db = dbjs;
 	    _self.getSubscribed();
 	    _self.getOptions();
@@ -386,7 +385,7 @@ Ext.prototype = {
     },
     
     checkOldVersion: function(){	
-	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = chrome.runtime.getManifest().version;
+	var _self = this, vt =_self.getVersionTime(), now = new Date, currentVersion = _self.version;
 	if(vt && now - vt > (1000 * 3600 * 24 * 30)){
 	    // its been a month so lets check    
 	    _self.getJSON(_self.versionURL,
@@ -482,30 +481,32 @@ function openInstall(){
     chrome.tabs.create({url:url})
 }
 
-if(! tc.lsGet('tcversion') ){
+if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
     // new install
+    tc.lsSet('tcversion',tc.version);
     tc.initialCamps();
     tc.setVersionTime();    
-    setTimeout(
-	function(){ 
-	    tc.resetDB(function(){tc.fetchMetaData(function(){ openInstall(); tc.sync();})});}, 7000);	
+    tc.fetchMetaData(function(){ openInstall(); tc.sync();});    
+else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
+    // update from sqlite version
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();
+    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+    olddb.transaction(function(tx){
+    	tx.executeSql('drop table template',[]); 
+    	tx.executeSql('drop table place',[]); 
+    	tx.executeSql('drop table place_data',[]); 
+    	tx.executeSql('drop table results',[]); 
+    });
+    tc.fetchMetaData(function(){ openUpdate(); });    
 } else if(tc.lsGet('tcversion') != tc.version){
     // update
     tc.lsSet('tcversion',tc.version);
     tc.initialCamps();
     tc.setVersionTime();
-    // uncomment me for release
-    // var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-    // olddb.transaction(function(tx){
-    // 	tx.executeSql('drop table template',[]); 
-    // 	tx.executeSql('drop table place',[]); 
-    // 	tx.executeSql('drop table place_data',[]); 
-    // 	tx.executeSql('drop table results',[]); 
-    // });
-    //tc.fetchMetaData(function(){ openUpdate(); });
     setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
 }      
-tc.lsSet('tcversion',tc.version);
 
 chrome.notifications.onClicked.addListener(
     function(notificationId){

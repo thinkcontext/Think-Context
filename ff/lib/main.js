@@ -44,26 +44,26 @@ function Ext(){
 	       , schema:_self.schema})
 	.done( function(dbjs){
 	    _self.db = dbjs;
-	    _self.onInstallUpdate();
 	    _self.getSubscribed();
 	    _self.getOptions();
 	    _self.getNotifications();
 	    
 	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
-	    
-	    if(lastSyncTime == 0 && _self.getVersionTime()){
-    		// we haven't done a sync before do it immediately
-    		_self.sync();
-	    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    		// we haven't done one in 4 hrs so do one 
-    		// but wait a little bit first to not lag browser start
-    		setTimeout(
-    		    function(){
-    			_self.sync();
-    		    }
-    		    , 5 * 60 * 1000); // 5 minutes 
+
+	    if(_self.lsGet('tcversion') == _self.version){	    
+		if(lastSyncTime == 0 && _self.getVersionTime()){
+    		    // we haven't done a sync before do it immediately
+    		    _self.sync();
+		} else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    		    // we haven't done one in 4 hrs so do one 
+    		    // but wait a little bit first to not lag browser start
+    		    setTimeout(
+    			function(){
+    			    _self.sync();
+    			}
+    			, 5 * 60 * 1000); // 5 minutes 
+		}
 	    }
-	    
 	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
 	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
 	});    
@@ -515,6 +515,47 @@ Ext.prototype = {
 
 var tc = new Ext();
 
+function openOptions(){
+    var url = "options.html";
+    tabs.open({url:url})
+}
+function openUpdate(){
+    var url = "options.html?update";
+    chrome.tabs.create({url:url})
+}
+function openInstall(){
+    var url = "options.html?install";
+    chrome.tabs.create({url:url})
+}
+
+if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
+    // new install
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();    
+    tc.fetchMetaData(function(){ openInstall(); tc.sync();});    
+else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
+    // update from sqlite version
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();
+    var sql = require("sqlite");
+    sql.connect('thinkcontext');
+    sql.execute("drop table template",{}, null, null);
+    sql.execute("drop table place",{}, null, null);
+    sql.execute("drop table place_data",{}, null, null);
+    sql.execute("drop table results",{}, null, null);
+    sql = null;
+    });
+    tc.fetchMetaData(function(){ openUpdate(); });    
+} else if(tc.lsGet('tcversion') != tc.version){
+    // update
+    tc.lsSet('tcversion',tc.version);
+    tc.initialCamps();
+    tc.setVersionTime();
+    setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
+}      
+
 pageMod.PageMod(
     { include:[ "resource://*" ],
       attachTo: "top",
@@ -727,13 +768,3 @@ urlHandle = function(url){
     else 
     	return null;
 }
-
-// setTimeout(function(){
-//     tc.sendOptions(function(x){
-// 	console.log('sendOptions',x);
-//     });
-
-//      console.log('campaigns',tc.campaigns);
-//      tc.db.thing.query('handles').bound('domain:warbyparker.com','domain:warby}').execute().done(function(x){console.log('domain',x)});
-// }, 5000);
-
