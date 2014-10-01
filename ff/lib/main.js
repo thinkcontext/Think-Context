@@ -16,7 +16,8 @@ var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAA
 
 function Ext(){
     var _self = this;
-    _self.debug = 0;
+    _self.version = '1.00';
+    _self.debug = 2;
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
@@ -482,50 +483,22 @@ Ext.prototype = {
     get: function(url){
 	// simulate jQuery's $.get
 	Request({url:url}).get();
-    },        
-    onInstallUpdate: function(){
-	var _self = this;
-	console.log('loadReason',s.loadReason);
-	if(s.loadReason == 'upgrade' || s.loadReason == 'install'){
-	    var url;
-	    _self.initialCamps();
-	    _self.setVersionTime();
-	    if(s.loadReason == 'install'){
-	    	url = "options.html?install";
-		// ff uses "upgrade" chrome uses "update"
-	    }else if(s.loadReason == "upgrade"){
-	    	url = "options.html?update";
-
-	    	// remove websql tables
-		var sql = require("sqlite");
-		sql.connect('thinkcontext');
-		sql.execute("drop table template",{}, null, null);
-		sql.execute("drop table place",{}, null, null);
-		sql.execute("drop table place_data",{}, null, null);
-		sql.execute("drop table results",{}, null, null);
-		sql = null;
-	    }
-	    tc.fetchMetaData(function(){
-		tabs.open(data.url(url));
-	    });
-	    setTimeout(function(){	tc.sync();}, 15000);	
-	}
-    }
+    } 
 }
 
 var tc = new Ext();
 
 function openOptions(){
     var url = "options.html";
-    tabs.open({url:url})
+    tabs.open(data.url(url));
 }
 function openUpdate(){
     var url = "options.html?update";
-    chrome.tabs.create({url:url})
+    tabs.open(data.url(url));
 }
 function openInstall(){
     var url = "options.html?install";
-    chrome.tabs.create({url:url})
+    tabs.open(data.url(url));
 }
 
 if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
@@ -534,6 +507,7 @@ if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
     tc.initialCamps();
     tc.setVersionTime();    
     tc.fetchMetaData(function(){ openInstall(); tc.sync();});    
+}
 else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
     // update from sqlite version
     tc.lsSet('tcversion',tc.version);
@@ -546,7 +520,6 @@ else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
     sql.execute("drop table place_data",{}, null, null);
     sql.execute("drop table results",{}, null, null);
     sql = null;
-    });
     tc.fetchMetaData(function(){ openUpdate(); });    
 } else if(tc.lsGet('tcversion') != tc.version){
     // update
