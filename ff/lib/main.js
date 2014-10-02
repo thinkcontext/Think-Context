@@ -51,7 +51,33 @@ function Ext(){
 	    
 	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
-	    if(_self.lsGet('tcversion') == _self.version){	    
+	    if(! _self.lsGet('tcversion') && ! _self.lsGet('resultsversion')){
+		// new install
+		_self.lsSet('tcversion',_self.version);
+		_self.initialCamps();
+		_self.setVersionTime();    
+		_self.fetchMetaData(function(){ openInstall(); _self.sync();});    
+	    }
+	    else if(! _self.lsGet('tcversion') && _self.lsGet('resultsversion')){
+		// update from sqlite version
+		_self.lsSet('tcversion',_self.version);
+		_self.initialCamps();
+		_self.setVersionTime();
+		var sql = require("sqlite");
+		sql.connect('thinkcontext');
+		sql.execute("drop table template",{}, null, null);
+		sql.execute("drop table place",{}, null, null);
+		sql.execute("drop table place_data",{}, null, null);
+		sql.execute("drop table results",{}, null, null);
+		sql = null;
+		_self.fetchMetaData(function(){ openUpdate(); });    
+	    } else if(_self.lsGet('tcversion') != _self.version){
+		// update
+		_self.lsSet('tcversion',_self.version);
+		_self.initialCamps();
+		_self.setVersionTime();
+		setTimeout(function(){ _self.resetDB(_self.sync); }, 15000);	
+	    } else if(_self.lsGet('tcversion') == _self.version){	    
 		if(lastSyncTime == 0 && _self.getVersionTime()){
     		    // we haven't done a sync before do it immediately
     		    _self.sync();
@@ -181,21 +207,21 @@ Ext.prototype = {
 	var _self = this;
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaDeactivatedUrl, 
-		  {startkey: metaDeact,
-		   rando: Math.random() // remove me, pierces cache
-		  } ,
-		  function(data){
-		      var rows = data.rows;
-		      if(rows.length > 0){
-			  for(var x = 0; x < rows.length; x++){
-			      _self.db.thing.remove(rows[x].id).done();
+		      {startkey: metaDeact,
+		       rando: Math.random() // remove me, pierces cache
+		      } ,
+		      function(data){
+			  var rows = data.rows;
+			  if(rows.length > 0){
+			      for(var x = 0; x < rows.length; x++){
+				  _self.db.thing.remove(rows[x].id).done();
+			      }
+			      _self.lsSet('metadea', rows[rows.length -1].key);
 			  }
-			  _self.lsSet('metadea', rows[rows.length -1].key);
-		      }
-		      if(typeof callback == 'function')
-			  callback();			  
-		      setTimeout(function(){_self.getSubscribed();},500);
-		  });
+			  if(typeof callback == 'function')
+			      callback();			  
+			  setTimeout(function(){_self.getSubscribed();},500);
+		      });
     },
     
     fetchMetaData: function(callback){
@@ -450,6 +476,7 @@ Ext.prototype = {
 		_self.lsRm(o);
 	    });
 	_self.lsSet('campaigns', JSON.stringify(newCamps));    
+	_self.getSubscribed();
     },
     lsSet: function(x,y){
 	ss.storage[x] = y;
@@ -501,34 +528,6 @@ function openInstall(){
     tabs.open(data.url(url));
 }
 
-if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
-    // new install
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();    
-    tc.fetchMetaData(function(){ openInstall(); tc.sync();});    
-}
-else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
-    // update from sqlite version
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();
-    var sql = require("sqlite");
-    sql.connect('thinkcontext');
-    sql.execute("drop table template",{}, null, null);
-    sql.execute("drop table place",{}, null, null);
-    sql.execute("drop table place_data",{}, null, null);
-    sql.execute("drop table results",{}, null, null);
-    sql = null;
-    tc.fetchMetaData(function(){ openUpdate(); });    
-} else if(tc.lsGet('tcversion') != tc.version){
-    // update
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();
-    setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
-}      
-
 pageMod.PageMod(
     { include:[ "resource://*" ],
       attachTo: "top",
@@ -553,6 +552,11 @@ pageMod.PageMod(
 
 pageMod.PageMod({
     include : ["http://*","https://*"],
+    exclude : ["*.adsonar.com"
+	       ,"*.msn.com"
+	       ,"*.doubleclick.net"
+	       ,"*.overture.com"
+	      ],
     attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
     contentScriptWhen:  'ready',
@@ -598,35 +602,35 @@ pageMod.PageMod({
     }
 });		
 
-pageMod.PageMod({
-    include : ["*.adsonar.com"
-	       ,"*.msn.com"
-	       ,"*.doubleclick.net"
-	       ,"*.overture.com"
-	      ],
-    attachTo: "frame",
-    contentStyleFile: data.url("jquery-ui.css"),
-    contentScriptWhen:  'ready',
-    contentScriptFile: [
-	data.url('jquery-2.0.3.min.js')
-	,data.url('jquery-ui-1.9.2.custom.min.js')
-	,data.url('ejs_production.js') 
-	,data.url('utils.js') 
-	,data.url('iframe.js') 
-    ],
-    onAttach: function(worker){
-	tabWorkers[worker.tab.id] = worker;
-	worker.on('message', function(request){
-	    if(request.kind == 'sendstat' && !sender.tab.incognito){
- 		tc.sendStat(request.key);
-	    } else if(request.handle){
-		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
-	    } else {
- 		console.log("couldn't get a handle",request);
-	    }
-	});
-    }
-});		
+// pageMod.PageMod({
+//     include : ["*.adsonar.com"
+// 	       ,"*.msn.com"
+// 	       ,"*.doubleclick.net"
+// 	       ,"*.overture.com"
+// 	      ],
+//     attachTo: "frame",
+//     contentStyleFile: data.url("jquery-ui.css"),
+//     contentScriptWhen:  'ready',
+//     contentScriptFile: [
+// 	data.url('jquery-2.0.3.min.js')
+// 	,data.url('jquery-ui-1.9.2.custom.min.js')
+// 	,data.url('ejs_production.js') 
+// 	,data.url('utils.js') 
+// 	,data.url('iframe.js') 
+//     ],
+//     onAttach: function(worker){
+// 	tabWorkers[worker.tab.id] = worker;
+// 	worker.on('message', function(request){
+// 	    if(request.kind == 'sendstat' && !sender.tab.incognito){
+//  		tc.sendStat(request.key);
+// 	    } else if(request.handle){
+// 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
+// 	    } else {
+//  		console.log("couldn't get a handle",request);
+// 	    }
+// 	});
+//     }
+// });		
 
 var action_button = ui.ActionButton({
   id: "tcOptions",

@@ -1,12 +1,10 @@
 var tc = {};
 tc.found = false;
-tc.debug = 0;
+tc.debug = 1;
 tc.responses = {};
 tc.popD = null;
 tc.defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkSFTsC27HFFQAAAPxJREFUKM+F0r1KQ0EQBeAvcgkWYiEprKws5FZiYXELUfA5rEKwCBYpQkgh+ASWKX0XC99AEFQQbiGilSJ6UcFmhGXz48AWe2bOzsw52zIdBSpsxf0GV/i2II5Q4wf3cb7wiO480jkanKKT4GsY4wOTWZ0a7CfYMUbJvcI7eulOdXRKo44uRYIN8YQ27MVOnYxYYifDVmOywyLUe8BLVnQWjx0k2CvuUBYLFN7G+rzkUvi0Eer9FyvYDI4ifBpnRbd4y7ABnrH8B3RDwSopOske2w07+vkYk0gMQ710vEHkLmK9qeiFTw2u4zQxXj8ltWaQ2+FtmXzyS3ymRb8KQDZXemSofgAAAABJRU5ErkJggg=="; // infoI
 tc.defaultTitle = "thinkContext";
-
-tc.debug && console.log("utils",document.URL);
 
 tc.urlRegExp = new RegExp(
     "^\s*(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*\s*$");
@@ -22,15 +20,18 @@ tc.registerResponse = function(kind, func){
 }
 
 // ff
+if(window.top === window){
+    tc.debug && console.log("utils",document.URL);
 
-tc.registerResponse('tcPopD'
-		    ,function(r){
-			if(tc.popD.dialog('isOpen')){
-			    tc.popD.dialog('close');
-			} else {
-			    tc.popD.dialog('open');
-			}
-		    });
+    tc.registerResponse('tcPopD'
+			,function(r){
+			    if(tc.popD.dialog('isOpen')){
+				tc.popD.dialog('close');
+			    } else {
+				tc.popD.dialog('open');
+			    }
+			});
+}
 
 tc.onResponse = function(request){
     tc.debug  && console.log('onResponse',request,tc.responses);

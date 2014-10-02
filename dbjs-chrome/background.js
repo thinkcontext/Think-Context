@@ -35,24 +35,49 @@ function Ext(){
 	    
 	    var lastSyncTime = _self.lsGet('lastSyncTime')||0;
 
-	    if(_self.lsGet('tcversion') == _self.version){	    
-		if(lastSyncTime == 0 && _self.getVersionTime()){
-    		    // we haven't done a sync before do it immediately
-    		    _self.sync();
-		} else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
-    		    // we haven't done one in 4 hrs so do one 
-    		    // but wait a little bit first to not lag browser start
-    		    setTimeout(
-    			function(){
-    			    _self.sync();
-    			}
-    			, 5 * 60 * 1000); // 5 minutes 
+	    if(! _self.lsGet('tcversion') && ! _self.lsGet('resultsversion')){
+		// new install
+		_self.lsSet('tcversion',_self.version);
+		_self.initialCamps();
+		_self.setVersionTime();    
+		_self.fetchMetaData(function(){ openInstall(); _self.sync();});    
+		else if(! _self.lsGet('tcversion') && _self.lsGet('resultsversion')){
+		    // update from sqlite version
+		    _self.lsSet('tcversion',_self.version);
+		    _self.initialCamps();
+		    _self.setVersionTime();
+		    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
+		    olddb.transaction(function(tx){
+    			tx.executeSql('drop table template',[]); 
+    			tx.executeSql('drop table place',[]); 
+    			tx.executeSql('drop table place_data',[]); 
+    			tx.executeSql('drop table results',[]); 
+		    });
+		    _self.fetchMetaData(function(){ openUpdate(); });    
+		} else if(_self.lsGet('tcversion') != _self.version){
+		    // update
+		    _self.lsSet('tcversion',_self.version);
+		    _self.initialCamps();
+		    _self.setVersionTime();
+		    setTimeout(function(){ _self.resetDB(_self.sync); }, 15000);	
+		} else if(_self.lsGet('tcversion') == _self.version){	    
+		    if(lastSyncTime == 0 && _self.getVersionTime()){
+    			// we haven't done a sync before do it immediately
+    			_self.sync();
+		    } else if( (new Date) - (new Date(lastSyncTime)) > 4 * 3600 * 1000){
+    			// we haven't done one in 4 hrs so do one 
+    			// but wait a little bit first to not lag browser start
+    			setTimeout(
+    			    function(){
+    				_self.sync();
+    			    }
+    			    , 5 * 60 * 1000); // 5 minutes 
+		    }
 		}
-	    }
-	    setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
-	    setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
-	});    
-}
+		setInterval(function(){_self.sync()}, 4 * 3600 * 1000);  // 4hrs
+		setInterval(function(){_self.getNotifications()}, 4.2 * 3600 * 1000);
+	    });    
+	     }
 
 Ext.prototype = {
     resetDB: function(callback){
@@ -421,6 +446,7 @@ Ext.prototype = {
 		_self.lsRm(o);
 	    });
 	_self.lsSet('campaigns', JSON.stringify(newCamps));    
+	_self.getSubscribed();
     },
     lsSet: function(x,y){
 	localStorage[x] = y;
@@ -480,33 +506,6 @@ function openInstall(){
     var url = "options.html?install";
     chrome.tabs.create({url:url})
 }
-
-if(! tc.lsGet('tcversion') && ! tc.lsGet('resultsversion')){
-    // new install
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();    
-    tc.fetchMetaData(function(){ openInstall(); tc.sync();});    
-else if(! tc.lsGet('tcversion') && tc.lsGet('resultsversion')){
-    // update from sqlite version
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();
-    var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-    olddb.transaction(function(tx){
-    	tx.executeSql('drop table template',[]); 
-    	tx.executeSql('drop table place',[]); 
-    	tx.executeSql('drop table place_data',[]); 
-    	tx.executeSql('drop table results',[]); 
-    });
-    tc.fetchMetaData(function(){ openUpdate(); });    
-} else if(tc.lsGet('tcversion') != tc.version){
-    // update
-    tc.lsSet('tcversion',tc.version);
-    tc.initialCamps();
-    tc.setVersionTime();
-    setTimeout(function(){ tc.resetDB(tc.sync); }, 15000);	
-}      
 
 chrome.notifications.onClicked.addListener(
     function(notificationId){
