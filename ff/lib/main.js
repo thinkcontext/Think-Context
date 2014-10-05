@@ -559,7 +559,7 @@ pageMod.PageMod({
 	      ],
     attachTo: "top",
     contentStyleFile: data.url("jquery-ui.css"),
-    contentScriptWhen:  'ready',
+    contentScriptWhen:  'end',
     contentScriptFile: [
 	data.url('jquery-2.0.3.min.js')
 	,data.url('jquery-ui-1.9.2.custom.min.js')
