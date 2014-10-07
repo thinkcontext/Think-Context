@@ -70,7 +70,10 @@ function Ext(){
 		sql.execute("drop table place_data",{}, null, null);
 		sql.execute("drop table results",{}, null, null);
 		sql = null;
-		_self.fetchMetaData(function(){ openUpdate(); });    
+		_self.fetchMetaData(function(){ 
+		    openUpdate(); 
+		    _self.sync();
+		});    
 	    } else if(_self.lsGet('tcversion') != _self.version){
 		// update
 		_self.lsSet('tcversion',_self.version);
@@ -208,7 +211,7 @@ Ext.prototype = {
 	var metaDeact = parseInt(_self.lsGet('metadea')) || parseInt(_self.lsGet('metaseq')) || 0;
 	_self.getJSON(_self.metaDeactivatedUrl, 
 		      {startkey: metaDeact,
-		       rando: Math.random() // remove me, pierces cache
+		       //rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows;
@@ -230,7 +233,7 @@ Ext.prototype = {
 	_self.getJSON(_self.metaUrl,
 		  { include_docs: true,
 		    startkey: metaSeq,
-		    rando: Math.random() // remove me, pierces cache 
+		    //rando: Math.random() // remove me, pierces cache 
 		  },		  
 		  function(data){
 		      var rows = data.rows;
@@ -259,7 +262,7 @@ Ext.prototype = {
 	_self.getJSON(_self.deactivateUrl, 
 		      {startkey: JSON.stringify([ campaign, campDeact ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       rando: Math.random() // remove me, pierces cache
+		       //rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows, req;
@@ -282,7 +285,7 @@ Ext.prototype = {
 		      {include_docs: true,
 		       startkey: JSON.stringify([ campaign, campSeq ]),
 		       endkey: JSON.stringify([ campaign, {} ]),
-		       rando: Math.random() // remove me, pierces cache
+		       //rando: Math.random() // remove me, pierces cache
 		      } ,
 		      function(data){
 			  var rows = data.rows;
@@ -467,7 +470,7 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts','effback','politifact','naacp','whoprofits'];
+	var newCamps = ['congress','climatecounts','effback','politifact','naacp','whoprofits','ciw'];
 	[ 'opt_rush','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
 	    function(o){
 		if(_self.lsGet(o) != 0){

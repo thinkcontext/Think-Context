@@ -1,7 +1,7 @@
 if (!document.baseURI.match(/^safari-extension/) && ( window.top === window || document.baseURI.search("http://.*search.yahoo.com/.*") >= 0 )) {
 var tc = {};
 tc.found = false;
-tc.debug = 2;
+tc.debug = 0;
 tc.responses = {};
 tc.popD = null;
 
