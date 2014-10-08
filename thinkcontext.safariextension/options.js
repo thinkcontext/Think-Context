@@ -39,7 +39,8 @@ function renderPage(){
 	aTD = $("<td>");
 	for(var a in campaign['actions']){
     	    action = availableActions[campaign.actions[a]];
-    	    aTD.append($("<img>",{src: action['icon']}));
+	    if(action)
+    		aTD.append($("<img>",{src: action['icon']}));
 	}    
 	if(campaigns.length >= 1 && campaigns.indexOf(campaign['tid']) >= 0){
 	    checked = true;
