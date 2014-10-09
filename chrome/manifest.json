@@ -1,5 +1,5 @@
 {"name":"thinkContext test"
- , "version": "7.2"
+ , "version": "7.7"
  , "description":"thinkContext Test"
  , "manifest_version": 2
  , "permissions": ["http://127.0.0.1:5984/*"
@@ -10,7 +10,7 @@
  , "page_action": { "default_title": "thinkContext - Click for more info" }
  , "options_page": "options.html"
  , "background": {"scripts": ["jquery-2.0.3.min.js"
-			      ,"ydn.db-1.0.2.js"
+			      ,"db.js"
 			      ,"background.js"]}
  , "content_scripts": [
      {"css": ["jquery-ui.css"]
@@ -62,3 +62,4 @@
        }
  ]
 }
+
