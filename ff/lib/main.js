@@ -17,7 +17,7 @@ var defaultIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAA
 function Ext(){
     var _self = this;
     _self.version = '1.00';
-    _self.debug = 2;
+    _self.debug = 0;
     _self.schema = {
 	thing: {
 	    key: { keyPath: '_id' },
@@ -31,7 +31,7 @@ function Ext(){
     };
     _self.dbName = 'tc';
     //_self.couch = 'http://127.0.0.1:5984/tc';
-    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tcv1';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';

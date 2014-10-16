@@ -1,9 +1,9 @@
 {
   "name": "thinkcontext",
-  "fullName": "thinkContext beta",
+  "fullName": "thinkContext",
   "id": "jid1-ODGBE3tzECIBXQ",
-  "description": "",
+  "description": "thinkContext is a web browser extension which adds contextually relevant, politically progressive information to your web browsing",
   "author": "",
   "license": "GPLv3",
-  "version": "1.0"
+  "version": "1.00"
 }

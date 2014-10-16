@@ -30,7 +30,7 @@ function Ext(){
     _self.dbName = 'tc';
     _self.db = new ydn.db.Storage(_self.dbName,_self.schema);
     //_self.couch = 'http://127.0.0.1:5984/tc';
-    _self.couch = 'http://lin1.thinkcontext.org:5984/tc';
+    _self.couch = 'http://lin1.thinkcontext.org:5984/tcv1';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -518,7 +518,6 @@ var tc = new Ext();
 // browser specific
 function onRequest(e){
     var request = e.message;
-    console.log(e);
     var callback = function(r){ e.target.page.dispatchMessage(r.kind,r)};
     
     if(request.kind == 'pageA'){
@@ -531,7 +530,6 @@ function onRequest(e){
     } else if(request == 'sendOptions'){
 	tc.sendOptions(
 	    function(r){
-		console.log('sendOptions callback',r);
 		e.target.page.dispatchMessage('sendOptions',r);
 	    }
 	);
