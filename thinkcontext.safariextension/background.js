@@ -1,7 +1,7 @@
 function Ext(){
     var _self = this;
     _self.version = '1.00'
-    _self.debug = 0;
+    _self.debug = 2;
     _self.schema = { 
 	stores: [
 	    {
@@ -265,6 +265,7 @@ Ext.prototype = {
     
     fetchCampaignDeactivated: function(campaign){
 	var _self = this;
+	_self.debug && console.log("fetchCampaignDeactivated");
 	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
 	_self.getJSON(_self.deactivateUrl, 
 		      {startkey: JSON.stringify([ campaign, campDeact ]),
@@ -476,6 +477,7 @@ Ext.prototype = {
     
     initialCamps: function(){
 	var _self = this;
+	_self.debug && console.log("initialCamps");
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
@@ -488,6 +490,7 @@ Ext.prototype = {
 		_self.lsRm(o);
 	    });
 	_self.lsSet('campaigns', JSON.stringify(newCamps));    
+	_self.getSubscribed();
     },
     lsSet: function(x,y){
 	localStorage[x] = y;

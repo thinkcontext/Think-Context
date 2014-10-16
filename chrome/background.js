@@ -224,6 +224,7 @@ Ext.prototype = {
     
     fetchCampaignDeactivated: function(campaign){
 	var _self = this;
+	_self.debug && console.log("fetchCampaignDeactivated");
 	var campDeact = parseInt(_self.lsGet('dea' + campaign)) || parseInt(_self.lsGet('seq' + campaign)) || 0;
 	_self.getJSON(_self.deactivateUrl, 
 		      {startkey: JSON.stringify([ campaign, campDeact ]),
