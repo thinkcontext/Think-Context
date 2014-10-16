@@ -1,15 +1,13 @@
-//if window.top === window 
-    if(document.baseURI.search("https?://.*search.yahoo.com/.*") >= 0 ){
-
-tc.searchLinkExam('div#web > ol h3 > a'
-		  , 'yahoo-search');
-
-// ads
-
-tc.searchLinkExam('div.ads ul.spns li.sitelink:has(div > a) em > a'
-		  , 'yahoo-search'
-		  , null //function(x){return x.parentElement.children[0].children[0];}
-		  , function(x){return x.textContent});
-    safari.self.addEventListener("message",tc.onResponse, false);    
+if ( window === window.top && !tc.found && document.domain.match(/(^|\.)yahoo\.com|(^|\.)goodsearch\.com$/)) {
+    tc.found = true;
+    tc.handleExamine('div#web > ol h3 > a'
+		     , null);
+    
+    // ads
+    
+    tc.handleExamine('div.ads ul.spns li.sitelink:has(div > a) em > a'
+		     , null
+		     , function(x){return x.textContent}
+		     , null //function(x){return x.parentElement.children[0].children[0];}
+		    );
 }
-//}

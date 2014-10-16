@@ -1,39 +1,30 @@
-if (window.top === window) {
-    if(! /(bing\.com)|(google\.com)|(yahoo\.com)|(facebook\.com)|(twitter\.com)/.test(document.domain) && document.baseURI.search(/^safari-extension/) < 0){    
-
+if (window.top === window && !tc.found) {
     tc.reverse = {};
-    
-    tc.registerResponse('link',
-			function(request){
-			    if(request.pop == 1){
-				tc.popDialog(request);				
-			    } else {
-				tc.resultPrevResponse(request);
-			    }
-			}
-		       );
-    tc.sendMessage(
-	{kind: 'link'
-	 , pop: 1
-	 , key: tc.sigURL(document.baseURI)
-	});
-    function doit(){
-	tc.searchLinkExam("a[href*='shlinks.industrybrains.com']"
-			  ,'link'
-			  ,null
-			  ,function(x){ return x.textContent});
 
-	//news.bbc.co.uk
-	tc.searchLinkExam("li > p > a[href*='googleadservices.com/pagead/aclk']"
-			  ,'link'
-			  ,null
-			  ,function(x){ return x.textContent});	
+    tc.popSend();
+
+    tc.reverse.doit = function(){
+	tc.handleExamine("a[href*='shlinks.industrybrains.com']"
+			 ,'urlfrag'
+			 ,function(x){ return x.textContent;}
+			);
 	
-	tc.searchLinkExam("div.adsonarAd > a.displayUrl"
-			  ,'link'
-			  ,null
-			  ,function(x){ return x.textContent});	
+	tc.handleExamine("li > p > a[href*='googleadservices.com/pagead/aclk']"
+			 ,'urlfrag'
+			 ,function(x){ return x.textContent}
+			);
 	
+	tc.handleExamine("div.adsonarAd > a.displayUrl"
+			 ,'urlfrag'
+			 ,function(x){ return x.textContent;}
+			);
+
+	tc.handleExamine("[itemtype='http://schema.org/Organization'] [itemprop='url']"
+			 ,'urlfrag'
+			 ,function(x){ return x.href; }
+			 ,function(x){ return x.parentElement; });
+
+
 	// $("object param[name='flashvars'][value*='2mdn.net']").not('a[sid]').map(
 	//     function(){
 	// 	if(m = this.value.match(/link\%253D(http[^\&]+)/) && m[1]){
@@ -47,7 +38,7 @@ if (window.top === window) {
 	// 	    var sid = "gs" + tc.random();
 	// 	    this.setAttribute("sid",sid);
 	// 	    var m = this.value.match(/sscs%253D%253fhttp(s)?%3A\/\/([^\/]+)/);
-    // 	    if(m && m.length == 3){
+	// 	    if(m && m.length == 3){
 	// 		console.log('doubleclick param ' + m[2]);
 	// 		tc.sendMessage({kind: 'link'
 	// 				, subtype: 'imgad'
@@ -86,9 +77,6 @@ if (window.top === window) {
 	// 	    }
 	// 	});
     }
-    
-    window.setTimeout(doit,500);
-	safari.self.addEventListener("message",tc.onResponse, false);
-	
-    }
+
+    window.setTimeout(tc.reverse.doit,500);
 }
