@@ -1,6 +1,6 @@
 {"name":"thinkContext"
- , "version": "1.0"
- , "description":"thinkContext"
+ , "version": "1.1"
+ , "description":"thinkContext beta"
  , "manifest_version": 2
  , "permissions": ["http://*.thinkcontext.org:5984/*"
 		   ,"https://*.thinkcontext.org:5984/*"
@@ -43,7 +43,8 @@
 	       ,"twitter.js"
 	       ,"wikipedia.js"
 	       ,"yahoo-search.js"
-	       ,"yelp.js"]
+	       ,"yelp.js"
+	       ,"reddit.js"]
      }
      , {"css": ["jquery-ui.css"]
 	, "matches": ["http://*.adsonar.com/*"
