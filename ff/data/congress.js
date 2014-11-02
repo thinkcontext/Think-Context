@@ -17,7 +17,7 @@ tc.congress.doit = function(){
     for(var q in cs){
 	cong = cs[q];
 	// find all nodes that contain a candidate string
-	cons = $.makeArray($("*:not('body,head,script,a,html'):contains("+cong+")"));
+	cons = $.makeArray($("*:not('body,head,script,a,html,textarea'):contains("+cong+")"));
 	for(var i = 0; i < cons.length; i++){
 	    // the list contains ancestors we don't want
 	    // so walk the list and skip those that are parents

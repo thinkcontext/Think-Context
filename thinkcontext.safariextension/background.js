@@ -1,7 +1,7 @@
 function Ext(){
     var _self = this;
     _self.version = '1.00'
-    _self.debug = 2;
+    _self.debug = 0;
     _self.schema = { 
 	stores: [
 	    {
