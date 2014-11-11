@@ -1,12 +1,11 @@
-if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.com$/)) {
+if (window.top === window && !tc.found && document.domain.search(/^www\.google(\.(co|com))?\.[a-z]{2,3}$/) == 0) {
     tc.found = true;
     tc.googleSearch = {};
     var $observerSummaryRoot = $("body");
     
-    if(document.location.href.search('.*www.google.com/search\?.*') >= 0
-       ||document.location.href.search('.*www.google.com/webhp') >= 0
+    if(document.location.pathname.search(/^\/(webhp|search)$/) == 0
        ||document.location.href.search('.*www.google.com/#') >= 0
-       ||($('div#center_col').length == 0 && document.location.hostname == 'www.google.com' && document.location.pathname == '/')
+       ||($('div#center_col').length == 0 && document.location.pathname == '/')
       ){
 	tc.googleSearch.observe = function(){
 	    $observerSummaryRoot.mutationSummary("connect"
@@ -24,7 +23,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)google\.c
 	    //	result link	
 	    tc.handleExamine("ol#rso li.g div > h3 > a",null);
 	}
-    }else if((document.location.hostname == 'www.google.com' && document.location.pathname.search('/maps') == 0) || document.location.hostname == 'maps.google.com'){
+    }else if(document.location.pathname.search('/maps') == 0){
 	
 	if(document.location.search.search('output=classic') >= 0){
 	    // classic maps interface
