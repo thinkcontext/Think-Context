@@ -1,11 +1,11 @@
-if(window != window.parent
-   && (document.domain.match('adsonar.com')
+if(window != window.parent){
+    console.log('iframe',document.URL,document.body);
+    if(document.domain.match('adsonar.com')
        || document.domain.match('msn.com')
        || document.URL.match("doubleclick.net/pagead/")
        || document.domain.match('overture.com')
        || document.URL.match("ad.doubleclick.net/adi/")       
-      )
-  ){ 
+      ){ 
     if(document.domain.match('adsonar.com')){
 	tc.handleExamine("p.lnk a"
 			 ,'urlfrag'
@@ -47,6 +47,24 @@ if(window != window.parent
 				 ,'urlfrag'
 				 ,function(x){ return x.textContent;}
 				);
+
+		// samples/nytimes-dc-img.html
+		$("a[href*='googleadservices.com/pagead/aclk'] > img").map(
+		    function(){
+			var m,href = this.parentElement.href;
+			if(m = href.match(/adurl=([^&]*)/) && m[1]){
+			    console.log('ad img',m[1]);
+			}
+		    });
+
+		// samples/nytimes-dc-obj.html
+		$("a[href*='googleadservices.com/pagead/aclk'] object[flashvars*='adurl']").map(
+		    function(){
+			var m,obj = this.childNodes[0].childNodes[0], href=decodeURIComponent(obj.attributes['flashvars']);
+			if(m = href.match(/adurl=([^&]*)/) && m[1]){
+			    console.log('ad img',m[1]);
+			}
+		    });
 	    }
 	    , 500);
     } else if(document.domain.match('overture.com')){
@@ -82,5 +100,6 @@ if(window != window.parent
 	// 		console.log(m[1]);
 	// 	    }	
 	// 	});
+    }
     }
 }

@@ -54,6 +54,7 @@
 		      ,"http://*.msn.com/*"
 		      ,"http://*.doubleclick.net/*"
 		      ,"http://*.overture.com/*"
+		      ,"javascript:*"
 		     ]
 	, "js": ["jquery-2.0.3.min.js"
 		 ,"jquery-ui-1.9.2.custom.min.js"
