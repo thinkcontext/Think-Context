@@ -46,11 +46,13 @@ tc.sendMessage = function(request){
 tc.popSend = function(){
     tc.registerResponse('pop',tc.onPop);
     var url = document.baseURI;
-    $("link[rel='canonical']").map(
-	function(){ 
-	    if(this.href)
-		url = this.href;
-	});
+    if(document.location.pathname != '/'){
+	$("link[rel='canonical']").map(
+	    function(){ 
+		if(this.href)
+		    url = this.href;
+	    });
+    }
     var h = new tc.urlHandle(url);
     if(h){
 	tc.sendMessage({
