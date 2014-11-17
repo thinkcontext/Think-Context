@@ -68,55 +68,55 @@ tc.onPop = function(request){
     var dd = tc.renderResults(request.results,'tcpopd');
     var d;
     if(dd){
-	d = dd.dialog;
-	d.dialog({
-	    title: dd.title
-	    , zIndex: 100000001
-	    , position: [window.innerWidth - 350
-			 , 10 ]
-	    , close: function(){
-		$(window).unbind('resize');
-		$(window).unbind('scroll');
-	    }
-	    , closeText: 'x'
-	    , create: function() {
-	    	$(this).css("maxHeight", 300);
-	    }	    
-	    , width: 500
-	    , resizable: false
-	    , autoOpen: false
-	    , dialogClass: 'thinkcontext'
-	});     
-	tc.popD = d;
+    	d = dd.dialog;
+    	d.dialog({
+    	    title: dd.title
+    	    , zIndex: 100000001
+    	    , position: [window.innerWidth - 350
+    			 , 10 ]
+    	    , close: function(){
+    		$(window).unbind('resize');
+    		$(window).unbind('scroll');
+    	    }
+    	    , closeText: 'x'
+    	    , create: function() {
+    	    	$(this).css("maxHeight", 300);
+    	    }	    
+    	    , width: 500
+    	    , resizable: false
+    	    , autoOpen: false
+    	    , dialogClass: 'thinkcontext'
+    	});     
+    	tc.popD = d;
 	
-	if(autoOpen){
-	    d.dialog('open');
-	}
-	tc.sendMessage({kind:'pageA',icon:dd.icon});
-	$('div#tcpopd a[tcstat]').click(function(){
-	    tc.sendMessage({kind: 'sendstat'
-	 		    , key: this.attributes['tcstat'].value});
-	});
+    	if(autoOpen){
+    	    d.dialog('open');
+    	}
+    	tc.sendMessage({kind:'pageA',icon:dd.icon});
+    	$('div#tcpopd a[tcstat]').click(function(){
+    	    tc.sendMessage({kind: 'sendstat'
+    	 		    , key: this.attributes['tcstat'].value});
+    	});
 
-	$(window).scroll(function(){
-	    d.dialog('close');
-	});
-	$(window).click(function(){
-	    d.dialog('close');
-	});
-	d.mouseenter(function(){
-	    $(window).off('click');
-	});
-	d.mouseleave(function(){
-	    $(window).click(function(){
-		d.dialog('close');
-	    });
-	});
+    	$(window).scroll(function(){
+    	    d.dialog('close');
+    	});
+    	$(window).click(function(){
+    	    d.dialog('close');
+    	});
+    	d.mouseenter(function(){
+    	    $(window).off('click');
+    	});
+    	d.mouseleave(function(){
+    	    $(window).click(function(){
+    		d.dialog('close');
+    	    });
+    	});
 	
-	// really irritating when the dialog steals focus
-	if(autoOpen){
-	    document.activeElement.blur();
-	}
+    	// really irritating when the dialog steals focus
+    	if(autoOpen){
+    	    document.activeElement.blur();
+    	}
     }
 }
 
@@ -199,7 +199,7 @@ tc.insertPrev = function(n,request){
 	});
     }
 };
-    
+
 tc.renderResults = function(results,rid){
     tc.debug >= 2 && console.log('renderResults',results,rid);
     var d = $("<div>"
@@ -265,8 +265,10 @@ tc.urlHandle = function(url){
     var m, sp = url.split('/');
     var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
     var path = sp.slice(3).join('/');
+    var query = path.split('?')[1];
     this.domain = domain;
     this.path = path;
+    this.query = query;
     
     if(domain == 'twitter.com' && (m = path.match(/^(\w+)/))){
 	this.kind = 'twitter';
@@ -297,6 +299,12 @@ tc.urlHandle = function(url){
 	this.hval = m[1];
     } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
 	this.kind = 'imdb';
+	this.hval = m[1];
+    } else if(domain.match(/\.?netflix\.com$/) && (m = path.match(/WiMovie\/([0-9]+)/) || (query != null && (m = query.match(/movieid=([0-9]+)/))))){
+	this.kind = 'netflix';
+	this.hval = m[1];
+    } else if(domain.match(/\.?rottentomatoes\.com$/) && (m = path.match(/m\/([^\/]+)/))){
+	this.kind = 'rt';
 	this.hval = m[1];
     } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
