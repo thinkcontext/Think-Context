@@ -326,10 +326,6 @@ Ext.prototype = {
 	_self.lsSet('lastSyncTime', (new Date).toJSON());	
     },
     
-    sendStat: function(key){
-	if(key.match(/^\w+$/))
-	    this.get('http://thinkcontext.org/s/?' + key);
-    },
     lookup: function(handle,request,callback){
 	var _self = this;
 	var req ;

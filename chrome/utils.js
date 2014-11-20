@@ -93,10 +93,6 @@ tc.onPop = function(request){
     	    d.dialog('open');
     	}
     	tc.sendMessage({kind:'pageA',icon:dd.icon});
-    	$('div#tcpopd a[tcstat]').click(function(){
-    	    tc.sendMessage({kind: 'sendstat'
-    	 		    , key: this.attributes['tcstat'].value});
-    	});
 
     	$(window).scroll(function(){
     	    d.dialog('close');
@@ -193,10 +189,6 @@ tc.insertPrev = function(n,request){
 		$('div:has(#'+iid+')').mouseout(function(e){ d.dialog('close'); });
 		return false;}
 	);
-	$('#' + iid +' a[tcstat]').click(function(){
-	    tc.sendMessage({'kind': 'sendstat'
-	 		    , 'key': this.attributes['tcstat'].value});
-	});
     }
 };
 

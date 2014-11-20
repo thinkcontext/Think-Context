@@ -48,7 +48,7 @@
 	       ,"wikipedia.js"
 	       ,"yahoo-search.js"
 	       ,"yelp.js"
-	       ,"reddit.js"]
+	       ,"amazon.js"]
      }
      , {"css": ["jquery-ui.css"]
 	, "matches": ["http://*.adsonar.com/*"

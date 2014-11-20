@@ -317,10 +317,6 @@ Ext.prototype = {
 	_self.lsSet('lastSyncTime', (new Date).toJSON());	
     },
     
-    sendStat: function(key){
-	if(key.match(/^\w+$/))
-	    this.get('http://thinkcontext.org/s/?' + key);
-    },
     lookup: function(handle,request,callback){
 	var _self = this;
 	var req ;
@@ -594,9 +590,7 @@ pageMod.PageMod({
     onAttach: function(worker){
 	tabWorkers[worker.tab.id] = worker;
 	worker.on('message', function(request){
-	    if(request.kind == 'sendstat' && !sender.tab.incognito){
- 		tc.sendStat(request.key);
-	    } else if(request.handle){
+	    if(request.handle){
 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
 	    } else {
  		console.log("couldn't get a handle",request);
@@ -624,9 +618,7 @@ pageMod.PageMod({
 //     onAttach: function(worker){
 // 	tabWorkers[worker.tab.id] = worker;
 // 	worker.on('message', function(request){
-// 	    if(request.kind == 'sendstat' && !sender.tab.incognito){
-//  		tc.sendStat(request.key);
-// 	    } else if(request.handle){
+//          if(request.handle){
 // 		tc.lookup(request.handle,request, function(r){ worker.postMessage(r) });
 // 	    } else {
 //  		console.log("couldn't get a handle",request);

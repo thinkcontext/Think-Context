@@ -285,10 +285,6 @@ Ext.prototype = {
 	_self.lsSet('lastSyncTime', (new Date).toJSON());	
     },
     
-    sendStat: function(key){
-	if(key.match(/^\w+$/))
-	    this.get('http://thinkcontext.org/s/?' + key);
-    },
     lookup: function(handle,request,callback){
 	var _self = this;
 	var req ;
@@ -484,8 +480,6 @@ function onRequest(request, sender, callback) {
     if(request.kind == 'pageA'){
 	chrome.pageAction.setIcon({tabId:sender.tab.id,path:request.icon});
 	chrome.pageAction.show(sender.tab.id);
-    } else if(request.kind == 'sendstat' && !sender.tab.incognito){
-	tc.sendStat(request.key);
     } else if(request.handle){
 	tc.lookup(request.handle,request,callback);
     } else {
