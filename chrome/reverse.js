@@ -1,8 +1,9 @@
 if (window.top === window && !tc.found) {
     tc.reverse = {};
-
-    tc.popSend();
-
+    // amazon handles its own pop
+    if(! (document.location.host == 'amazon.com')){
+	tc.popSend();
+    }
     tc.reverse.doit = function(){
 	tc.handleExamine("a[href*='shlinks.industrybrains.com']"
 			 ,'urlfrag'
