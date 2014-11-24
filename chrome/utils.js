@@ -131,6 +131,7 @@ tc.handleExamine = function(selector,kind,getval,placer){
     tc.debug >= 2 && console.log('handleExamine',kind,selector);
     $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
+	    console.log('examine',this.href);
 	    var target = this, href = this.href, h;
 	    if(getval)
 		href = getval(this);
@@ -311,7 +312,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
 	this.kind = 'imdb';
 	this.hval = m[1];
-    } else if(domain.match(/\.?netflix\.com$/) && (m = path.match(/WiMovie\/([0-9]+)/) || (query != null && (m = query.match(/movieid=([0-9]+)/))) || (m = path.match(/^Movie\/.*\/([0-9]+)$/)))){
+    } else if(domain.match(/\.?netflix\.com$/) && (m = path.match(/WiMovie\/([0-9]+)/) || (query && (m = query.match(/movieid=([0-9]+)/))) || (m = path.match(/^Movie\/.*\/([0-9]+)$/)))){
 	this.kind = 'netflix';
 	this.hval = m[1];
     } else if(domain.match(/\.?rottentomatoes\.com$/) && (m = path.match(/m\/([^\/]+)/))){

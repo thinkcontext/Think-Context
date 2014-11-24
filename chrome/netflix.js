@@ -1,48 +1,25 @@
 if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.com$/)) {
     tc.found = true;
-    
     var h = new tc.urlHandle(document.URL);
+    var selector;
 
     if(h.kind == 'netflix'){
-	tc.handleExamine("a[href*='m/']:not([href*='"+h.hval+"'])",'netflix');
+	selector = "a.playLink:not([href*='"+h.hval+"'])";
     } else {
-	tc.handleExamine("a[href*='m/']",'netflix');
+	selector = "a.playLink";
     }
-
-    var bindElement;
-
-    switch ($('body').attr('id')) {
-    case 'page-WiHome':
-        bindElement = '.boxShot';
-        break;
-	
-    case 'page-WiAltGenre':
-        bindElement = '.boxShot';
-        break;
-	
-    case 'page-WiMovie':
-        bindElement = '.agMovie';
-        break;
-	
-    case 'page-RecommendationsHome':
-        bindElement = '.agMovie';
-        break;
-	
-    default:
-        bindElement = '.boxShot';
-        break;
-    }
-
-    $(bindElement).each(function() {
-        var $this = $(this)
-        ,   $movieLink = $this.find('a')
-        ,   $parentEl = $this.parent()
-        ,   $parentElClass = $parentEl.attr('class')
-        ,   bindElementTemp = $movieLink.closest(bindElement)
-        ,   hit_the_server = true
-        ,   RTData = {};
-
-	
-    }
-
+    
+    tc.registerResponse('nfLink',tc.onLink);
+    $(selector).not('[tcid]').map(
+	function(){
+	    var h = new tc.urlHandle(this.href);
+	    if(h && h.handle){
+		var r = tc.random();	    
+		this.setAttribute('tcid',r);
+		tc.sendMessage({
+		    kind: 'link'
+		    , tcid: r
+		    , handle: h.handle});
+	    }
+	});
 }
