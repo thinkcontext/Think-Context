@@ -117,12 +117,12 @@ tc.onPop = function(request){
     }
 }
 
-tc.onLink = function(request){
+tc.onLink = function(request,spClass){
     //console.log('onLink',request,request.tcid);
     if(request.tcid > 0)
 	$("[tcid="+request.tcid+"]").map(
 	    function(){
-		tc.insertPrev(this,request);
+		tc.insertPrev(this,request,spClass);
 	    });
 }
 
@@ -154,9 +154,10 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	});
 }
 
-tc.insertPrev = function(n,request){
+tc.insertPrev = function(n,request,pClass){
     tc.debug >= 2 && console.log('insertPrev',request,n);
     var d;
+    var spClass = pClass || 'thinkcontext';
     var rid = tc.random(), iid = 'i' + rid;
     var dd = tc.renderResults(request.results,rid);
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
@@ -167,7 +168,7 @@ tc.insertPrev = function(n,request){
 	    oh = 16;
 	else if(oh < 0)
 	    oh = 14;
-	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
+	var resDiv = $('<span>', { id: iid, tc: 'tc',class: spClass})
     	    .append($('<img>', { src: dd.icon, height: oh, width: oh }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";
@@ -269,7 +270,6 @@ tc.movHandle = function(name,year){
 
 tc.urlHandle = function(url){
     //tc.debug >= 2 && 
-    console.log('urlHandle',url);
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;

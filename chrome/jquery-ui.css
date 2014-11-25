@@ -319,3 +319,4 @@
 .thinkcontext img { display:inline !important ; float:none !important ; margin:0px !important ; padding: 0px !important; vertical-align: middle !important; height: auto !important; width: auto !important;}
 .thinkcontext span { display: inline;padding-bottom: 3px;padding-left: 3px;padding-top: 3px;padding-right: 3px; }
 .thinkcontext hr {border: solid medium gray; margin: 3px; display: block;}
+span.tcNetflix {position: absolute; bottom: 0px; left: 0px; z-index: 100;}
