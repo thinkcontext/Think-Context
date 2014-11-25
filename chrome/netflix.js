@@ -46,7 +46,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 
 	function rateVisibleMovies(){
-	    nlinks = $(selector).not('[tcid]').each(
+	    nlinks = $(selector).filter(':visible').not('[tcid]').each(
 		function(){
 		    var $this = $(this);
 		    if($this.isOnScreen()){
@@ -58,9 +58,9 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	var selector;
 	
 	if(h.kind == 'netflix'){
-	    selector = "a.playLink:not([href*='"+h.hval+"'])";
+	    selector = "a.playLink:not([href*='"+h.hval+"']), a.playHover:not([href*='"+h.hval+"'])";
 	} else {
-	    selector = "a.playLink";
+	    selector = "a.playLink , a.playHover";
 	}
 	
 	tc.registerResponse('nfLink',onNFLink);
