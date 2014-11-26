@@ -72,6 +72,11 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	$(window).scroll(function(){
 	    rateVisibleMovies();
 	});
-	
+	$("input#searchField").on('input',function(e){
+	    setTimeout(function(){
+		console.log('input');	    
+		rateVisibleMovies();
+	    },500);
+	});	
     }());
 }
