@@ -44,8 +44,6 @@ tc.sendMessage = function(request){
 }
 
 tc.popSend = function(){
-    //tc.debug >= 2 && 
-	console.log('popSend');
     tc.registerResponse('pop',tc.onPop);
     var url = document.baseURI;
     if(document.location.pathname != '/'){
@@ -131,7 +129,6 @@ tc.handleExamine = function(selector,kind,getval,placer){
     tc.debug >= 2 && console.log('handleExamine',kind,selector);
     $(selector).not('[tcid]').filter(function(){ if(this.textContent && this.textContent.trim && this.textContent.trim().length > 0) return true }).map(
 	function(){
-	    console.log('examine',this.href);
 	    var target = this, href = this.href, h;
 	    if(getval)
 		href = getval(this);
