@@ -248,25 +248,24 @@ tc.fragHandle = function(frag){
     }
 }
 
-tc.movHandle = function(name,year){
-    tc.debug >= 2 && console.log('movHandle',name,year);
-    this.kind = 'mov';
-    if(! (name && name.length > 0 && year && year.match(/^[0-9]{4}$/))){
-      return null;
-    }
-    name = name.replace(/^the | the | the$/gi,'').toLowerCase();
-    name = name.replace(/[\s\.,-\/#!$%\^&\*;:{}=\-_`~()\[\]]/g,"");
+// tc.movHandle = function(name,year){
+//     tc.debug >= 2 && console.log('movHandle',name,year);
+//     this.kind = 'mov';
+//     if(! (name && name.length > 0 && year && year.match(/^[0-9]{4}$/))){
+//       return null;
+//     }
+//     name = name.replace(/^the | the | the$/gi,'').toLowerCase();
+//     name = name.replace(/[\s\.,-\/#!$%\^&\*;:{}=\-_`~()\[\]]/g,"");
     
-    this.handle_seperator = ':';
-    this.name = name;
-    this.year = year;
-    this.hval = name + '|' + year;
+//     this.handle_seperator = ':';
+//     this.name = name;
+//     this.year = year;
+//     this.hval = name + '|' + year;
     
-    this.handle = this.kind + this.handle_seperator + this.hval;
-}
+//     this.handle = this.kind + this.handle_seperator + this.hval;
+// }
 
 tc.urlHandle = function(url){
-    //tc.debug >= 2 && 
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;

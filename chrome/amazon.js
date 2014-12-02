@@ -17,7 +17,6 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)amazon\.c
 	    if(item[0].content){
 		iurl = item[0].content;
 		ihandle = new tc.urlHandle(iurl); 
-		console.log('ihandle',ihandle.handle);
 		if(ihandle && ihandle.handle){
 		    tc.sendMessage({
 			kind: 'pop'

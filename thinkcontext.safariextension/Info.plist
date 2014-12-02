@@ -45,6 +45,8 @@
 				<string>google-search.js</string>
 				<string>hcom.js</string>
 				<string>imdb.js</string>
+				<string>netflix.js</string>
+				<string>rotten.js</string>
 				<string>kayak.js</string>
 				<string>orbitz.js</string>
 				<string>priceline.js</string>

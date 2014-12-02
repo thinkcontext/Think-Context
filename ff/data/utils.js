@@ -45,11 +45,13 @@ tc.sendMessage = function(request){
 tc.popSend = function(){
     tc.registerResponse('pop',tc.onPop);
     var url = document.baseURI;
-    $("link[rel='canonical']").map(
-	function(){ 
-	    if(this.href)
-		url = this.href;
-	});
+    if(document.location.pathname != '/'){
+	$("link[rel='canonical']").map(
+	    function(){ 
+		if(this.href)
+		    url = this.href;
+	    });
+    }
     var h = new tc.urlHandle(url);
     if(h){
 	tc.sendMessage({
@@ -117,12 +119,12 @@ tc.onPop = function(request){
     }
 }
 
-tc.onLink = function(request){
+tc.onLink = function(request,spClass){
     //console.log('onLink',request,request.tcid);
     if(request.tcid > 0)
 	$("[tcid="+request.tcid+"]").map(
 	    function(){
-		tc.insertPrev(this,request);
+		tc.insertPrev(this,request,spClass);
 	    });
 }
 
@@ -152,9 +154,10 @@ tc.handleExamine = function(selector,kind,getval,placer){
 	});
 }
 
-tc.insertPrev = function(n,request){
+tc.insertPrev = function(n,request,pClass){
     tc.debug >= 2 && console.log('insertPrev',request,n);
     var d;
+    var spClass = pClass || 'thinkcontext';
     var rid = tc.random(), iid = 'i' + rid;
     var dd = tc.renderResults(request.results,rid);
     if(dd && (!n.previousSibling || !n.previousSibling.getAttribute || !n.previousSibling.getAttribute('tc'))){ 
@@ -165,7 +168,7 @@ tc.insertPrev = function(n,request){
 	    oh = 16;
 	else if(oh < 0)
 	    oh = 14;
-	var resDiv = $('<span>', { id: iid, tc: 'tc',class: 'thinkcontext'})
+	var resDiv = $('<span>', { id: iid, tc: 'tc',class: spClass})
     	    .append($('<img>', { src: dd.icon, height: oh, width: oh }));
 	resDiv.insertBefore(n);
     	//n.style.display = "inline";
@@ -252,8 +255,24 @@ tc.fragHandle = function(frag){
     }
 }
 
+// tc.movHandle = function(name,year){
+//     tc.debug >= 2 && console.log('movHandle',name,year);
+//     this.kind = 'mov';
+//     if(! (name && name.length > 0 && year && year.match(/^[0-9]{4}$/))){
+//       return null;
+//     }
+//     name = name.replace(/^the | the | the$/gi,'').toLowerCase();
+//     name = name.replace(/[\s\.,-\/#!$%\^&\*;:{}=\-_`~()\[\]]/g,"");
+    
+//     this.handle_seperator = ':';
+//     this.name = name;
+//     this.year = year;
+//     this.hval = name + '|' + year;
+    
+//     this.handle = this.kind + this.handle_seperator + this.hval;
+// }
+
 tc.urlHandle = function(url){
-    tc.debug >= 2 && console.log('urlHandle',url);
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;
@@ -261,8 +280,10 @@ tc.urlHandle = function(url){
     var m, sp = url.split('/');
     var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
     var path = sp.slice(3).join('/');
+    var query = path.split('?')[1];
     this.domain = domain;
     this.path = path;
+    this.query = query;
     
     if(domain == 'twitter.com' && (m = path.match(/^(\w+)/))){
 	this.kind = 'twitter';
@@ -293,6 +314,12 @@ tc.urlHandle = function(url){
 	this.hval = m[1];
     } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
 	this.kind = 'imdb';
+	this.hval = m[1];
+    } else if(domain.match(/\.?netflix\.com$/) && (m = path.match(/WiMovie\/([0-9]+)/) || (query && (m = query.match(/movieid=([0-9]+)/))) || (m = path.match(/^Movie\/.*\/([0-9]+)$/)))){
+	this.kind = 'netflix';
+	this.hval = m[1];
+    } else if(domain.match(/\.?rottentomatoes\.com$/) && (m = path.match(/m\/([^\/]+)/))){
+	this.kind = 'rt';
 	this.hval = m[1];
     } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';

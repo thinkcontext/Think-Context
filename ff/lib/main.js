@@ -30,8 +30,8 @@ function Ext(){
         }
     };
     _self.dbName = 'tc';
-    //_self.couch = 'http://127.0.0.1:5984/tc';
-    _self.couch = 'http://lin1.thinkcontext.org:5984/tcv1';
+    _self.couch = 'http://127.0.0.1:5984/tc';
+    //_self.couch = 'http://lin1.thinkcontext.org:5984/tcv1';
     _self.dataUrl = _self.couch + '/_design/seq/_view/dataByCampaignSeq';
     _self.deactivateUrl = _self.couch + '/_design/seq/_view/dataByCampaignDeactivated';
     _self.metaUrl = _self.couch + '/_design/seq/_view/meta';
@@ -578,6 +578,8 @@ pageMod.PageMod({
 	,data.url("google-search.js")
 	,data.url("hcom.js")
 	,data.url("imdb.js")
+	,data.url("netflix.js")
+	,data.url("rotten.js")
 	,data.url("kayak.js")
 	,data.url("orbitz.js")
 	,data.url("priceline.js")
@@ -684,7 +686,7 @@ tabs.on('activate', buttonTab);
 tabs.on('close',buttonTabClose);
 
 urlHandle = function(url){
-    tc.debug >= 2 && console.log('urlHandle',url);
+    //tc.debug >= 2 && 
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;
@@ -692,8 +694,10 @@ urlHandle = function(url){
     var m, sp = url.split('/');
     var domain = sp[2].toLowerCase().replace(/^[w0-9]+\./,'');
     var path = sp.slice(3).join('/');
+    var query = path.split('?')[1];
     this.domain = domain;
     this.path = path;
+    this.query = query;
     
     if(domain == 'twitter.com' && (m = path.match(/^(\w+)/))){
 	this.kind = 'twitter';
@@ -725,6 +729,12 @@ urlHandle = function(url){
     } else if(domain == 'imdb.com' && (m = path.match(/title\/(tt[0-9]+)/))){
 	this.kind = 'imdb';
 	this.hval = m[1];
+    } else if(domain.match(/\.?netflix\.com$/) && (m = path.match(/WiMovie\/([0-9]+)/) || (query && (m = query.match(/movieid=([0-9]+)/))) || (m = path.match(/^Movie\/.*\/([0-9]+)$/)))){
+	this.kind = 'netflix';
+	this.hval = m[1];
+    } else if(domain.match(/\.?rottentomatoes\.com$/) && (m = path.match(/m\/([^\/]+)/))){
+	this.kind = 'rt';
+	this.hval = m[1];
     } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
 	this.hval = m[1];
@@ -740,3 +750,4 @@ urlHandle = function(url){
     else 
     	return null;
 }
+
