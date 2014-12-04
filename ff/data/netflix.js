@@ -46,7 +46,11 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 
 	function rateVisibleMovies(){
-	    nlinks = $(selector).filter(':visible').not('[tcid]').each(
+
+	    // todo iterate over slider sets
+	    nlinks = $(selector).filter(':visible').not('[tcid]');
+	    console.log('rateVisibleMovies',nlinks.length);
+	    nlinks.each(
 		function(){
 		    var $this = $(this);
 		    if($this.isOnScreen()){
@@ -69,8 +73,14 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	$(".sliderButton").mouseover(function() {
             rateSliderMovies(this.parentElement);
 	});
+
+	var doingScroll = 0;
 	$(window).scroll(function(){
-	    rateVisibleMovies();
+	    if(doingScroll == 0){
+		doingScroll = 1;
+		rateVisibleMovies();
+		setTimeout(function(){doingScroll = 0;},250);
+	    }
 	});
 	$("input#searchField").on('input',function(e){
 	    setTimeout(function(){
