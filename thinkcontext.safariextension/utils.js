@@ -293,7 +293,8 @@ tc.fragHandle = function(frag){
 // }
 
 tc.urlHandle = function(url){
-    //tc.debug >= 2 && 
+    if(!url)
+	return null;
     url = url.trim();
     if(!url.match(/^https?:\/\/\w/))
 	return null;

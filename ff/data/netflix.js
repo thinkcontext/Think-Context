@@ -39,25 +39,31 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 
 	function rateSliderMovies(slider){
-	    nlinks = $(slider).find(selector).not('[tcid]').each(
+	    var nlinks = $(slider).find(selector).not('[tcid]').each(
 		function(){
 		    rateMovie(this);
 		});	    
 	}
 
 	function rateVisibleMovies(){
-
-	    // todo iterate over slider sets
-	    nlinks = $(selector).filter(':visible').not('[tcid]');
-	    console.log('rateVisibleMovies',nlinks.length);
-	    nlinks.each(
-		function(){
-		    var $this = $(this);
-		    if($this.isOnScreen()){
-			rateMovie(this);
-		    }
-		});	    
+	    var nlinks = $('.agMovieSet'), found = 0,nl;
+	    for(var i = 0; i < nlinks.length; i++){
+		nl = $(nlinks[i]);
+		if(nl.isOnScreen()){
+		    $(selector,nl).not('[tcid]').each(
+			function(){
+			    var $this = $(this);
+			    if($this.isOnScreen()){
+				rateMovie(this);
+			    }
+			});	    
+		    found = 1;
+		} else if(found){
+		    return;
+		}		
+	    }
 	}
+
 	var h = new tc.urlHandle(document.URL);
 	var selector;
 	
@@ -73,18 +79,11 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	$(".sliderButton").mouseover(function() {
             rateSliderMovies(this.parentElement);
 	});
-
-	var doingScroll = 0;
 	$(window).scroll(function(){
-	    if(doingScroll == 0){
-		doingScroll = 1;
-		rateVisibleMovies();
-		setTimeout(function(){doingScroll = 0;},250);
-	    }
+	    rateVisibleMovies();
 	});
 	$("input#searchField").on('input',function(e){
 	    setTimeout(function(){
-		console.log('input');	    
 		rateVisibleMovies();
 	    },500);
 	});	

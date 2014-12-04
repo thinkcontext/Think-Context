@@ -39,21 +39,31 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 
 	function rateSliderMovies(slider){
-	    nlinks = $(slider).find(selector).not('[tcid]').each(
+	    var nlinks = $(slider).find(selector).not('[tcid]').each(
 		function(){
 		    rateMovie(this);
 		});	    
 	}
 
 	function rateVisibleMovies(){
-	    nlinks = $(selector).filter(':visible').not('[tcid]').each(
-		function(){
-		    var $this = $(this);
-		    if($this.isOnScreen()){
-			rateMovie(this);
-		    }
-		});	    
+	    var nlinks = $('.agMovieSet'), found = 0,nl;
+	    for(var i = 0; i < nlinks.length; i++){
+		nl = $(nlinks[i]);
+		if(nl.isOnScreen()){
+		    $(selector,nl).not('[tcid]').each(
+			function(){
+			    var $this = $(this);
+			    if($this.isOnScreen()){
+				rateMovie(this);
+			    }
+			});	    
+		    found = 1;
+		} else if(found){
+		    return;
+		}		
+	    }
 	}
+
 	var h = new tc.urlHandle(document.URL);
 	var selector;
 	
@@ -74,7 +84,6 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	});
 	$("input#searchField").on('input',function(e){
 	    setTimeout(function(){
-		console.log('input');	    
 		rateVisibleMovies();
 	    },500);
 	});	
