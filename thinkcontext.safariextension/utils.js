@@ -86,6 +86,7 @@ tc.onPop = function(request){
 	    , close: function(){
 	    	$(window).unbind('resize');
 	    	$(window).unbind('scroll');
+		$(window).unbind('click');
 	    }
 	    , closeText: 'x'
 	    , create: function() {
@@ -125,7 +126,9 @@ tc.onPop = function(request){
                        , function(){$(this).css('opacity','0.4')});
 
 	// end safari specific
-
+	d.mouseenter(function(){
+	    $(window).off('click');
+	});
 	$(window).scroll(function(){
 	    d.dialog('close');
 	});
