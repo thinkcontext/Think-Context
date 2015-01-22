@@ -27,6 +27,7 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 
 	function rateMovie(n){
+	    //console.log('rateMovie',n);
 	    var h = new tc.urlHandle(n.href);
 	    if(h && h.handle){
 		var r = tc.random();	    
@@ -44,9 +45,15 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 		    rateMovie(this);
 		});	    
 	}
-
-	function rateVisibleMovies(){
-	    var nlinks = $('.agMovieSet'), found = 0,nl;
+ 
+	function rateVisibleMovies(search){
+	    var q;
+	    if(search)
+		q = '#instantSearchGalleryResults .agMovieGallery';
+	    else
+		q = '.agMovieSet';
+	    var nlinks = $(q), found = 0,nl;
+	    //console.log('rateVisibleMovies',nlinks.length,q);
 	    for(var i = 0; i < nlinks.length; i++){
 		nl = $(nlinks[i]);
 		if(nl.isOnScreen()){
@@ -74,17 +81,17 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)netflix\.
 	}
 	
 	tc.registerResponse('nfLink',onNFLink);
-	rateVisibleMovies();
+	rateVisibleMovies(0);
 
 	$(".sliderButton").mouseover(function() {
             rateSliderMovies(this.parentElement);
 	});
 	$(window).scroll(function(){
-	    rateVisibleMovies();
+	    rateVisibleMovies(0);
 	});
 	$("input#searchField").on('input',function(e){
 	    setTimeout(function(){
-		rateVisibleMovies();
+		rateVisibleMovies(1);
 	    },500);
 	});	
     }());
