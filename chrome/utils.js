@@ -70,7 +70,7 @@ tc.onPop = function(request){
     	d = dd.dialog;
     	d.dialog({
     	    title: dd.title
-    	    , zIndex: 100000001
+    	    , zIndex: 2147483647
     	    , position: [window.innerWidth - 350
     			 , 10 ]
     	    , close: function(){
@@ -178,7 +178,7 @@ tc.insertPrev = function(n,request,pClass){
 	     }	    
 	     , resizable: false
 	     , width: 500
-	     , zIndex: 10000000
+	     , zIndex: 2147483647  
 	     , dialogClass: 'thinkcontext'
   	     , closeText: 'x'
 	    }); 
