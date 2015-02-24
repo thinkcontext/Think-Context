@@ -286,7 +286,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'tripadvisor.com' && (m = path.match(/_Review-(g[0-9]+-d[0-9]+)/))){
 	this.kind = 'tripadvisor';
 	this.hval = m[1];
-    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/^([^\?\/\#]+)/)))){
+    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/groups/([^\/\?\#]+)/)) || (m = path.match(/^([^\?\/\#]+)/)))){
 	this.kind = 'facebook';
 	this.hval = m[1].toLowerCase();
     } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
