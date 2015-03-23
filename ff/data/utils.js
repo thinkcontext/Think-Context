@@ -70,7 +70,7 @@ tc.onPop = function(request){
 	d = dd.dialog;
 	d.dialog({
 	    title: dd.title
-	    , zIndex: 100000001
+	    , zIndex: 2147483647
 	    , position: [window.innerWidth - 350
 			 , 10 ]
 	    , close: function(){
@@ -181,7 +181,7 @@ tc.insertPrev = function(n,request,pClass){
 	     }	    
 	     , resizable: false
 	     , width: 500
-	     , zIndex: 10000000
+	     , zIndex: 2147483647
 	     , dialogClass: 'thinkcontext'
   	     , closeText: 'x'
 	    }); 
@@ -293,7 +293,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'tripadvisor.com' && (m = path.match(/_Review-(g[0-9]+-d[0-9]+)/))){
 	this.kind = 'tripadvisor';
 	this.hval = m[1];
-    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/^([^\?\/\#]+)/)))){
+    } else if(domain == 'facebook.com' && ((m = path.match(/pages.*\/([0-9]{5,20})/)) || (m = path.match(/groups\/([^\/\?\#]+)/)) || (m = path.match(/^([^\?\/\#]+)/)))){
 	this.kind = 'facebook';
 	this.hval = m[1].toLowerCase();
     } else if(domain == 'yelp.com' && (m = path.match(/biz\/([\w\-]+)/))){
