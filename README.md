@@ -1,5 +1,7 @@
 **thinkContext** is a web browser extension which aims to add contextually relevant information to users' web browsing experience.  Currently Chrome, Firefox and Safari are supported.
 
+![HRC score displayed on AA website](https://pbs.twimg.com/media/B0kFt0oCYAAxXsg.png:large)
+
 ### Overview
 
 **thinkContext** works by recognizing entities that are present on a page or if the page itself represents an entity.  Once entities are identified a document database is consulted to determine if there is any corresponding (user selected) information available.  If there is the software displays the information in some form to the user by inserting the information into the web page they are viewing.
