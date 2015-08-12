@@ -21,7 +21,7 @@ if (window.top === window && !tc.found && document.domain.search(/^www\.google(\
 			    );
 	    
 	    //	result link	
-	    tc.handleExamine("ol#rso li.g div > h3 > a",null);
+	    tc.handleExamine("ol#rso .g div > h3 > a",null);
 	}
     }else if(document.location.pathname.search('/maps') == 0){
 	

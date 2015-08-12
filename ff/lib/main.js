@@ -59,21 +59,10 @@ function Ext(){
 		_self.fetchMetaData(function(){ openInstall(); _self.sync();});    
 	    }
 	    else if(! _self.lsGet('tcversion') && _self.lsGet('resultsversion')){
-		// update from sqlite version
-		_self.lsSet('tcversion',_self.version);
-		_self.initialCamps();
-		_self.setVersionTime();
-		var sql = require("sqlite");
-		sql.connect('thinkcontext');
-		sql.execute("drop table template",{}, null, null);
-		sql.execute("drop table place",{}, null, null);
-		sql.execute("drop table place_data",{}, null, null);
-		sql.execute("drop table results",{}, null, null);
-		sql = null;
-		_self.fetchMetaData(function(){ 
-		    openUpdate(); 
-		    _self.sync();
-		});    
+		// was update from sqlite version
+		// now removed
+		console.error('old sqlite version');
+		
 	    } else if(_self.lsGet('tcversion') != _self.version){
 		// update
 		_self.lsSet('tcversion',_self.version);
