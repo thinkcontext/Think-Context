@@ -561,7 +561,6 @@ pageMod.PageMod({
 	,data.url("duckduckgo.js")
 	,data.url("expedia.js")
 	,data.url("facebook.js")
-	,data.url("google-mail.js")
 	,data.url("google-maps.js")
 	,data.url("google-place-page.js")
 	,data.url("google-search.js")
