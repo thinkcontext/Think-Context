@@ -134,6 +134,8 @@ tc.handleExamine = function(selector,kind,getval,placer){
 		href = getval(this);
 	    if(placer)
 		target = placer(this);
+	    if(!target)
+		return;
 	    if(this != target)
 		this.setAttribute('tcid',1);
 	    var r = tc.random();	    
@@ -319,7 +321,7 @@ tc.urlHandle = function(url){
     } else if(domain == 'plus.google.com' && ((m = path.match(/^([0-9]+)/)) || (m = path.match('(\+\w+)')))){
 	this.kind = 'gplus';
 	this.hval = m[1];
-    } else if(domain == 'en.wikipedia.org' && (m = path.match(/wiki\/([\w\-]+)/))){
+    } else if(domain == 'en.wikipedia.org' && (m = path.match(/wiki\/(.+)/))){
 	this.kind = 'wiki'
 	this.hval = m[1];
     } else {

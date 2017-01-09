@@ -1,5 +1,5 @@
 {"name":"thinkContext"
- , "version": "1.4"
+ , "version": "1.6"
  , "description":"thinkContext"
  , "manifest_version": 2
  , "icons": {
@@ -10,6 +10,7 @@
 		   , "http://*.thinkcontext.org/*"
 		   , "https://*.thinkcontext.org/*"		   
 		   , "notifications"
+		   , "cookies"
 		  ]
  , "page_action": { "default_title": "thinkContext - Click for more info" }
  , "options_page": "options.html"

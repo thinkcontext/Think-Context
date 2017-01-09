@@ -35,7 +35,16 @@ if (window.top === window && !tc.found && document.domain.match(/(^|\.)twitter\.
 	tc.handleExamine("div#profile_popup-body div.profile-details[data-screen-name]"
 			 ,'twitter'
 			 ,function(x){ return 'https://twitter.com/' + x.attributes['data-screen-name']; });
-	tc.handleExamine("a.js-user-profile-link:not([href*='"+proHandle.path+"']),a.twitter-atreply:not([href*='"+proHandle.path+"'])",'twitter');
+	tc.handleExamine("a.js-user-profile-link:not([href*='"+proHandle.path+"']),a.twitter-atreply:not([href*='"+proHandle.path+"'])",
+			 'twitter'
+			 , null
+			 , function(x){
+			     if(x.parentElement.parentElement.className == 'tweet-box rich-editor'){
+			 	 return;
+			     }
+			     return x;
+			 }
+			);
     }
 
     tc.twitter.doOb();

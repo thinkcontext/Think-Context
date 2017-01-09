@@ -41,22 +41,6 @@ function Ext(){
 		_self.initialCamps();
 		_self.setVersionTime();    
 		_self.fetchMetaData(function(){ openInstall(); _self.sync();});    
-	    } else if(! _self.lsGet('tcversion') && _self.lsGet('resultsversion')){
-		// update from sqlite version
-		_self.lsSet('tcversion',_self.version);
-		_self.initialCamps();
-		_self.setVersionTime();
-		var olddb = openDatabase('thinkcontext','1.0','thinkcontext',0);
-		olddb.transaction(function(tx){
-    		    tx.executeSql('drop table template',[]); 
-    		    tx.executeSql('drop table place',[]); 
-    		    tx.executeSql('drop table place_data',[]); 
-    		    tx.executeSql('drop table results',[]); 
-		});
-		_self.fetchMetaData(function(){ 
-		    openUpdate(); 
-		    _self.sync();
-		});    
 	    } else if(_self.lsGet('tcversion') != _self.version){
 		// update
 		_self.lsSet('tcversion',_self.version);
@@ -437,16 +421,28 @@ Ext.prototype = {
 	if(_self.lsGet('campaigns')) // there's existing config so return
 	    return;
 
-	var newCamps = ['congress','climatecounts','effback','politifact','whoprofits','ciw','trump'];
-	[ 'opt_rush','opt_hotel','opt_bechdel', 'opt_bcorp', 'opt_roc','opt_hrc' ].forEach(
-	    function(o){
-		if(_self.lsGet(o) != 0){
-		    newCamps.push(o.replace('opt_',''));
+	chrome.cookies.getAll(
+	    {
+		domain: 'thinkcontext.org',
+		name: 'tcCamps'
+	    },
+	    function(cookies){
+		var newCamps = ['congress','climatecounts','effback','politifact','whoprofits','ciw','trump'],
+		    cookie, val;
+		if(cookies.length > 0){
+		    cookie = cookies[0];
+		    if(cookie && cookie.value){
+			val = JSON.parse(cookie.value);
+			if(val.length && val.length > 0){
+			    newCamps = val;
+			}
+		    }
+		    _self.lsSet('campaigns', JSON.stringify(newCamps));    
+		    _self.getSubscribed();		
 		}
-		_self.lsRm(o);
-	    });
-	_self.lsSet('campaigns', JSON.stringify(newCamps));    
-	_self.getSubscribed();
+	    }
+	);
+			   
     },
     lsSet: function(x,y){
 	localStorage[x] = y;

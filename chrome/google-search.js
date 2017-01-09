@@ -51,14 +51,14 @@ if (window.top === window && !tc.found && document.domain.search(/^www\.google(\
 				     return ret;
 				 }
 				);	
-	    
+		
 		// in map popup dialogs		
 		tc.handleExamine("div.gmnoprint td.basicinfo div#iwhomepage a"
 				 , null
 				 , function(x){return 'http://' + x.textContent}
 				 , null
 				);	    
-	}
+	    }
 	    
 	} else {
 	    
@@ -90,7 +90,7 @@ if (window.top === window && !tc.found && document.domain.search(/^www\.google(\
 	    
 	}
     }
-        
+    
     tc.googleSearch.summaryCallback = function(summaries){
 	//    tc.googleSearch.doit();
 	$observerSummaryRoot.mutationSummary("disconnect");
