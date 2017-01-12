@@ -1,3 +1,7 @@
+if (typeof chrome === 'undefined' && typeof browser !== 'undefined') {
+    chrome = browser;
+}
+
 var tc = {};
 tc.found = false;
 tc.debug = 0;
@@ -22,7 +26,7 @@ tc.registerResponse = function(kind, func){
 }
 
 if(window.top === window){ // don't listen in an iframe
-    chrome.extension.onMessage.addListener(
+    chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse){
 	    if(request.kind == 'tcPopD')
 		if(tc.popD.dialog('isOpen')){
@@ -40,7 +44,7 @@ tc.onResponse = function(request){
 }
 tc.sendMessage = function(request){
     tc.debug  && console.log('sendMessage',request);
-    chrome.extension.sendRequest(request, tc.onResponse);
+    chrome.runtime.sendMessage(request, tc.onResponse);
 }
 
 tc.popSend = function(){
