@@ -1,3 +1,7 @@
+if (typeof chrome === 'undefined' && typeof browser !== 'undefined') {
+    chrome = browser;
+}
+
 function Ext(){
     var _self = this;
     _self.version = chrome.runtime.getManifest().version;
@@ -427,7 +431,7 @@ Ext.prototype = {
 		name: 'tcCamps'
 	    },
 	    function(cookies){
-		var newCamps = ['congress','climatecounts','effback','politifact','whoprofits','ciw','trump'],
+		var newCamps = ['congress','climatecounts','effback','politifact','whoprofits','ciw','trump','hrc'],
 		    cookie, val;
 		if(cookies.length > 0){
 		    cookie = cookies[0];
@@ -437,9 +441,9 @@ Ext.prototype = {
 			    newCamps = val;
 			}
 		    }
-		    _self.lsSet('campaigns', JSON.stringify(newCamps));    
-		    _self.getSubscribed();		
 		}
+		_self.lsSet('campaigns', JSON.stringify(newCamps));    
+		_self.getSubscribed();				
 	    }
 	);
 			   
@@ -480,10 +484,11 @@ function onRequest(request, sender, callback) {
 	tc.lookup(request.handle,request,callback);
     } else {
 	console.log("couldn't get a handle",request);
-    }   
+    }
+    return true;
 }
 
-chrome.extension.onRequest.addListener(onRequest);
+chrome.runtime.onMessage.addListener(onRequest);
 chrome.pageAction.onClicked.addListener(
     function(tab){
 	chrome.tabs.sendMessage(tab.id,{kind: 'tcPopD'});
